@@ -1,5 +1,5 @@
 # README #
-
+ 
 Half Way There App -- to augment your pedometer by letting you know when you are half way to your goal from where you started.
 
 ### What is this repository for? ###
