@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">HalfWayThere</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="distance_travelled">Distance Travelled:</string>
+    <string name="current_location">Current Location</string>
     <string name="action_settings">Settings</string>
+    <string name="email_button">Email</string>
+    <string name="clear_button">Clear</string>
 </resources>
