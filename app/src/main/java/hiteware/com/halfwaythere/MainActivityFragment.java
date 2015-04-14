@@ -23,10 +23,23 @@ import java.util.Vector;
 public class MainActivityFragment extends Fragment implements LocationListener {
 
     private Location latestLocation;
+    private double distance = 0.0;
+    private boolean first_entry = false;
     private List<String> locations = new Vector<>();
 
     public MainActivityFragment() {
     }
+
+    private static double distanceInMiles(double lat1, double long1, double lat2, double long2) {
+        double piDividedBy180 = 0.0174532925199433;
+        double deltaLongitudeInRadians = (long2 - long1) * piDividedBy180;
+        double deltaLatitudeInRadians = (lat2 - lat1) * piDividedBy180;
+        double a = Math.pow(Math.sin(deltaLatitudeInRadians/2.0), 2) + Math.cos(lat1 * piDividedBy180) *
+                Math.cos(lat2 * piDividedBy180) * Math.pow(Math.sin(deltaLongitudeInRadians/2.0), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return 3956 * c;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,6 +67,8 @@ public class MainActivityFragment extends Fragment implements LocationListener {
                 public void onClick(View view) {
                     Toast.makeText(getActivity(), "Clear Clicked", Toast.LENGTH_SHORT).show();
                     locations.clear();
+                    distance = 0.0;
+                    first_entry = false;
                 }
             });
         }
@@ -97,10 +112,18 @@ public class MainActivityFragment extends Fragment implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        latestLocation = location;
-        if (location.getAccuracy() < 10.0) {
+        if (location.getAccuracy() < 20.1) {
+            if (first_entry) {
+                distance = distance + distanceInMiles(latestLocation.getLatitude(), latestLocation.getLongitude(),
+                        location.getLatitude(), location.getLongitude());
+                TextView distanceText = (TextView) getView().findViewById(R.id.distance_text);
+                distanceText.setText(distance+" miles");
+            }
+            first_entry = true;
+            latestLocation = location;
+
             String position = new String("Lat: " + location.getLatitude() + " Long: " + location.getLongitude() + " Accuracy: " + location.getAccuracy());
-            String output = new String(location.getLatitude() + "," + location.getLongitude() + "\n");
+            String output = new String(location.getLatitude() + "," + location.getLongitude() + " distance:"+distance+"\n");
             TextView positionView = (TextView) getView().findViewById(R.id.textView3);
             positionView.setText(position);
             locations.add(output);
