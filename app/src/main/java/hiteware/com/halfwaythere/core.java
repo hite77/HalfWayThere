@@ -1,4 +1,4 @@
-package com.hitetech.core;
+package hiteware.com.halfwaythere;
 
 public class core
 {

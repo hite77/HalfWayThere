@@ -1,8 +1,6 @@
-package com.hitetech.core;
-
 import org.junit.Test;
 
-import static com.hitetech.core.core.distanceInMiles;
+import static hiteware.com.halfwaythere.core.distanceInMiles;
 import static org.junit.Assert.assertEquals;
 
 public class CoreTest
