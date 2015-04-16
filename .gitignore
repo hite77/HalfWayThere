@@ -10,4 +10,4 @@ gradle.properties
 gradlew.bat
 gradlew
 /gradle
-app/app.iml
+*.iml
