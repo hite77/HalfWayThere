@@ -1,31 +1,27 @@
-Current README is the skeleton.  Will fill this in.  Plus make sure I can recreate with Android Studio.
-This app is for the contest, it tells the user when they get half way to there goal.
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Half Way There App -- to augment your pedometer by letting you know when you are half way to your goal from where you started.
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* My first Android App on the android store.
+Helps the user to find out when they should turn around when trying to make a step goal.
+Example: you are at 7500 steps of 10,000.  At 8750 steps it will signal that you should turn around.
+App uses GPS positioning, sampled every 6 seconds, and calculates distance between each, when it is calibrated for distance to steps, it will show how many steps you have walked.
+* Future Versions
+Will add capability to specify at what intervals to notify. Such as thirds, or fourths, etc.
+Possibly add google maps integration / intent to call google maps to display data points.
+Improve UI, add more functions. 
+* Version 1.00
 
 ### How do I get set up? ###
 
 * Summary of set up
 * Configuration
 * Dependencies
-* Database configuration
 * How to run tests
 * Deployment instructions
 
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
 ### Who do I talk to? ###
 
-* Repo owner or admin
-* Other community or team contact
+* hite77 
