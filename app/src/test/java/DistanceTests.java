@@ -44,16 +44,44 @@ public class DistanceTests {
     }
 
     @Test
+    public void whenOneLocationHasBeenArrivedAtTheStringIsStillEmptyForDistance()
+    {
+        LocationManager locationManager = (LocationManager) RuntimeEnvironment.application.getSystemService(Application.LOCATION_SERVICE);
+        ShadowLocationManager shadowLocationManager = shadowOf(locationManager);
+        Location firstLocation = location(LocationManager.NETWORK_PROVIDER, 39.9833, -82.9833);
+        firstLocation.setTime(firstLocation.getTime()+8000);
+        shadowLocationManager.simulateLocation(firstLocation);
+        assertThat(DistanceValue.getText().toString(), equalTo(""));
+    }
+
+    @Test
     public void distanceBetweenTwoPointsResultsInCorrectDistanceDisplayed()
     {
         LocationManager locationManager = (LocationManager) RuntimeEnvironment.application.getSystemService(Application.LOCATION_SERVICE);
         ShadowLocationManager shadowLocationManager = shadowOf(locationManager);
         Location firstLocation = location(LocationManager.NETWORK_PROVIDER, 39.9833, -82.9833);
         Location secondLocation = location(LocationManager.NETWORK_PROVIDER, 38.2500, -85.7667);
+        secondLocation.setTime(8000+secondLocation.getTime());
+        shadowLocationManager.simulateLocation(firstLocation);
+        shadowLocationManager.simulateLocation(secondLocation);
+        assertThat(DistanceValue.getText().toString(), equalTo("191.18 miles"));
+    }
+
+    @Test
+    public void distanceBetweenMultiplePlacesResultsInCorrectDistanceDisplayed()
+    {
+        LocationManager locationManager = (LocationManager) RuntimeEnvironment.application.getSystemService(Application.LOCATION_SERVICE);
+        ShadowLocationManager shadowLocationManager = shadowOf(locationManager);
+        Location firstLocation = location(LocationManager.NETWORK_PROVIDER, 39.9833, -82.9833);
+        Location secondLocation = location(LocationManager.NETWORK_PROVIDER, 38.2500, -85.7667);
+        Location thirdLocation = location(LocationManager.NETWORK_PROVIDER, 36.1215, -115.1739);
+        secondLocation.setTime(8000+secondLocation.getTime());
+        thirdLocation.setTime(16000+thirdLocation.getTime());
 
         shadowLocationManager.simulateLocation(firstLocation);
         shadowLocationManager.simulateLocation(secondLocation);
-        assertThat(DistanceValue.getText().toString(), equalTo("191.48 miles"));
+        shadowLocationManager.simulateLocation(thirdLocation);
+        assertThat(DistanceValue.getText().toString(), equalTo("1808.62 miles"));
     }
 
     private Location location(String provider, double latitude, double longitude) {

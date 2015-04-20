@@ -1,9 +1,9 @@
 import org.junit.Test;
 
-import static hiteware.com.halfwaythere.core.distanceInMiles;
+import static hiteware.com.halfwaythere.Conversion.distanceInMiles;
 import static org.junit.Assert.assertEquals;
 
-public class CoreTest
+public class ConversionTest
 {
     @Test
     public void DistanceCalculationTest()
