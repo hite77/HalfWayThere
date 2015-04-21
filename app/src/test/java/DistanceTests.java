@@ -25,10 +25,31 @@ import static org.robolectric.Shadows.shadowOf;
 public class DistanceTests {
     public Activity CreatedActivity;
     public TextView DistanceValue;
+    public int TimeOffset;
+    public ShadowLocationManager MyShadowLocationManager;
     @Before
     public void setUp() {
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().get();
         DistanceValue = (TextView) CreatedActivity.findViewById(R.id.distance_value);
+        LocationManager locationManager = (LocationManager) RuntimeEnvironment.application.getSystemService(Application.LOCATION_SERVICE);
+        MyShadowLocationManager = shadowOf(locationManager);
+
+        TimeOffset = 0;
+    }
+
+    private Location location(String provider, double latitude, double longitude) {
+        Location location = new Location(provider);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        location.setTime(System.currentTimeMillis());
+        return location;
+    }
+
+    public void simulateLocationWithTimeOffset(Location location)
+    {
+        location.setTime(location.getTime()+TimeOffset);
+        TimeOffset+= 8000;
+        MyShadowLocationManager.simulateLocation(location);
     }
 
     @Test
@@ -46,49 +67,25 @@ public class DistanceTests {
     @Test
     public void whenOneLocationHasBeenArrivedAtTheStringIsStillEmptyForDistance()
     {
-        LocationManager locationManager = (LocationManager) RuntimeEnvironment.application.getSystemService(Application.LOCATION_SERVICE);
-        ShadowLocationManager shadowLocationManager = shadowOf(locationManager);
         Location firstLocation = location(LocationManager.NETWORK_PROVIDER, 39.9833, -82.9833);
-        firstLocation.setTime(firstLocation.getTime()+8000);
-        shadowLocationManager.simulateLocation(firstLocation);
+        simulateLocationWithTimeOffset(firstLocation);
         assertThat(DistanceValue.getText().toString(), equalTo(""));
     }
 
     @Test
     public void distanceBetweenTwoPointsResultsInCorrectDistanceDisplayed()
     {
-        LocationManager locationManager = (LocationManager) RuntimeEnvironment.application.getSystemService(Application.LOCATION_SERVICE);
-        ShadowLocationManager shadowLocationManager = shadowOf(locationManager);
-        Location firstLocation = location(LocationManager.NETWORK_PROVIDER, 39.9833, -82.9833);
-        Location secondLocation = location(LocationManager.NETWORK_PROVIDER, 38.2500, -85.7667);
-        secondLocation.setTime(8000+secondLocation.getTime());
-        shadowLocationManager.simulateLocation(firstLocation);
-        shadowLocationManager.simulateLocation(secondLocation);
+        simulateLocationWithTimeOffset(location(LocationManager.NETWORK_PROVIDER, 39.9833, -82.9833));
+        simulateLocationWithTimeOffset(location(LocationManager.NETWORK_PROVIDER, 38.2500, -85.7667));
         assertThat(DistanceValue.getText().toString(), equalTo("191.18 miles"));
     }
 
     @Test
     public void distanceBetweenMultiplePlacesResultsInCorrectDistanceDisplayed()
     {
-        LocationManager locationManager = (LocationManager) RuntimeEnvironment.application.getSystemService(Application.LOCATION_SERVICE);
-        ShadowLocationManager shadowLocationManager = shadowOf(locationManager);
-        Location firstLocation = location(LocationManager.NETWORK_PROVIDER, 39.9833, -82.9833);
-        Location secondLocation = location(LocationManager.NETWORK_PROVIDER, 38.2500, -85.7667);
-        Location thirdLocation = location(LocationManager.NETWORK_PROVIDER, 36.1215, -115.1739);
-        secondLocation.setTime(8000+secondLocation.getTime());
-        thirdLocation.setTime(16000+thirdLocation.getTime());
-
-        shadowLocationManager.simulateLocation(firstLocation);
-        shadowLocationManager.simulateLocation(secondLocation);
-        shadowLocationManager.simulateLocation(thirdLocation);
+        simulateLocationWithTimeOffset(location(LocationManager.NETWORK_PROVIDER, 39.9833, -82.9833));
+        simulateLocationWithTimeOffset(location(LocationManager.NETWORK_PROVIDER, 38.2500, -85.7667));
+        simulateLocationWithTimeOffset(location(LocationManager.NETWORK_PROVIDER, 36.1215, -115.1739));
         assertThat(DistanceValue.getText().toString(), equalTo("1808.62 miles"));
-    }
-
-    private Location location(String provider, double latitude, double longitude) {
-        Location location = new Location(provider);
-        location.setLatitude(latitude);
-        location.setLongitude(longitude);
-        location.setTime(System.currentTimeMillis());
-        return location;
     }
 }
