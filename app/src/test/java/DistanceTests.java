@@ -67,8 +67,7 @@ public class DistanceTests {
     @Test
     public void whenOneLocationHasBeenArrivedAtTheStringIsStillEmptyForDistance()
     {
-        Location firstLocation = location(LocationManager.NETWORK_PROVIDER, 39.9833, -82.9833);
-        simulateLocationWithTimeOffset(firstLocation);
+        simulateLocationWithTimeOffset(location(LocationManager.NETWORK_PROVIDER, 39.9833, -82.9833));
         assertThat(DistanceValue.getText().toString(), equalTo(""));
     }
 
