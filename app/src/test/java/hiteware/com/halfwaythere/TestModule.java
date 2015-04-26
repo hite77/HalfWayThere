@@ -1,3 +1,5 @@
+package hiteware.com.halfwaythere;
+
 import android.location.LocationManager;
 
 import org.mockito.Mockito;
@@ -6,7 +8,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import hiteware.com.halfwaythere.MainActivityFragment;
 
 /**
  * Created by jasonhite on 4/25/15.
@@ -16,6 +17,9 @@ import hiteware.com.halfwaythere.MainActivityFragment;
         overrides = true
 )
 public class TestModule {
+    public TestModule() {
+    }
+
     @Provides
     @Singleton
     LocationManager provideLocationManager() {

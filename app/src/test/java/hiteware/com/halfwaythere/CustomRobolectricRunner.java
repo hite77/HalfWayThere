@@ -1,3 +1,5 @@
+package hiteware.com.halfwaythere;
+
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;

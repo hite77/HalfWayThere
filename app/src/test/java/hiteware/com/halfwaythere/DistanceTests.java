@@ -1,3 +1,5 @@
+package hiteware.com.halfwaythere;
+
 import android.app.Activity;
 import android.app.Application;
 import android.location.Location;
@@ -11,10 +13,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLocationManager;
-
-import hiteware.com.halfwaythere.BuildConfig;
-import hiteware.com.halfwaythere.MainActivity;
-import hiteware.com.halfwaythere.R;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
