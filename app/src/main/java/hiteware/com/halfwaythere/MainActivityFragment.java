@@ -33,12 +33,12 @@ public class MainActivityFragment extends Fragment implements LocationListener{
 
     public void initializeListeners()
     {
-        //LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         List<String> allProviders = locationManager.getAllProviders();
-//        locationManager.getAllProviders(); // second call to hopefully cause errors.
         for (String provider : allProviders)
         {
-            locationManager.requestLocationUpdates(provider, 6000, 0, this);
+            long minimumTimeBeforeNavigationUpdate = 6000;
+            float minimumDistanceBeforeNavigationUpdate = 0;
+            locationManager.requestLocationUpdates(provider, minimumTimeBeforeNavigationUpdate, minimumDistanceBeforeNavigationUpdate, this);
         }
     }
 
