@@ -1,3 +1,5 @@
+package hiteware.com.halfwaythere;
+
 import android.location.LocationManager;
 
 import org.junit.Before;
@@ -8,11 +10,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import javax.inject.Inject;
-
-import dagger.ObjectGraph;
-import hiteware.com.halfwaythere.BuildConfig;
-import hiteware.com.halfwaythere.DemoApplication;
-import hiteware.com.halfwaythere.MainActivity;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,9 +29,10 @@ public class LocationHandlerUnitTest
 
     @Before
     public void setUp() {
-        ObjectGraph.create(new TestModule()).inject(this);
-        ((DemoApplication) RuntimeEnvironment.application).setActiveLocationManager(locationManager);
+        TestDemoApplication application = (TestDemoApplication) RuntimeEnvironment.application;
+        application.setMockLocationManager();
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().get();
+        application.inject(null, this);
     }
 
     @Test

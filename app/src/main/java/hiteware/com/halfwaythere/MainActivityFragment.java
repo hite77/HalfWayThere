@@ -1,12 +1,10 @@
 package hiteware.com.halfwaythere;
 
-import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +13,6 @@ import android.widget.TextView;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.ObjectGraph;
-import dagger.Provides;
 
 import static hiteware.com.halfwaythere.Conversion.distanceInMiles;
 
@@ -33,25 +26,6 @@ public class MainActivityFragment extends Fragment implements LocationListener{
     private Location current_location;
 
     @Inject LocationManager locationManager;
-
-    @Module(
-            injects = MainActivityFragment.class,
-            overrides = false
-    )
-    static class ProductionModule {
-
-        private FragmentActivity Activity;
-
-        public ProductionModule(FragmentActivity activity) {
-            Activity = activity;
-        }
-
-        @Provides
-        @Singleton
-        LocationManager provideLocationManager() {
-            return (LocationManager) Activity.getSystemService(Context.LOCATION_SERVICE);
-        }
-    }
 
     public MainActivityFragment()
     {
@@ -74,12 +48,8 @@ public class MainActivityFragment extends Fragment implements LocationListener{
     {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        ObjectGraph.create(new ProductionModule(getActivity())).inject(this);
+        ((DemoApplication)getActivity().getApplication()).inject(getActivity(), this);
 
-        DemoApplication application = (DemoApplication) getActivity().getApplication();
-
-        if (application.getActiveLocationManager() != null)
-            locationManager = application.getActiveLocationManager();
         initializeListeners();
         return view;
     }

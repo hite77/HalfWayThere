@@ -1,3 +1,5 @@
+package hiteware.com.halfwaythere;
+
 import org.junit.Test;
 
 import static hiteware.com.halfwaythere.Conversion.distanceInMiles;
