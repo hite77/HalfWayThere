@@ -14,5 +14,73 @@
         android:layout_below="@+id/distance"
         android:id="@+id/distance_value"/>
 
+    <TextView
+        android:text="Lat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/SpikeLat"
+        android:layout_below="@+id/distance_value"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/SpikeLatText"
+        android:layout_below="@+id/SpikeLat"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/distance_value"
+        android:layout_alignEnd="@+id/distance_value" />
+
+    <TextView
+        android:text="Long"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/SpikeLong"
+        android:layout_alignTop="@+id/SpikeLat"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/SpikeLongText"
+        android:layout_below="@+id/SpikeLat"
+        android:layout_alignParentRight="true" />
+
+    <TextView
+        android:text="Speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/SpikeSpeed"
+        android:layout_below="@+id/SpikeLatText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/SpikeSpeedText"
+        android:layout_below="@+id/SpikeSpeed"
+        android:layout_alignParentLeft="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:id="@+id/email_button"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear"
+        android:id="@+id/Clear_Button"
+        android:layout_alignBottom="@+id/email_button"
+        android:layout_toRightOf="@+id/email_button"
+        android:layout_toEndOf="@+id/email_button" />
 
 </RelativeLayout>
