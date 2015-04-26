@@ -11,9 +11,12 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
+import static org.mockito.Matchers.anyFloat;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.times;
@@ -38,13 +41,13 @@ public class LocationHandlerUnitTest
     public void setUp() {
         application = (TestDemoApplication) RuntimeEnvironment.application;
         application.setMockLocationManager();
+        application.inject(null, this);
     }
 
     @Test
     public void mockProviderIsCalledForRegisterWithOneProviderWithSixSecondDelayZeroDistanceNeeded()
     {
         String provider = new String("Hello");
-        application.inject(null, this);
         when(locationManager.getAllProviders()).thenReturn(Arrays.asList(provider));
 
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().get();
@@ -52,12 +55,18 @@ public class LocationHandlerUnitTest
         long time = 6000;
         float distance = 0;
 
-        verify(locationManager, times(1)).requestLocationUpdates(eq(provider),eq(time),eq(distance),isA(LocationListener.class));
+        verify(locationManager, times(1)).requestLocationUpdates(eq(provider), eq(time), eq(distance), isA(LocationListener.class));
     }
 
     @Test
     public void mockProviderIsCalledForRegisterWithMultipleProviders()
     {
+        List<String> providers = Arrays.asList("First", "Second");
+        when(locationManager.getAllProviders()).thenReturn(providers);
 
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().get();
+
+        verify(locationManager, times(1)).requestLocationUpdates(eq(providers.get(0)), anyLong(), anyFloat(), isA(LocationListener.class));
+        verify(locationManager, times(1)).requestLocationUpdates(eq(providers.get(1)), anyLong(), anyFloat(), isA(LocationListener.class));
     }
 }
