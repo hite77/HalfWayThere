@@ -39,13 +39,7 @@ public class MainActivityFragment extends Fragment implements LocationListener{
 
     public void initializeListeners()
     {
-        //LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        List<String> allProviders = locationManager.getAllProviders();
-//        locationManager.getAllProviders(); // second call to hopefully cause errors.
-        for (String provider : allProviders)
-        {
-            locationManager.requestLocationUpdates(provider, 6000, 0, this);
-        }
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 6000, 0, this);
     }
 
     @Override
@@ -112,26 +106,30 @@ public class MainActivityFragment extends Fragment implements LocationListener{
 
     @Override
     public void onLocationChanged(Location location) {
-        if (firstLocation) {
-            distance += distanceInMiles(location.getLatitude(), location.getLongitude(),
-                                        current_location.getLatitude(), current_location.getLongitude());
-            TextView outputView = (TextView) getView().findViewById(R.id.distance_value);
-            outputView.setText(String.format( "%.2f", distance )+" miles");
 
-            float speed = location.getSpeed();
-            TextView speedView = (TextView) getView().findViewById(R.id.SpikeSpeedText);
-            speedView.setText(String.format("%.2f", speed));
+        if ((location.getAccuracy() < 20.1) && (location.getSpeed() >= 0.01)) {
 
-            String output = new String(location.getLatitude() + "," + location.getLongitude() + " distance:"+distance+ " speed:"+ speed+"\n");
-            locations.add(output);
+            if (firstLocation) {
+                distance += distanceInMiles(location.getLatitude(), location.getLongitude(),
+                        current_location.getLatitude(), current_location.getLongitude());
+                TextView outputView = (TextView) getView().findViewById(R.id.distance_value);
+                outputView.setText(String.format("%.2f", distance) + " miles");
 
-            ((TextView)getView().findViewById(R.id.SpikeLatText)).setText(String.format("%.6f", location.getLatitude()));
-            ((TextView)getView().findViewById(R.id.SpikeLongText)).setText(String.format("%.6f", location.getLongitude()));
+                float speed = location.getSpeed();
+                TextView speedView = (TextView) getView().findViewById(R.id.SpikeSpeedText);
+                speedView.setText(String.format("%.2f", speed));
 
+                String output = new String(location.getLatitude() + "," + location.getLongitude() + " distance:" + distance + " speed:" + speed + "\n");
+                locations.add(output);
+
+                ((TextView) getView().findViewById(R.id.SpikeLatText)).setText(String.format("%.6f", location.getLatitude()));
+                ((TextView) getView().findViewById(R.id.SpikeLongText)).setText(String.format("%.6f", location.getLongitude()));
+
+            }
+
+            current_location = location;
+            firstLocation = true;
         }
-
-        current_location = location;
-        firstLocation = true;
     }
 
     @Override
