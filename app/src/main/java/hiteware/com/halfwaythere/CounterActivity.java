@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +19,9 @@ public class CounterActivity extends Activity implements SensorEventListener {
     private SensorManager sensorManager;
     private TextView count;
     boolean activityRunning;
+    private boolean firstRun = true;
+    float offset = 0;
+    private boolean halfWay = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,6 +30,7 @@ public class CounterActivity extends Activity implements SensorEventListener {
         count = (TextView) findViewById(R.id.count);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        vibrate();
     }
 
     @Override
@@ -51,13 +56,31 @@ public class CounterActivity extends Activity implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        if (firstRun)
+        {
+            firstRun = false;
+            // hard code count to 7768 -- this calculates offset to make it be 7768 no mater what value it starts as.
+            offset = 7768 - event.values[0];
+        }
         if (activityRunning) {
-            count.setText(String.valueOf(event.values[0]));
+            count.setText(String.valueOf(event.values[0]+offset));
         }
 
+        // important that this still takes place even if paused.  I locked the screen but it worked.
+        if ((event.values[0]+offset > 8884) &&(!halfWay))  // if they are at half way point vibrate
+        {
+            halfWay = true;
+            vibrate();
+        }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    public void vibrate() {
+        Vibrator v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 500 milliseconds
+        v.vibrate(2000);
     }
 }
