@@ -1,6 +1,7 @@
 package hiteware.com.halfwaythere;
 
 import android.content.Context;
+import android.hardware.SensorManager;
 import android.location.LocationManager;
 
 import javax.inject.Singleton;
@@ -27,5 +28,9 @@ public class ProductionModule {
     @Singleton
     LocationManager provideLocationManager() {
         return (LocationManager) Activity.getSystemService(Context.LOCATION_SERVICE);
+    }
+
+    @Provides @Singleton SensorManager provideSensorManager() {
+        return (SensorManager) Activity.getSystemService(Context.SENSOR_SERVICE);
     }
 }

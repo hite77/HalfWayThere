@@ -1,5 +1,7 @@
 package hiteware.com.halfwaythere;
 
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,6 +27,9 @@ public class MainActivityFragment extends Fragment implements LocationListener{
     private double distance = 0;
     private Location current_location;
 
+    @Inject
+    SensorManager sensorManager;
+
     @Inject LocationManager locationManager;
 
     public MainActivityFragment()
@@ -33,6 +38,7 @@ public class MainActivityFragment extends Fragment implements LocationListener{
 
     public void initializeListeners()
     {
+        sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         List<String> allProviders = locationManager.getAllProviders();
         for (String provider : allProviders)
         {
