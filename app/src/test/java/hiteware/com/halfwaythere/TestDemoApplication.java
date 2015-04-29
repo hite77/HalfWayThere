@@ -15,9 +15,9 @@ public class TestDemoApplication extends DemoApplication{
         testModule = new TestModule();
     }
 
-    public void setMockLocationManager() {
-        useMockLocationManager = true;
-        mockLocationManagerModule = testModule;
+    public void setMockSensorManager() {
+        useMockSensorManager = true;
+        mockSensorManagerModule = testModule;
     }
 
     public void inject(FragmentActivity activity, Object object) {

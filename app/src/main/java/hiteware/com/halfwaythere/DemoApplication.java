@@ -12,9 +12,9 @@ public class DemoApplication extends Application {
 
     private ProductionModule productionModule = null;
     private ObjectGraph graph = null;
-    protected boolean useMockLocationManager = false;
+    protected boolean useMockSensorManager = false;
 
-    protected Object mockLocationManagerModule;
+    protected Object mockSensorManagerModule;
 
     @Override public void onCreate() {
         super.onCreate();
@@ -23,8 +23,8 @@ public class DemoApplication extends Application {
     public void inject(FragmentActivity activity, Object object)
     {
         if (graph == null) {
-            if (useMockLocationManager) {
-                graph = ObjectGraph.create(mockLocationManagerModule);
+            if (useMockSensorManager) {
+                graph = ObjectGraph.create(mockSensorManagerModule);
             } else {
                 if (productionModule == null)
                     productionModule = new ProductionModule(activity);
