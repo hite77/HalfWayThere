@@ -7,10 +7,9 @@ Half Way There App -- to augment your pedometer by letting you know when you are
 * My first Android App on the android store.
 Helps the user to find out when they should turn around when trying to make a step goal.
 Example: you are at 7500 steps of 10,000.  At 8750 steps it will signal that you should turn around.
-App uses GPS positioning, sampled every 6 seconds, and calculates distance between each, when it is calibrated for distance to steps, it will show how many steps you have walked.
+App uses KitKat StepCounter Sensor, it will show how many steps you have walked.
 * Future Versions
 Will add capability to specify at what intervals to notify. Such as thirds, or fourths, etc.
-Possibly add google maps integration / intent to call google maps to display data points.
 Improve UI, add more functions. 
 * Version 1.00
 
