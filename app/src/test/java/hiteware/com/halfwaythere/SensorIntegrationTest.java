@@ -32,7 +32,6 @@ public class SensorIntegrationTest
     public void setUp()
     {
         application = (TestDemoApplication) RuntimeEnvironment.application;
-        application.buildGraph();
         application.addToGraph(new IntegrationModule());
         application.inject(this);
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();

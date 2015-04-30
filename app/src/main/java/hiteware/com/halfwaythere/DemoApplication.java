@@ -22,9 +22,10 @@ public class DemoApplication extends Application {
     }
 
     // temporarily build graph and then inject
-    public void buildGraph()
+    private void buildGraph()
     {
-        if (graph == null) {
+        if (graph == null)
+        {
             if (useMockSensorManager) {
                 graph = ObjectGraph.create(mockSensorManagerModule, stepSensorChangeModule);
             } else {
@@ -37,10 +38,12 @@ public class DemoApplication extends Application {
 
     public void inject(Object object)
     {
+        buildGraph();
         graph.inject(object);
     }
 
     public void addToGraph(Object module) {
+        buildGraph();
         graph = graph.plus(module);
     }
 }

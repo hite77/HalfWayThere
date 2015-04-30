@@ -38,7 +38,6 @@ public class SensorHandlerUnitTest
     public void setUp() {
         application = (TestDemoApplication) RuntimeEnvironment.application;
         application.setMockSensorManager();
-        application.buildGraph();
         application.inject(this);
     }
 

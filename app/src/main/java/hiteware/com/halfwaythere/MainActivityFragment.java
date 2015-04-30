@@ -47,7 +47,6 @@ public class MainActivityFragment extends Fragment implements SensorEventListene
     {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        ((DemoApplication)getActivity().getApplication()).buildGraph();
         ((DemoApplication)getActivity().getApplication()).inject(this);
 
         return view;
