@@ -3,6 +3,7 @@ package hiteware.com.halfwaythere;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,8 @@ import org.robolectric.annotation.Config;
 
 import javax.inject.Inject;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
@@ -56,5 +59,14 @@ public class SensorHandlerUnitTest
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         verify(sensorManager, times(1)).registerListener(any(SensorEventListener.class), eq(sensor), eq(SensorManager.SENSOR_DELAY_UI));
+    }
+
+    @Test
+    public void whenAppAndActivityAreConstructedAndSensorManagerIndicatesNoStepSensorThenMessageIsDisplayed()
+    {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(null);
+
+        assertThat(((TextView) CreatedActivity.findViewById(R.id.distance)).getText().toString(), equalTo("Your device does not have Hardware Pedometer. Future versions of this software will have software pedometer and work with your device."));
     }
 }
