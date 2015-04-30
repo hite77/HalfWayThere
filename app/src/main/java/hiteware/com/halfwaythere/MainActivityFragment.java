@@ -31,11 +31,11 @@ public class MainActivityFragment extends Fragment implements SensorEventListene
     public void initializeListeners()
     {
         Sensor defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-//        if (defaultSensor==null)
-//        {
-            TextView stepsText = (TextView) getView().findViewById(R.id.distance);
+        if (defaultSensor==null)
+        {
+            TextView stepsText = (TextView) getView().findViewById(R.id.steps_title);
             stepsText.setText("Your device does not have Hardware Pedometer. Future versions of this software will have software pedometer and work with your device.");
-//        }
+        }
         stepSensorChange.setOutputView((TextView) getView().findViewById(R.id.distance_value));
         sensorManager.registerListener(stepSensorChange, defaultSensor, SensorManager.SENSOR_DELAY_UI);
     }

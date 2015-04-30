@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">HalfWayThere</string>
-    <string name="distance">Distance</string>
+    <string name="steps">Steps</string>
     <string name="action_settings">Settings</string>
 </resources>

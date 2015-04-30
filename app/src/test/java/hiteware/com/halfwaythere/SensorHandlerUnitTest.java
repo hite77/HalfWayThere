@@ -67,6 +67,16 @@ public class SensorHandlerUnitTest
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(null);
 
-        assertThat(((TextView) CreatedActivity.findViewById(R.id.distance)).getText().toString(), equalTo("Your device does not have Hardware Pedometer. Future versions of this software will have software pedometer and work with your device."));
+        assertThat(((TextView) CreatedActivity.findViewById(R.id.steps_title)).getText().toString(), equalTo("Your device does not have Hardware Pedometer. Future versions of this software will have software pedometer and work with your device."));
+    }
+
+    @Test
+    public void whenStartedAndThereIsAStepSensorTheTitleAtTopSaysSteps()
+    {
+        Sensor sensor = Mockito.mock(Sensor.class);
+        when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(sensor);
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        assertThat(((TextView) CreatedActivity.findViewById(R.id.steps_title)).getText().toString(), equalTo("Steps"));
     }
 }
