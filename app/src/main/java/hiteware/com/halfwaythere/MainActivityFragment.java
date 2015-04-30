@@ -1,8 +1,6 @@
 package hiteware.com.halfwaythere;
 
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,7 +14,7 @@ import javax.inject.Inject;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements SensorEventListener {
+public class MainActivityFragment extends Fragment{
 
     @Inject
     SensorManager sensorManager;
@@ -32,6 +30,8 @@ public class MainActivityFragment extends Fragment implements SensorEventListene
     {
         Sensor defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         TextView stepsText = (TextView) getView().findViewById(R.id.steps_title);
+        stepSensorChange.setOutputView((TextView) getView().findViewById(R.id.step_value));
+
         if (defaultSensor==null)
         {
             stepsText.setText("Your device does not have Hardware Pedometer. Future versions of this software will have software pedometer and work with your device.");
@@ -39,9 +39,8 @@ public class MainActivityFragment extends Fragment implements SensorEventListene
         else
         {
             stepsText.setText("Steps");
+            sensorManager.registerListener(stepSensorChange, defaultSensor, SensorManager.SENSOR_DELAY_UI);
         }
-        stepSensorChange.setOutputView((TextView) getView().findViewById(R.id.distance_value));
-        sensorManager.registerListener(stepSensorChange, defaultSensor, SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
@@ -59,15 +58,5 @@ public class MainActivityFragment extends Fragment implements SensorEventListene
         ((DemoApplication)getActivity().getApplication()).inject(this);
 
         return view;
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event)
-    {
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 }

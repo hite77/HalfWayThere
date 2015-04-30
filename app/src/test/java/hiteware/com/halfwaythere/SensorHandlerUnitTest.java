@@ -73,6 +73,15 @@ public class SensorHandlerUnitTest
     }
 
     @Test
+    public void whenStartedAndNoStepCountThenShouldNotRegisterForUpdates()
+    {
+        when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(null);
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        verify(sensorManager, times(0)).registerListener(any(SensorEventListener.class), any(Sensor.class), eq(SensorManager.SENSOR_DELAY_UI));
+    }
+
+    @Test
     public void whenStartedAndThereIsAStepSensorTheTitleAtTopSaysSteps()
     {
         Sensor sensor = Mockito.mock(Sensor.class);

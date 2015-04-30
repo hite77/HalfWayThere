@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_below="@+id/steps_title"
-        android:id="@+id/distance_value"/>
+        android:id="@+id/step_value"/>
 
 
 </RelativeLayout>
