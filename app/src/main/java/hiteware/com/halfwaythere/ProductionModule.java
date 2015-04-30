@@ -12,12 +12,18 @@ import dagger.Provides;
  * Created by jasonhite on 4/25/15.
  */
 @Module(
+        includes = StepSensorChangeModule.class,
         injects = MainActivityFragment.class,
         overrides = false
 )
 public class ProductionModule {
 
     private Context Activity;
+
+    public ProductionModule()
+    {
+
+    }
 
     public ProductionModule(Context activity) {
         Activity = activity;

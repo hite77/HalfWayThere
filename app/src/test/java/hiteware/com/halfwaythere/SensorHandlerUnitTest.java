@@ -38,13 +38,14 @@ public class SensorHandlerUnitTest
     public void setUp() {
         application = (TestDemoApplication) RuntimeEnvironment.application;
         application.setMockSensorManager();
-        application.inject(null, this);
+        application.buildGraph();
+        application.inject(this);
     }
 
     @Test
     public void whenAppAndActivityAreConstructedTheSensorManagerAsksForStepCounter()
     {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().get();
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         verify(sensorManager, times(1)).getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
     }
 
@@ -53,7 +54,7 @@ public class SensorHandlerUnitTest
     {
         Sensor sensor = Mockito.mock(Sensor.class);
         when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(sensor);
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().get();
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         verify(sensorManager, times(1)).registerListener(any(SensorEventListener.class), eq(sensor), eq(SensorManager.SENSOR_DELAY_UI));
     }

@@ -13,10 +13,11 @@ import dagger.Provides;
  * Created by jasonhite on 4/25/15.
  */
 @Module(
+        includes = StepSensorChangeModule.class,
         injects = {MainActivityFragment.class, SensorHandlerUnitTest.class},
         overrides = true
 )
-public class TestModule {
+public class TestModule{
     public TestModule() {
     }
 

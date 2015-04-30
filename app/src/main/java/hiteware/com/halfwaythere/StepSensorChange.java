@@ -17,7 +17,8 @@ public class StepSensorChange implements SensorEventListener
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        OutputView.setText(String.format("%.0f", event.values[0]));
+        if ((event != null) && (OutputView != null))
+            OutputView.setText(String.format("%.0f", event.values[0]));
     }
 
     @Override

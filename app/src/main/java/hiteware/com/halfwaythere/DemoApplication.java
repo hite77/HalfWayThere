@@ -1,7 +1,6 @@
 package hiteware.com.halfwaythere;
 
 import android.app.Application;
-import android.support.v4.app.FragmentActivity;
 
 import dagger.ObjectGraph;
 
@@ -16,22 +15,32 @@ public class DemoApplication extends Application {
 
     protected Object mockSensorManagerModule;
 
+    private StepSensorChangeModule stepSensorChangeModule = new StepSensorChangeModule();
+
     @Override public void onCreate() {
         super.onCreate();
     }
 
-    public void inject(FragmentActivity activity, Object object)
+    // temporarily build graph and then inject
+    public void buildGraph()
     {
         if (graph == null) {
             if (useMockSensorManager) {
-                graph = ObjectGraph.create(mockSensorManagerModule);
+                graph = ObjectGraph.create(mockSensorManagerModule, stepSensorChangeModule);
             } else {
                 if (productionModule == null)
-                    productionModule = new ProductionModule(activity);
-                graph = ObjectGraph.create(productionModule);
+                    productionModule = new ProductionModule(this);
+                graph = ObjectGraph.create(productionModule, stepSensorChangeModule);
             }
         }
+    }
+
+    public void inject(Object object)
+    {
         graph.inject(object);
     }
-}
 
+    public void addToGraph(Object module) {
+        graph = graph.plus(module);
+    }
+}
