@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">HalfWayThere</string>
     <string name="steps">Steps</string>
+    <string name="goal">Goal</string>
     <string name="action_set_goal_steps">Set Goal Steps</string>
     <string name="action_set_current_steps">Set Current Steps</string>
 </resources>

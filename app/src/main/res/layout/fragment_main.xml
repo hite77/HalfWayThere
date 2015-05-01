@@ -18,12 +18,26 @@
         android:layout_below="@+id/steps_title"
         android:id="@+id/step_value"/>
     <hiteware.com.halfwaythere.CircularProgressBar
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_margin = "10dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         app:progress = "35"
         app:progressBarThickness="4dp"
-       />
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
+    <TextView
+        android:text="@string/goal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/goalstepText"
+        android:layout_below="@+id/step_value"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/goalStepValue"
+        android:layout_below="@+id/goalstepText"
+        android:layout_alignParentLeft="true" />
 </RelativeLayout>

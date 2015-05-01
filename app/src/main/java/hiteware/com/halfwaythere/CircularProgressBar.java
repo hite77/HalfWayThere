@@ -19,7 +19,8 @@ public class CircularProgressBar extends View
     private int min = 0;
     private int max = 100;
     private int startAngle = -90;
-    private int color = Color.DKGRAY;
+    private int color = Color.GREEN;
+    private int backgroundColor = Color.DKGRAY;
     private RectF rectF;
     private Paint backgroundPaint;
     private Paint foregroundPaint;
@@ -46,7 +47,7 @@ public class CircularProgressBar extends View
 
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        backgroundPaint.setColor(adjustAlpha(color, 0.3f));
+        backgroundPaint.setColor(adjustAlpha(backgroundColor, 0.3f));
         backgroundPaint.setStyle(Paint.Style.STROKE);
         backgroundPaint.setStrokeWidth(strokeWidth);
 
