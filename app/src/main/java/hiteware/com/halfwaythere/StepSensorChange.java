@@ -45,6 +45,7 @@ public class StepSensorChange implements SensorEventListener
             allTheWayThere = true;
             vibrate();
         }
+
     }
 
     private void vibrate() {
