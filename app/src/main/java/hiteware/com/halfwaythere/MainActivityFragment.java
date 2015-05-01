@@ -27,6 +27,8 @@ public class MainActivityFragment extends Fragment{
         Sensor defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         TextView stepsText = (TextView) getView().findViewById(R.id.steps_title);
         stepSensorChange.setOutputView((TextView) getView().findViewById(R.id.step_value));
+        stepSensorChange.setgoalStepsView((TextView) getView().findViewById(R.id.goalStepValue));
+        stepSensorChange.setprogressView((CircularProgressBar) getView().findViewById(R.id.circle_status));
 
         if (defaultSensor==null)
         {

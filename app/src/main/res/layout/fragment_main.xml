@@ -23,7 +23,8 @@
         app:progress = "35"
         app:progressBarThickness="4dp"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:id="@+id/circle_status"/>
 
     <TextView
         android:text="@string/goal"
