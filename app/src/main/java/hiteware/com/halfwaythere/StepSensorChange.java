@@ -13,6 +13,7 @@ public class StepSensorChange implements SensorEventListener
     boolean calculateOffset = false;
     float offset;
     float initialSteps;
+    float goalSteps = 10000;
 
     private TextView OutputView;
     public StepSensorChange()
@@ -47,5 +48,10 @@ public class StepSensorChange implements SensorEventListener
         // when step comes in set offset so it is 1 + expected steps.
         initialSteps = countOfSteps + 1;
         calculateOffset = true;
+    }
+
+    public void SetGoalSteps(float countOfSteps)
+    {
+        goalSteps = countOfSteps;
     }
 }

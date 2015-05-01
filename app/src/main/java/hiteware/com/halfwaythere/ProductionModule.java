@@ -13,7 +13,7 @@ import dagger.Provides;
  */
 @Module(
         includes = StepSensorChangeModule.class,
-        injects = MainActivityFragment.class,
+        injects = {MainActivityFragment.class, MainActivity.class},
         overrides = false
 )
 public class ProductionModule {
