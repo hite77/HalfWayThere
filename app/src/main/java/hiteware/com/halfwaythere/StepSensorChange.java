@@ -10,6 +10,10 @@ import android.widget.TextView;
  */
 public class StepSensorChange implements SensorEventListener
 {
+    boolean calculateOffset = false;
+    float offset;
+    float initialSteps;
+
     private TextView OutputView;
     public StepSensorChange()
     {
@@ -17,8 +21,13 @@ public class StepSensorChange implements SensorEventListener
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        if (calculateOffset)
+        {
+            calculateOffset = false;
+            offset = initialSteps - event.values[0];
+        }
         if ((event != null) && (OutputView != null))
-            OutputView.setText(String.format("%.0f", event.values[0]));
+            OutputView.setText(String.format("%.0f", event.values[0]+offset));
     }
 
     @Override
@@ -29,5 +38,14 @@ public class StepSensorChange implements SensorEventListener
     public void setOutputView(TextView outputView)
     {
         OutputView = outputView;
+    }
+
+    public void setNumberOfSteps(float countOfSteps)
+    {
+        // first update count on display.  When next event comes in calculate offset
+        OutputView.setText(String.format("%.0f", countOfSteps));
+        // when step comes in set offset so it is 1 + expected steps.
+        initialSteps = countOfSteps + 1;
+        calculateOffset = true;
     }
 }
