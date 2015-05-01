@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.AttributeSet;
 import android.view.View;
 
 /**
@@ -15,6 +16,26 @@ public class CircularGauge extends View
 
     public CircularGauge(Context context) {
         super(context);
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        paint.setColor(Color.WHITE);
+        paint.setAntiAlias(true);
+    }
+
+    public CircularGauge(Context context, AttributeSet attrs) {
+        super( context, attrs );
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        paint.setColor(Color.WHITE);
+        paint.setAntiAlias(true);
+    }
+
+    public CircularGauge(Context context, AttributeSet attrs, int defStyle) {
+        super( context, attrs, defStyle );
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        paint.setColor(Color.WHITE);
+        paint.setAntiAlias(true);
     }
 
     @Override
@@ -34,5 +55,7 @@ public class CircularGauge extends View
                 0, (float)canvas.getHeight(), paint);
         // left line
         canvas.drawLine(0, (float)canvas.getHeight(), 0, 0, paint);
+
+        canvas.drawCircle((float)(canvas.getWidth()/2.0),(float)(canvas.getHeight()/2.0),(float)(canvas.getWidth()/2.0),paint);
     }
 }
