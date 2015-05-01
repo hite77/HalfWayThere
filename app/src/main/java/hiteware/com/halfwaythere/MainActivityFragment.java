@@ -1,17 +1,12 @@
 package hiteware.com.halfwaythere;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -26,10 +21,6 @@ public class MainActivityFragment extends Fragment{
 
     @Inject
     StepSensorChange stepSensorChange;
-
-    public MainActivityFragment()
-    {
-    }
 
     public void initializeListeners()
     {
@@ -57,24 +48,8 @@ public class MainActivityFragment extends Fragment{
 
     private void promptForSteps()
     {
-        final EditText input = new EditText(getView().getContext());
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-
-
-        new AlertDialog.Builder(getView().getContext())
-                .setTitle("Current Step Count")
-                .setMessage("Enter Steps:")
-                .setView(input)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        Editable value = input.getText();
-                        float countOfSteps = Float.valueOf(value.toString());
-                        stepSensorChange.setNumberOfSteps(countOfSteps);
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-            }
-        }).show();
+        QuickDialogUtility dialog = new QuickDialogUtility(((InjectableApplication)getActivity().getApplication()));
+        dialog.CollectCurrentSteps(getView().getContext());
     }
 
     @Override

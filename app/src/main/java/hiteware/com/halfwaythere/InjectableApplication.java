@@ -21,7 +21,6 @@ public class InjectableApplication extends Application {
         super.onCreate();
     }
 
-    // temporarily build graph and then inject
     private void buildGraph()
     {
         if (graph == null)

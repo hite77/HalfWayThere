@@ -18,8 +18,6 @@ import dagger.Provides;
         overrides = true
 )
 public class TestModule{
-    public TestModule() {
-    }
 
     @Provides @Singleton
     SensorManager provideSensorManager() { return Mockito.mock(SensorManager.class); }
