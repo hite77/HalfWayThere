@@ -77,7 +77,7 @@ public class StepSensorChange implements SensorEventListener
     {
         halfWayThere = false;
         allTheWayThere = false;
-        
+
         if (goalSteps > initialSteps) {
             halfWayThereValue = (float) Math.floor(((goalSteps - initialSteps - 1) / 2 + initialSteps - 1));
         }

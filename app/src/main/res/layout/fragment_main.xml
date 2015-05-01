@@ -13,6 +13,14 @@
         android:layout_width="wrap_content"
         android:layout_below="@+id/steps_title"
         android:id="@+id/step_value"/>
-
+    <hiteware.com.halfwaythere.CircularGauge
+        android:id="@+id/circularGauge"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_weight="0.41"
+        android:layout_below="@+id/step_value"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
