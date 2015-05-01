@@ -37,11 +37,11 @@ public class SensorHandlerUnitTest
     SensorManager sensorManager;
 
     public MainActivity CreatedActivity;
-    public TestDemoApplication application;
+    public TestInjectableApplication application;
 
     @Before
     public void setUp() {
-        application = (TestDemoApplication) RuntimeEnvironment.application;
+        application = (TestInjectableApplication) RuntimeEnvironment.application;
         application.setMockSensorManager();
         application.inject(this);
     }

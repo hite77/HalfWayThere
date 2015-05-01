@@ -7,7 +7,7 @@ import dagger.ObjectGraph;
 /**
  * Created by jasonhite on 4/23/15.
  */
-public class DemoApplication extends Application {
+public class InjectableApplication extends Application {
 
     private ProductionModule productionModule = null;
     private ObjectGraph graph = null;
