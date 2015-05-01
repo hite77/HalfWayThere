@@ -14,6 +14,8 @@ public class StepSensorChange implements SensorEventListener
 {
     boolean calculateOffset = false;
     boolean halfWayThere = false;
+    boolean allTheWayThere = false;
+
     float offset;
     float initialSteps;
     float goalSteps = 10000;
@@ -36,11 +38,19 @@ public class StepSensorChange implements SensorEventListener
         if ((!halfWayThere) && (event.values[0]+offset > halfWayThereValue))
         {
             halfWayThere = true;
-            Vibrator v = (Vibrator) OutputView.getContext().getSystemService(Context.VIBRATOR_SERVICE);
-            // Vibrate for 500 milliseconds
-            v.vibrate(2000);
-
+            vibrate();
         }
+        if ((!allTheWayThere) && (event.values[0]+offset > goalSteps))
+        {
+            allTheWayThere = true;
+            vibrate();
+        }
+    }
+
+    private void vibrate() {
+        Vibrator v = (Vibrator) OutputView.getContext().getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 500 milliseconds
+        v.vibrate(2000);
     }
 
     @Override
@@ -66,6 +76,8 @@ public class StepSensorChange implements SensorEventListener
     public void calculateHalfWayPoint()
     {
         halfWayThere = false;
+        allTheWayThere = false;
+        
         if (goalSteps > initialSteps) {
             halfWayThereValue = (float) Math.floor(((goalSteps - initialSteps - 1) / 2 + initialSteps - 1));
         }
