@@ -23,7 +23,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public class SensorIntegrationTest
 {
     public MainActivity CreatedActivity;
-    public TestDemoApplication application;
+    public TestInjectableApplication application;
 
     @Inject
     StepSensorChange stepSensorChange;
@@ -31,7 +31,7 @@ public class SensorIntegrationTest
     @Before
     public void setUp()
     {
-        application = (TestDemoApplication) RuntimeEnvironment.application;
+        application = (TestInjectableApplication) RuntimeEnvironment.application;
         application.addToGraph(new IntegrationModule());
         application.inject(this);
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();

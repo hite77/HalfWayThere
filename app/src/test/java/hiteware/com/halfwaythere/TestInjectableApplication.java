@@ -3,7 +3,7 @@ package hiteware.com.halfwaythere;
 /**
  * Created by jasonhite on 4/23/15.
  */
-public class TestDemoApplication extends DemoApplication{
+public class TestInjectableApplication extends InjectableApplication {
 
     private TestModule testModule;
 
