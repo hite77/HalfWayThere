@@ -57,9 +57,11 @@ public class StepSensorChange implements SensorEventListener
     }
 
     private void vibrate() {
-        Vibrator v = (Vibrator) OutputView.getContext().getSystemService(Context.VIBRATOR_SERVICE);
-        // Vibrate for 500 milliseconds
-        v.vibrate(2000);
+        if (OutputView.getContext() != null) {
+            Vibrator v = (Vibrator) OutputView.getContext().getSystemService(Context.VIBRATOR_SERVICE);
+            // Vibrate for 500 milliseconds
+            v.vibrate(2000);
+        }
     }
 
     @Override

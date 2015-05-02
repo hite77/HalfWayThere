@@ -22,6 +22,7 @@ public class StepSensorChangeTest
         TextView outputView = mock(TextView.class);
 
         SensorEvent sensorEvent = Mockito.mock(SensorEvent.class);
+        CircularProgressBar progressBar = Mockito.mock(CircularProgressBar.class);
 
         Field valuesField = SensorEvent.class.getField("values");
         valuesField.setAccessible(true);
@@ -30,6 +31,7 @@ public class StepSensorChangeTest
 
         StepSensorChange stepSensorChange = new StepSensorChange();
         stepSensorChange.setOutputView(outputView);
+        stepSensorChange.setprogressView(progressBar);
         stepSensorChange.onSensorChanged(sensorEvent);
 
         verify(outputView, times(1)).setText("14");
