@@ -40,15 +40,15 @@ public class StepSensorChange implements SensorEventListener
         if ((event != null) && (OutputView != null))
             OutputView.setText(String.format("%.0f", event.values[0]+offset));
 
-        updateProgressBar();
         currentSteps = event.values[0] + offset;
+        updateProgressBar();
 
-        if ((!halfWayThere) && (event.values[0]+offset > halfWayThereValue))
+        if ((!halfWayThere) && (currentSteps >= halfWayThereValue))
         {
             halfWayThere = true;
             vibrate();
         }
-        if ((!allTheWayThere) && (event.values[0]+offset > goalSteps))
+        if ((!allTheWayThere) && (currentSteps >= goalSteps))
         {
             allTheWayThere = true;
             vibrate();
@@ -76,7 +76,6 @@ public class StepSensorChange implements SensorEventListener
     public void setgoalStepsView(TextView goalStepsView) {
         this.goalstepsView = goalStepsView;
         goalstepsView.setText(String.format("%.0f", goalSteps));
-        calculateHalfWayPoint();
     }
     public void setprogressView(CircularProgressBar circularProgressBar) {this.circularProgressBar = circularProgressBar; }
 
@@ -99,8 +98,8 @@ public class StepSensorChange implements SensorEventListener
         // when step comes in set offset so it is 1 + expected steps.
         initialSteps = countOfSteps + 1;
         calculateOffset = true;
-        calculateHalfWayPoint();
         currentSteps = countOfSteps;
+        calculateHalfWayPoint();
         updateProgressBar();
     }
 
@@ -109,8 +108,8 @@ public class StepSensorChange implements SensorEventListener
         halfWayThere = false;
         allTheWayThere = false;
 
-        if (goalSteps > initialSteps) {
-            halfWayThereValue = (float) Math.floor(((goalSteps - initialSteps - 1) / 2 + initialSteps - 1));
+        if (goalSteps > currentSteps) {
+            halfWayThereValue = (float) Math.floor((goalSteps - currentSteps) / (float)2 + currentSteps);
         }
         else
             halfWayThereValue = goalSteps;
