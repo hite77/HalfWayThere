@@ -19,7 +19,12 @@ Improve UI, add more functions.
 * Configuration
 * Dependencies
 * How to run tests
+1) Command Line -- Enter ./gradlew test, or ./gradlew clean test.  I prefer the later, it forces a rebuild of everything and then runs tests.
+2) UI -- Android Studio, you need a version with experimental Unit test, or full unit test support.  Run the tests by right clicking and run.
 * Deployment instructions
+1) Command Line -- Enter ./gradlew assemble release  .  You must have already edited gradle to supply signing keys.
+2) UI -- Select App, and Release build.  Click the Play button.
+Files are located in your module, under the bin folder.
 
 ### Who do I talk to? ###
 
