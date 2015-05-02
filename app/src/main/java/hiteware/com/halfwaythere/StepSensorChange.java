@@ -71,7 +71,11 @@ public class StepSensorChange implements SensorEventListener
     {
         OutputView = outputView;
     }
-    public void setgoalStepsView(TextView goalStepsView) {this.goalstepsView = goalStepsView; goalstepsView.setText(String.format("%.0f", goalSteps));}
+    public void setgoalStepsView(TextView goalStepsView) {
+        this.goalstepsView = goalStepsView;
+        goalstepsView.setText(String.format("%.0f", goalSteps));
+        calculateHalfWayPoint();
+    }
     public void setprogressView(CircularProgressBar circularProgressBar) {this.circularProgressBar = circularProgressBar; }
 
     public void updateProgressBar()
