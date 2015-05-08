@@ -35,6 +35,35 @@ public class SoftwareStepSensor implements SensorEventListener
 //                To stabilise the result it's better to count a few cycles.
 //
 
+//        Also .... need to use the z value -- which should be values[2] and how to register the listener.
+//        @Override
+//        public void onSensorChanged(SensorEvent event) {
+//            if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER){
+//                return;
+//            }
+//            final float z = smooth(event.values[2]); // scalar kalman filter
+//            if (Math.abs(z - mLastZ) > LEG_THRSHOLD_AMPLITUDE)
+//            {
+//                mInactivityCount = 0;
+//                int currentActivity = (z > mLastZ) ? LEG_MOVEMENT_FORWARD : LEG_MOVEMENT_BACKWARD;
+//                if (currentActivity != mLastActivity){
+//                    mLastActivity = currentActivity;
+//                    notifyListeners(currentActivity);
+//                }
+//            } else {
+//                if (mInactivityCount > LEG_THRSHOLD_INACTIVITY) {
+//                    if (mLastActivity != LEG_MOVEMENT_NONE){
+//                        mLastActivity = LEG_MOVEMENT_NONE;
+//                        notifyListeners(LEG_MOVEMENT_NONE);
+//                    }
+//                } else {
+//                    mInactivityCount++;
+//                }
+//            }
+//            mLastZ = z;
+//        }
+
+
         float x = event.values[0];
 
     }
