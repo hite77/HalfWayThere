@@ -1,7 +1,5 @@
 package hiteware.com.halfwaythere;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 
@@ -13,9 +11,11 @@ import dagger.Provides;
 )
 public class StepSensorChangeModule
 {
+    StepSensorChange stepSensorChange = new StepSensorChange();
+
     @Provides
-    @Singleton
-    StepSensorChange provideStepSensorChange() {
-        return new StepSensorChange();
+    public StepSensorChange provideStepSensorChange()
+    {
+        return stepSensorChange;
     }
 }

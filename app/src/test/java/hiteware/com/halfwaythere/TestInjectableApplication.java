@@ -5,7 +5,7 @@ package hiteware.com.halfwaythere;
  */
 public class TestInjectableApplication extends InjectableApplication {
 
-    private TestModule testModule;
+    public TestModule testModule;
 
     @Override
     public void onCreate() {

@@ -9,8 +9,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import javax.inject.Inject;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
@@ -25,16 +23,14 @@ public class SensorIntegrationTest
     public MainActivity CreatedActivity;
     public TestInjectableApplication application;
 
-    @Inject
     StepSensorChange stepSensorChange;
 
     @Before
     public void setUp()
     {
         application = (TestInjectableApplication) RuntimeEnvironment.application;
-        application.addToGraph(new IntegrationModule());
-        application.inject(this);
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        stepSensorChange = application.stepSensorChangeModule.provideStepSensorChange();
     }
 
     @Test
@@ -43,5 +39,4 @@ public class SensorIntegrationTest
         stepSensorChange.onSensorChanged(SensorValue.CreateSensorEvent(23));
         assertThat(((TextView) CreatedActivity.findViewById(R.id.step_value)).getText().toString(), equalTo("23"));
     }
-
 }

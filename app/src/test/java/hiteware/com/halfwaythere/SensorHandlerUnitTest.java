@@ -14,8 +14,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ActivityController;
 
-import javax.inject.Inject;
-
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -33,7 +31,6 @@ import static org.mockito.Mockito.when;
 @Config(constants = BuildConfig.class)
 public class SensorHandlerUnitTest
 {
-    @Inject
     SensorManager sensorManager;
 
     public MainActivity CreatedActivity;
@@ -43,7 +40,7 @@ public class SensorHandlerUnitTest
     public void setUp() {
         application = (TestInjectableApplication) RuntimeEnvironment.application;
         application.setMockSensorManager();
-        application.inject(this);
+        sensorManager = application.testModule.provideSensorManager();
     }
 
     @Test

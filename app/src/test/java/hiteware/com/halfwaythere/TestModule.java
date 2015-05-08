@@ -4,8 +4,6 @@ import android.hardware.SensorManager;
 
 import org.mockito.Mockito;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 
@@ -14,13 +12,15 @@ import dagger.Provides;
  */
 @Module(
         includes = StepSensorChangeModule.class,
-        injects = {MainActivityFragment.class, SensorHandlerUnitTest.class},
+        injects = MainActivityFragment.class,
         overrides = true
 )
 public class TestModule{
     public TestModule() {
     }
 
-    @Provides @Singleton
-    SensorManager provideSensorManager() { return Mockito.mock(SensorManager.class); }
+    private SensorManager sensorManager = Mockito.mock(SensorManager.class);
+
+    @Provides
+    public SensorManager provideSensorManager() { return sensorManager; }
 }

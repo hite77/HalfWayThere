@@ -29,7 +29,7 @@ public class ProductionModule {
         Activity = activity;
     }
 
-    @Provides @Singleton SensorManager provideSensorManager() {
+    @Provides @Singleton SensorManager provideSensorManager() { // note to self: should this be a singleton for the real thing?
         return (SensorManager) Activity.getSystemService(Context.SENSOR_SERVICE);
     }
 }
