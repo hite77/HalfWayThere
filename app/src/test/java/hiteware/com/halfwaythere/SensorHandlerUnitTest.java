@@ -12,11 +12,9 @@ import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.util.ActivityController;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Matchers.any;
@@ -87,24 +85,6 @@ public class SensorHandlerUnitTest
         Sensor sensor = Mockito.mock(Sensor.class);
         when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(sensor);
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
-
-        assertThat(((TextView) CreatedActivity.findViewById(R.id.steps_title)).getText().toString(), equalTo("Steps"));
-    }
-
-    @Test
-    public void whenStartedAndDoesNotHaveSensorAndResumedAndThereIsASensorDisplaysSteps()
-    {
-        ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();
-        CreatedActivity = (MainActivity) controller.get();
-        when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(null);
-
-        controller.resume();
-        assertThat(((TextView) CreatedActivity.findViewById(R.id.steps_title)).getText().toString(), not("Steps"));
-        controller.pause();
-
-        Sensor sensor = Mockito.mock(Sensor.class);
-        when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(sensor);
-        controller.resume();
 
         assertThat(((TextView) CreatedActivity.findViewById(R.id.steps_title)).getText().toString(), equalTo("Steps"));
     }
