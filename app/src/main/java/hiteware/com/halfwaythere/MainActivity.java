@@ -42,12 +42,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void promptForSteps()
-    {
-        QuickDialogUtility dialog = new QuickDialogUtility(((InjectableApplication)getApplication()));
-        dialog.CollectCurrentSteps(this);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +54,6 @@ public class MainActivity extends ActionBarActivity {
         Application.inject(this);
 
         initializeListeners();
-        promptForSteps();
     }
 
     @Override
