@@ -14,6 +14,7 @@ import javax.inject.Inject;
  */
 public class QuickDialogUtility
 {
+    public float selectedSteps = 0;
     @Inject
     StepSensorChange stepSensorChange;
 
@@ -37,6 +38,7 @@ public class QuickDialogUtility
                         Editable value = input.getText();
                         float countOfSteps = Float.valueOf(value.toString());
                         stepSensorChange.setNumberOfSteps(countOfSteps);
+                        selectedSteps = countOfSteps;
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
