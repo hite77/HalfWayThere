@@ -3,6 +3,7 @@ package hiteware.com.halfwaythere;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -12,7 +13,7 @@ public class MyBootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        Log.i("MyService", "System Boot Complete broadcast received.");
+        Log.i("MyService", "System Boot Complete broadcast received.");
         Toast.makeText(context, "initialBoot Complete Jason", Toast.LENGTH_LONG).show();
         /**
          * Starts the LocalService service.
