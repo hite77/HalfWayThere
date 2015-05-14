@@ -69,11 +69,6 @@ public class LocalService  extends Service implements SensorEventListener{
         offset = prefs.getFloat("offset", 0);
         Toast.makeText(this, "service starting -- offset:"+offset, Toast.LENGTH_LONG).show();
     }
-    
-    @Override
-    public void onDestroy() {
-        Toast.makeText(this, "service done -- saving offset", Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
