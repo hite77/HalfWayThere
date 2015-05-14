@@ -30,9 +30,12 @@ public class LocalService  extends Service implements SensorEventListener{
     private float offset = 0;
     private float initialSteps = 0;
     private float currentSteps = 0;
+    private counterListener mCounterListener;
+    private float totalCount = 0;
 
     private SensorManager sensorManager;
     private Sensor defaultSensor;
+    private Sensor countSensor;
 
     /**
      * Class used for the client Binder.  Because we know this service always
@@ -65,11 +68,28 @@ public class LocalService  extends Service implements SensorEventListener{
 
     }
 
+    class counterListener implements SensorEventListener{
+
+        @Override
+        public void onSensorChanged(SensorEvent event)
+        {
+            totalCount = totalCount + 1;
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    }
+
     @Override
     public void onCreate() {
         Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
         sensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
         defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+        mCounterListener = new counterListener();
+        sensorManager.registerListener(mCounterListener, countSensor, SensorManager.SENSOR_DELAY_UI);
         sensorManager.registerListener(this, defaultSensor, SensorManager.SENSOR_DELAY_UI);
     }
 
@@ -89,8 +109,13 @@ public class LocalService  extends Service implements SensorEventListener{
         return currentSteps;
     }
 
+    public float getTotalSteps() {
+        return totalCount;
+    }
+
     public void setSteps(float currentSteps) {
         this.initialSteps = currentSteps;
         this.calculateOffset = true;
+        this.totalCount = currentSteps;
     }
 }

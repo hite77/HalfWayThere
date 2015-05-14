@@ -80,8 +80,10 @@ public class MainActivity extends ActionBarActivity {
 
     void updateStatus()
     {
-        if (mBound)
-        ((TextView) findViewById(R.id.GoodText)).setText(String.format("%.0f", mService.getSteps()));
+        if (mBound) {
+            ((TextView) findViewById(R.id.GoodText)).setText(String.format("%.0f", mService.getSteps()));
+            ((TextView) findViewById(R.id.TotalText)).setText(String.format("%.0f", mService.getTotalSteps()));
+        }
     }
 
     void startRepeatingTask() {
@@ -123,9 +125,7 @@ public class MainActivity extends ActionBarActivity {
 
         if (id == R.id.action_set_current_steps)
         {
-            quickDialogUtility.CollectCurrentSteps(this);
-            if (mBound)
-                mService.setSteps(quickDialogUtility.selectedSteps);
+            quickDialogUtility.CollectCurrentSteps(this, mService);
             return true;
         }
 

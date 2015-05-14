@@ -23,7 +23,7 @@ public class QuickDialogUtility
         application.inject(this);
     }
 
-    public void CollectCurrentSteps(Context context)
+    public void CollectCurrentSteps(Context context, final LocalService mService)
     {
         final EditText input = new EditText(context);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -39,6 +39,7 @@ public class QuickDialogUtility
                         float countOfSteps = Float.valueOf(value.toString());
                         stepSensorChange.setNumberOfSteps(countOfSteps);
                         selectedSteps = countOfSteps;
+                        mService.setSteps(selectedSteps);
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
