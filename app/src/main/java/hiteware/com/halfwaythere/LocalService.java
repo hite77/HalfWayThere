@@ -69,12 +69,10 @@ public class LocalService  extends Service implements SensorEventListener{
         offset = prefs.getFloat("offset", 0);
         Toast.makeText(this, "service starting -- offset:"+offset, Toast.LENGTH_LONG).show();
     }
-
+    
     @Override
     public void onDestroy() {
         Toast.makeText(this, "service done -- saving offset", Toast.LENGTH_SHORT).show();
-        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-        prefs.edit().putFloat("offset", offset).apply();
     }
 
     @Override
@@ -89,5 +87,7 @@ public class LocalService  extends Service implements SensorEventListener{
 
     public void setSteps(float newSteps) {
         this.offset = newSteps - this.currentSteps + this.offset;
+        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+        prefs.edit().putFloat("offset", this.offset).apply();
     }
 }

@@ -137,6 +137,7 @@ public class MainActivity extends ActionBarActivity {
 //        Toast.makeText(getApplicationContext(), "onStart", Toast.LENGTH_LONG).show();
         // Bind to LocalService
         Intent intent = new Intent(this, LocalService.class);
+        startService(intent);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
