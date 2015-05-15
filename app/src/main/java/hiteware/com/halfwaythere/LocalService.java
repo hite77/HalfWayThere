@@ -84,5 +84,6 @@ public class LocalService  extends Service implements SensorEventListener{
         this.offset = newSteps - this.currentSteps + this.offset;
         SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
         prefs.edit().putFloat("offset", this.offset).apply();
+        this.currentSteps = newSteps;
     }
 }

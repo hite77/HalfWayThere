@@ -138,7 +138,7 @@ public class MainActivity extends ActionBarActivity {
         // Bind to LocalService
         Intent intent = new Intent(this, LocalService.class);
         startService(intent);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        bindService(intent, mConnection, Context.BIND_ABOVE_CLIENT); // bind changed from autocreate....
     }
 
     @Override
