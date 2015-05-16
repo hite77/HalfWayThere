@@ -36,7 +36,7 @@ public class SensorIntegrationTest
     @Test
     public void whenAStepCounterValueIsInjectedTheDisplayIsUpdated()
     {
-        stepSensorChange.onSensorChanged(SensorValue.CreateSensorEvent(24));
+        stepSensorChange.onSensorChanged(SensorValue.CreateSensorEvent(23));
         assertThat(((TextView) CreatedActivity.findViewById(R.id.step_value)).getText().toString(), equalTo("23"));
     }
 }
