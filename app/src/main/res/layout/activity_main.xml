@@ -58,4 +58,19 @@ tools:context=".MainActivity">
         android:layout_below="@+id/Good"
         android:layout_alignParentLeft="true" />
 
+    <TextView
+        android:text = "Service Offset"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/OffsetText"
+        android:layout_below="@+id/GoodText"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/Offset"
+        android:layout_below="@+id/OffsetText"
+        android:layout_alignParentLeft="true" />
+
 </RelativeLayout>

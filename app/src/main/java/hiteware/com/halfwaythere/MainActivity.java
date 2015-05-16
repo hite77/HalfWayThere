@@ -47,6 +47,7 @@ public class MainActivity extends ActionBarActivity {
     {
         if (mBound) {
             ((TextView) findViewById(R.id.GoodText)).setText(String.format("%.0f", mService.getSteps()));
+            ((TextView) findViewById(R.id.Offset)).setText(String.format("%.0f", mService.getOffset()));
         }
     }
 

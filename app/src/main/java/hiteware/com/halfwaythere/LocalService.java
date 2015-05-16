@@ -10,6 +10,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -46,12 +47,14 @@ public class LocalService  extends Service implements SensorEventListener{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("halfwayThere", "StartCommand");
         return START_STICKY;
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         currentSteps = event.values[0] + offset;
+        Log.i("halfwayThere", "Event:"+event.values[0]);
     }
 
     @Override
@@ -61,13 +64,23 @@ public class LocalService  extends Service implements SensorEventListener{
 
     @Override
     public void onCreate() {
+        super.onCreate();
+        Log.i("halfwayThere", "OnCreate");
         sensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
         defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         sensorManager.registerListener(this, defaultSensor, SensorManager.SENSOR_DELAY_UI);
 
         SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
         offset = prefs.getFloat("offset", 0);
+
         Toast.makeText(this, "service starting -- offset:"+offset, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        Log.i("halfwayThere", "OnDestroy");
     }
 
     @Override
@@ -79,6 +92,7 @@ public class LocalService  extends Service implements SensorEventListener{
     public float getSteps() {
         return currentSteps;
     }
+    public float getOffset() { return offset; }
 
     public void setSteps(float newSteps) {
         this.offset = newSteps - this.currentSteps + this.offset;
