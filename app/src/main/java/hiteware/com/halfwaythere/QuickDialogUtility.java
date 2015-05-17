@@ -1,7 +1,6 @@
 package hiteware.com.halfwaythere;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.text.Editable;
 import android.text.InputType;
@@ -12,13 +11,13 @@ import android.widget.EditText;
  */
 public class QuickDialogUtility
 {
-    public void CollectCurrentSteps(Context context, final LocalService mService)
+    public void CollectCurrentSteps(final MainActivity mainActivity)
     {
-        final EditText input = new EditText(context);
+        final EditText input = new EditText(mainActivity);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
 
-        new AlertDialog.Builder(context)
+        new AlertDialog.Builder(mainActivity)
                 .setTitle("Current Step Count")
                 .setMessage("Enter Steps:")
                 .setView(input)
@@ -26,7 +25,7 @@ public class QuickDialogUtility
                     public void onClick(DialogInterface dialog, int whichButton) {
                         Editable value = input.getText();
                         float countOfSteps = Float.valueOf(value.toString());
-                        mService.setSteps(countOfSteps);
+                        mainActivity.setSteps(countOfSteps);
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {

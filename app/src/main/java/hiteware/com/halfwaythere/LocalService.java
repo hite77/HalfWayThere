@@ -1,17 +1,20 @@
 package hiteware.com.halfwaythere;
 
+import android.app.Notification;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.Process;
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  * Created by jasonhite on 5/12/15.
@@ -24,37 +27,70 @@ import android.widget.Toast;
 // but only if running -- set a bool during onresume, and stop during onPause
 
 
-public class LocalService  extends Service implements SensorEventListener{
-    // Binder given to clients
-    private final IBinder mBinder = new LocalBinder();
+public class LocalService  extends Service implements SensorEventListener {
+    public static final String TAG = LocalService.class.getName();
+    public static final int SCREEN_OFF_RECEIVER_DELAY = 500;
 
-    private float offset = 0;
-    private float currentSteps = 0;
+    private SensorManager mSensorManager = null;
 
-    private SensorManager sensorManager;
-    private Sensor defaultSensor;
+    private PowerManager.WakeLock mWakeLock = null;
 
-    /**
-     * Class used for the client Binder.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
+    /*
+     * Register this as a sensor event listener.
      */
-    public class LocalBinder extends Binder {
-        LocalService getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return LocalService.this;
-        }
+    private void registerListener() {
+        mSensorManager.registerListener(this,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER),
+                SensorManager.SENSOR_DELAY_NORMAL);
     }
+
+    /*
+     * Un-register this as a sensor event listener.
+     */
+    private void unregisterListener() {
+        mSensorManager.unregisterListener(this);
+    }
+
+    public BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "onReceive(" + intent + ")");
+
+            if (!intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                return;
+            }
+
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    Log.i(TAG, "Runnable executing.");
+                    unregisterListener();
+                    registerListener();
+                }
+            };
+
+            new Handler().postDelayed(runnable, SCREEN_OFF_RECEIVER_DELAY);
+        }
+    };
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("halfwayThere", "StartCommand");
+        super.onStartCommand(intent, flags, startId);
+        Log.i(TAG, "StartCommand");
+
+        startForeground(Process.myPid(), new Notification());
+        registerListener();
+        mWakeLock.acquire();
+
         return START_STICKY;
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        currentSteps = event.values[0] + offset;
-        Log.i("halfwayThere", "Event:"+event.values[0]);
+        Intent broadcastSteps = new Intent();
+        broadcastSteps.setAction("halfWayThere.stepsOccurred");
+        broadcastSteps.putExtra("steps", event.values[0]);
+        this.sendBroadcast(broadcastSteps);
+        Log.i(TAG, "Event:" + event.values[0]);
     }
 
     @Override
@@ -65,39 +101,26 @@ public class LocalService  extends Service implements SensorEventListener{
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i("halfwayThere", "OnCreate");
-        sensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
-        defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        sensorManager.registerListener(this, defaultSensor, SensorManager.SENSOR_DELAY_UI);
 
-        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-        offset = prefs.getFloat("offset", 0);
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        Toast.makeText(this, "service starting -- offset:"+offset, Toast.LENGTH_LONG).show();
+        PowerManager manager =
+                (PowerManager) getSystemService(Context.POWER_SERVICE);
+        mWakeLock = manager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+
+        registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
     }
 
     @Override
-    public void onDestroy()
-    {
-        super.onDestroy();
-        Log.i("halfwayThere", "OnDestroy");
+    public void onDestroy() {
+        unregisterReceiver(mReceiver);
+        unregisterListener();
+        mWakeLock.release();
+        stopForeground(true);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Toast.makeText(this, "binding", Toast.LENGTH_SHORT).show();
-        return mBinder;
-    }
-
-    public float getSteps() {
-        return currentSteps;
-    }
-    public float getOffset() { return offset; }
-
-    public void setSteps(float newSteps) {
-        this.offset = newSteps - this.currentSteps + this.offset;
-        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-        prefs.edit().putFloat("offset", this.offset).apply();
-        this.currentSteps = newSteps;
+        return null;
     }
 }

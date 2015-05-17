@@ -1,28 +1,28 @@
 package hiteware.com.halfwaythere;
 
-import android.content.ComponentName;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity  {
 
-    private int mInterval = 5000; // 5 seconds by default, can be changed later
     private Handler mHandler;
 
-    LocalService mService;
-    boolean mBound = false;
-
+    private statusReceiver mStatusReceiver = new statusReceiver();
     private QuickDialogUtility quickDialogUtility;
+
+    private float offset;
+    private float currentSteps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,40 +35,28 @@ public class MainActivity extends ActionBarActivity {
         mHandler = new Handler();
     }
 
-    Runnable mStatusChecker = new Runnable() {
-        @Override
-        public void run() {
-            updateStatus(); //this function can change value of mInterval.
-            mHandler.postDelayed(mStatusChecker, mInterval);
-        }
-    };
-
     void updateStatus()
     {
-        if (mBound) {
-            ((TextView) findViewById(R.id.GoodText)).setText(String.format("%.0f", mService.getSteps()));
-            ((TextView) findViewById(R.id.Offset)).setText(String.format("%.0f", mService.getOffset()));
-        }
-    }
-
-    void startRepeatingTask() {
-        mStatusChecker.run();
-    }
-
-    void stopRepeatingTask() {
-        mHandler.removeCallbacks(mStatusChecker);
+            ((TextView) findViewById(R.id.GoodText)).setText(String.format("%.0f", currentSteps));
+            ((TextView) findViewById(R.id.Offset)).setText(String.format("%.0f", offset));
     }
 
     @Override
     protected void onPause() {
+        unregisterReceiver(mStatusReceiver);
         super.onPause();
-        stopRepeatingTask();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        startRepeatingTask();
+        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+        offset = prefs.getFloat("offset", 0);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("halfWayThere.stepsOccurred");
+
+        registerReceiver(mStatusReceiver, filter);
     }
 
     @Override
@@ -89,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
 
         if (id == R.id.action_set_current_steps)
         {
-            quickDialogUtility.CollectCurrentSteps(this, mService);
+            quickDialogUtility.CollectCurrentSteps(this);
             return true;
         }
 
@@ -97,40 +85,30 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onStart() {
+    protected void onStart()
+    {
         super.onStart();
-//        Toast.makeText(getApplicationContext(), "onStart", Toast.LENGTH_LONG).show();
-        // Bind to LocalService
         Intent intent = new Intent(this, LocalService.class);
         startService(intent);
-        bindService(intent, mConnection, Context.BIND_ABOVE_CLIENT); // bind changed from autocreate....
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // Unbind from the service
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
+    public void setSteps(float newSteps) {
+        this.offset = newSteps - this.currentSteps + this.offset;
+        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+        prefs.edit().putFloat("offset", this.offset).apply();
+        this.currentSteps = newSteps;
+        updateStatus();
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
+    private class statusReceiver extends BroadcastReceiver
+    {
         @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            LocalService.LocalBinder binder = (LocalService.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
+        public void onReceive(Context context, Intent intent)
+        {
+            if (intent.getAction().equals("halfWayThere.stepsOccurred")) {
+                currentSteps = intent.getFloatExtra("steps", 0) + offset;
+                updateStatus();
+            }
         }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };
+    }
 }
