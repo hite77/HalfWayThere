@@ -32,4 +32,26 @@ public class QuickDialogUtility
             }
         }).show();
     }
+
+    public void CollectGoalSteps(final MainActivity mainActivity)
+    {
+        final EditText input = new EditText(mainActivity);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+
+        new AlertDialog.Builder(mainActivity)
+                .setTitle("Goal Steps")
+                .setMessage("Enter Steps:")
+                .setView(input)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Editable value = input.getText();
+                        float goalSteps = Float.valueOf(value.toString());
+                        mainActivity.SetGoalSteps(goalSteps);
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        }).show();
+    }
 }

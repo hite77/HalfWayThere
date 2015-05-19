@@ -18,14 +18,8 @@
             </intent-filter>
         </activity>
         <service android:name=".LocalService" android:enabled="true"/>
-        <receiver android:name=".MyBootReceiver">
-        <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED"/>
-        </intent-filter>
-        </receiver>
     </application>
     <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="true"/>
 </manifest>

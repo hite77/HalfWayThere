@@ -11,10 +11,12 @@ import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity  {
+public class MainActivity extends ActionBarActivity implements View.OnClickListener {
 
     private Handler mHandler;
 
@@ -23,6 +25,7 @@ public class MainActivity extends ActionBarActivity  {
 
     private float offset;
     private float currentSteps;
+    private float goalSteps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,12 @@ public class MainActivity extends ActionBarActivity  {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         quickDialogUtility = new QuickDialogUtility();
+
+        Button startButton = (Button)findViewById(R.id.button);
+        Button stopButton = (Button)findViewById(R.id.button2);
+
+        startButton.setOnClickListener(this);
+        stopButton.setOnClickListener(this);
 
         mHandler = new Handler();
     }
@@ -72,6 +81,7 @@ public class MainActivity extends ActionBarActivity  {
 
         if (id == R.id.action_set_goal_steps)
         {
+            quickDialogUtility.CollectGoalSteps(this);
             return true;
         }
 
@@ -84,13 +94,8 @@ public class MainActivity extends ActionBarActivity  {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        Intent intent = new Intent(this, LocalService.class);
-        startService(intent);
-    }
+    //        Intent intent = new Intent(this, LocalService.class);
+    //        startService(intent);
 
     public void setSteps(float newSteps) {
         this.offset = newSteps - this.currentSteps + this.offset;
@@ -98,6 +103,29 @@ public class MainActivity extends ActionBarActivity  {
         prefs.edit().putFloat("offset", this.offset).apply();
         this.currentSteps = newSteps;
         updateStatus();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button:
+                Intent startIntent = new Intent(MainActivity.this, LocalService.class);
+                startIntent.setAction(LocalService.STARTFOREGROUND_ACTION);
+                startService(startIntent);
+                break;
+            case R.id.button2:
+                Intent stopIntent = new Intent(MainActivity.this, LocalService.class);
+                stopIntent.setAction(LocalService.STOPFOREGROUND_ACTION);
+                startService(stopIntent);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void SetGoalSteps(float goalSteps)
+    {
+        this.goalSteps = goalSteps;
     }
 
     private class statusReceiver extends BroadcastReceiver

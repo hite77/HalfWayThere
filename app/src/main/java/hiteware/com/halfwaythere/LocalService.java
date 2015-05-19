@@ -1,6 +1,7 @@
 package hiteware.com.halfwaythere;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,7 +14,7 @@ import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.os.Process;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 /**
@@ -28,6 +29,11 @@ import android.util.Log;
 
 
 public class LocalService  extends Service implements SensorEventListener {
+    public static String STARTFOREGROUND_ACTION = "hiteware.com.halfwaythere.action.startforeground";
+    public static String STOPFOREGROUND_ACTION = "hiteware.com.halfwaythere.action.stopforeground";
+    public static String MAIN_ACTION = "hiteware.com.halfwaythere.action.main";
+    public static int FOREGROUND_SERVICE = 101;
+
     public static final String TAG = LocalService.class.getName();
     public static final int SCREEN_OFF_RECEIVER_DELAY = 500;
 
@@ -77,13 +83,51 @@ public class LocalService  extends Service implements SensorEventListener {
         super.onStartCommand(intent, flags, startId);
         Log.i(TAG, "StartCommand");
 
-        startForeground(Process.myPid(), new Notification());
-        registerListener();
-        mWakeLock.acquire();
+        if (intent.getAction().equals(STARTFOREGROUND_ACTION)) {
+            Log.i(TAG, "Received Start Foreground Intent ");
+            mWakeLock.acquire();
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            notificationIntent.setAction(MAIN_ACTION);
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                    notificationIntent, 0);
 
+            Notification notification = new NotificationCompat.Builder(this)
+                    .setContentTitle("Step Count")
+                    .setTicker("Half Way There")
+                    .setContentText("Steps toward Goal")
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentIntent(pendingIntent)
+                    .setOngoing(true).build();
+            startForeground(FOREGROUND_SERVICE,
+                    notification);
+            registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+            registerListener();
+        } else if (intent.getAction().equals(
+                STOPFOREGROUND_ACTION)) {
+            Log.i(TAG, "Received Stop Foreground Intent");
+            stopForeground(true);
+            unregisterReceiver(mReceiver);
+            mWakeLock.release();
+            stopSelf();
+        }
         return START_STICKY;
     }
 
+        // Sets the progress indicator to a max value, the
+        // current completion percentage, and "determinate"
+        // state
+//        mBuilder.setProgress(100, incr, false);
+//        // Displays the progress bar for the first time.
+//        mNotifyManager.notify(id, mBuilder.build());
+//
+//        // When the loop is finished, updates the notification
+//        mBuilder.setContentText("Download complete")
+//                // Removes the progress bar
+//                .setProgress(0,0,false);
+//        mNotifyManager.notify(id, mBuilder.build());
+//
     @Override
     public void onSensorChanged(SensorEvent event) {
         Intent broadcastSteps = new Intent();
@@ -107,16 +151,11 @@ public class LocalService  extends Service implements SensorEventListener {
         PowerManager manager =
                 (PowerManager) getSystemService(Context.POWER_SERVICE);
         mWakeLock = manager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
-
-        registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
     }
 
     @Override
     public void onDestroy() {
-        unregisterReceiver(mReceiver);
         unregisterListener();
-        mWakeLock.release();
-        stopForeground(true);
     }
 
     @Override
