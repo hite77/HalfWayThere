@@ -44,9 +44,12 @@ public class LocalService  extends Service implements SensorEventListener {
     /*
      * Register this as a sensor event listener.
      */
-    private void registerListener() {
+    private void registerListeners() {
         mSensorManager.registerListener(this,
                 mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR),
                 SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -70,7 +73,7 @@ public class LocalService  extends Service implements SensorEventListener {
                 public void run() {
                     Log.i(TAG, "Runnable executing.");
                     unregisterListener();
-                    registerListener();
+                    registerListeners();
                 }
             };
 
@@ -103,7 +106,7 @@ public class LocalService  extends Service implements SensorEventListener {
             startForeground(FOREGROUND_SERVICE,
                     notification);
             registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
-            registerListener();
+            registerListeners();
         } else if (intent.getAction().equals(
                 STOPFOREGROUND_ACTION)) {
             Log.i(TAG, "Received Stop Foreground Intent");
@@ -130,10 +133,21 @@ public class LocalService  extends Service implements SensorEventListener {
 //
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Intent broadcastSteps = new Intent();
-        broadcastSteps.setAction("halfWayThere.stepsOccurred");
-        broadcastSteps.putExtra("steps", event.values[0]);
-        this.sendBroadcast(broadcastSteps);
+        if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER)
+        {
+            Intent broadcastSteps = new Intent();
+            broadcastSteps.setAction("halfWayThere.stepsOccurred");
+            broadcastSteps.putExtra("steps", event.values[0]);
+            this.sendBroadcast(broadcastSteps);
+        }
+        else if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR)
+        {
+            Intent broadcastSteps = new Intent();
+            broadcastSteps.setAction("halfWayThere.stepDetector");
+            broadcastSteps.putExtra("steps", event.values.length);
+            this.sendBroadcast(broadcastSteps);
+        }
+
         Log.i(TAG, "Event:" + event.values[0]);
     }
 

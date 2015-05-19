@@ -25,6 +25,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     private float offset;
     private float currentSteps;
+    private int detectedSteps;
     private float goalSteps;
 
     @Override
@@ -48,6 +49,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     {
             ((TextView) findViewById(R.id.GoodText)).setText(String.format("%.0f", currentSteps));
             ((TextView) findViewById(R.id.Offset)).setText(String.format("%.0f", offset));
+            ((TextView) findViewById(R.id.DetectedSteps)).setText("Detected Steps:" + detectedSteps);
     }
 
     @Override
@@ -64,6 +66,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("halfWayThere.stepsOccurred");
+        filter.addAction("halfWayThere.stepDetector");
 
         registerReceiver(mStatusReceiver, filter);
     }
@@ -102,6 +105,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
         prefs.edit().putFloat("offset", this.offset).apply();
         this.currentSteps = newSteps;
+        detectedSteps = (int)newSteps;
         updateStatus();
     }
 
@@ -135,6 +139,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         {
             if (intent.getAction().equals("halfWayThere.stepsOccurred")) {
                 currentSteps = intent.getFloatExtra("steps", 0) + offset;
+                updateStatus();
+            }
+            else if(intent.getAction().equals("halfWayThere.stepDetector")) {
+                detectedSteps = intent.getIntExtra("steps", 0) + detectedSteps;
                 updateStatus();
             }
         }
