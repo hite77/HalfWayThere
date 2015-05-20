@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +22,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private statusReceiver mStatusReceiver = new statusReceiver();
     private QuickDialogUtility quickDialogUtility;
 
-    private float offset;
     private float currentSteps;
     private int detectedSteps;
     private float goalSteps;
@@ -48,7 +46,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     void updateStatus()
     {
             ((TextView) findViewById(R.id.GoodText)).setText(String.format("%.0f", currentSteps));
-            ((TextView) findViewById(R.id.Offset)).setText(String.format("%.0f", offset));
             ((TextView) findViewById(R.id.DetectedSteps)).setText("Detected Steps:" + detectedSteps);
     }
 
@@ -61,8 +58,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-        offset = prefs.getFloat("offset", 0);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("halfWayThere.stepsOccurred");
@@ -97,13 +92,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-    //        Intent intent = new Intent(this, LocalService.class);
-    //        startService(intent);
-
     public void setSteps(float newSteps) {
-        this.offset = newSteps - this.currentSteps + this.offset;
-        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-        prefs.edit().putFloat("offset", this.offset).apply();
         this.currentSteps = newSteps;
         detectedSteps = (int)newSteps;
         updateStatus();
@@ -115,6 +104,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             case R.id.button:
                 Intent startIntent = new Intent(MainActivity.this, LocalService.class);
                 startIntent.setAction(LocalService.STARTFOREGROUND_ACTION);
+                startIntent.putExtra("goal", goalSteps);
+                startIntent.putExtra("currentSteps", currentSteps);
                 startService(startIntent);
                 break;
             case R.id.button2:
@@ -138,11 +129,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         public void onReceive(Context context, Intent intent)
         {
             if (intent.getAction().equals("halfWayThere.stepsOccurred")) {
-                currentSteps = intent.getFloatExtra("steps", 0) + offset;
+                currentSteps = intent.getFloatExtra("steps", 0);
                 updateStatus();
             }
             else if(intent.getAction().equals("halfWayThere.stepDetector")) {
-                detectedSteps = intent.getIntExtra("steps", 0) + detectedSteps;
+                detectedSteps = intent.getIntExtra("steps", 0);
                 updateStatus();
             }
         }

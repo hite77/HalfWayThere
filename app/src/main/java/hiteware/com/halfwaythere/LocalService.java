@@ -1,6 +1,7 @@
 package hiteware.com.halfwaythere;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -40,6 +41,23 @@ public class LocalService  extends Service implements SensorEventListener {
     private SensorManager mSensorManager = null;
 
     private PowerManager.WakeLock mWakeLock = null;
+
+    private float stepCounterSteps;
+    private float offset;
+    private int countOfSteps;
+    private int goal;
+    private int startValue;
+    private boolean setOffset = true;
+
+    private NotificationManager mNotifyManager;
+    NotificationCompat.Builder mBuilder;
+
+    private void updateProgress()
+    {
+        int percentage = (countOfSteps > goal) ? 100 : Math.round((float)(countOfSteps)/(goal)*100);
+        mBuilder.setProgress(100, percentage, false);
+        mNotifyManager.notify(FOREGROUND_SERVICE, mBuilder.build());
+    }
 
     /*
      * Register this as a sensor event listener.
@@ -96,7 +114,11 @@ public class LocalService  extends Service implements SensorEventListener {
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                     notificationIntent, 0);
 
-            Notification notification = new NotificationCompat.Builder(this)
+            mNotifyManager =
+                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            mBuilder = new NotificationCompat.Builder(this);
+
+            Notification notification = mBuilder
                     .setContentTitle("Step Count")
                     .setTicker("Half Way There")
                     .setContentText("Steps toward Goal")
@@ -107,6 +129,10 @@ public class LocalService  extends Service implements SensorEventListener {
                     notification);
             registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
             registerListeners();
+            goal = (int)intent.getFloatExtra("goal", 10000);
+            startValue = (int)intent.getFloatExtra("currentSteps", 0);
+            countOfSteps = startValue;
+            stepCounterSteps = startValue;
         } else if (intent.getAction().equals(
                 STOPFOREGROUND_ACTION)) {
             Log.i(TAG, "Received Stop Foreground Intent");
@@ -118,34 +144,29 @@ public class LocalService  extends Service implements SensorEventListener {
         return START_STICKY;
     }
 
-        // Sets the progress indicator to a max value, the
-        // current completion percentage, and "determinate"
-        // state
-//        mBuilder.setProgress(100, incr, false);
-//        // Displays the progress bar for the first time.
-//        mNotifyManager.notify(id, mBuilder.build());
-//
-//        // When the loop is finished, updates the notification
-//        mBuilder.setContentText("Download complete")
-//                // Removes the progress bar
-//                .setProgress(0,0,false);
-//        mNotifyManager.notify(id, mBuilder.build());
-//
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER)
         {
+            if (setOffset)
+            {
+                setOffset = false;
+                offset = stepCounterSteps - event.values[0];
+            }
             Intent broadcastSteps = new Intent();
             broadcastSteps.setAction("halfWayThere.stepsOccurred");
-            broadcastSteps.putExtra("steps", event.values[0]);
+            stepCounterSteps = event.values[0] + offset;
+            broadcastSteps.putExtra("steps", stepCounterSteps);
             this.sendBroadcast(broadcastSteps);
         }
         else if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR)
         {
             Intent broadcastSteps = new Intent();
             broadcastSteps.setAction("halfWayThere.stepDetector");
-            broadcastSteps.putExtra("steps", event.values.length);
+            countOfSteps += event.values.length;
+            broadcastSteps.putExtra("steps", countOfSteps);
             this.sendBroadcast(broadcastSteps);
+            updateProgress();
         }
 
         Log.i(TAG, "Event:" + event.values[0]);
