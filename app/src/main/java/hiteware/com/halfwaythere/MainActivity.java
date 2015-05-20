@@ -4,9 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,20 +15,16 @@ import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener {
 
-    private Handler mHandler;
-
     private statusReceiver mStatusReceiver = new statusReceiver();
     private QuickDialogUtility quickDialogUtility;
 
     private float currentSteps;
-    private int detectedSteps;
     private float goalSteps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         quickDialogUtility = new QuickDialogUtility();
 
@@ -39,14 +33,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         startButton.setOnClickListener(this);
         stopButton.setOnClickListener(this);
-
-        mHandler = new Handler();
     }
 
     void updateStatus()
     {
             ((TextView) findViewById(R.id.GoodText)).setText(String.format("%.0f", currentSteps));
-            ((TextView) findViewById(R.id.DetectedSteps)).setText("Detected Steps:" + detectedSteps);
     }
 
     @Override
@@ -61,7 +52,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         IntentFilter filter = new IntentFilter();
         filter.addAction("halfWayThere.stepsOccurred");
-        filter.addAction("halfWayThere.stepDetector");
 
         registerReceiver(mStatusReceiver, filter);
     }
@@ -94,7 +84,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     public void setSteps(float newSteps) {
         this.currentSteps = newSteps;
-        detectedSteps = (int)newSteps;
         updateStatus();
     }
 
@@ -130,10 +119,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         {
             if (intent.getAction().equals("halfWayThere.stepsOccurred")) {
                 currentSteps = intent.getFloatExtra("steps", 0);
-                updateStatus();
-            }
-            else if(intent.getAction().equals("halfWayThere.stepDetector")) {
-                detectedSteps = intent.getIntExtra("steps", 0);
                 updateStatus();
             }
         }

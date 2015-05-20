@@ -4,17 +4,12 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -36,17 +31,12 @@ public class LocalService  extends Service implements SensorEventListener {
     public static int FOREGROUND_SERVICE = 101;
 
     public static final String TAG = LocalService.class.getName();
-    public static final int SCREEN_OFF_RECEIVER_DELAY = 500;
 
     private SensorManager mSensorManager = null;
 
-    private PowerManager.WakeLock mWakeLock = null;
-
     private float stepCounterSteps;
     private float offset;
-    private int countOfSteps;
     private int goal;
-    private int startValue;
     private boolean setOffset = true;
 
     private NotificationManager mNotifyManager;
@@ -54,7 +44,7 @@ public class LocalService  extends Service implements SensorEventListener {
 
     private void updateProgress()
     {
-        int percentage = (countOfSteps > goal) ? 100 : Math.round((float)(countOfSteps)/(goal)*100);
+        int percentage = (stepCounterSteps > goal) ? 100 : Math.round(stepCounterSteps/goal*100);
         mBuilder.setProgress(100, percentage, false);
         mNotifyManager.notify(FOREGROUND_SERVICE, mBuilder.build());
     }
@@ -62,12 +52,9 @@ public class LocalService  extends Service implements SensorEventListener {
     /*
      * Register this as a sensor event listener.
      */
-    private void registerListeners() {
+    private void registerListener() {
         mSensorManager.registerListener(this,
                 mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER),
-                SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this,
-                mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR),
                 SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -78,27 +65,6 @@ public class LocalService  extends Service implements SensorEventListener {
         mSensorManager.unregisterListener(this);
     }
 
-    public BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "onReceive(" + intent + ")");
-
-            if (!intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-                return;
-            }
-
-            Runnable runnable = new Runnable() {
-                public void run() {
-                    Log.i(TAG, "Runnable executing.");
-                    unregisterListener();
-                    registerListeners();
-                }
-            };
-
-            new Handler().postDelayed(runnable, SCREEN_OFF_RECEIVER_DELAY);
-        }
-    };
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
@@ -106,7 +72,6 @@ public class LocalService  extends Service implements SensorEventListener {
 
         if (intent.getAction().equals(STARTFOREGROUND_ACTION)) {
             Log.i(TAG, "Received Start Foreground Intent ");
-            mWakeLock.acquire();
             Intent notificationIntent = new Intent(this, MainActivity.class);
             notificationIntent.setAction(MAIN_ACTION);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
@@ -127,18 +92,14 @@ public class LocalService  extends Service implements SensorEventListener {
                     .setOngoing(true).build();
             startForeground(FOREGROUND_SERVICE,
                     notification);
-            registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
-            registerListeners();
+            registerListener();
             goal = (int)intent.getFloatExtra("goal", 10000);
-            startValue = (int)intent.getFloatExtra("currentSteps", 0);
-            countOfSteps = startValue;
-            stepCounterSteps = startValue;
+            stepCounterSteps = (int)intent.getFloatExtra("currentSteps", 0);
         } else if (intent.getAction().equals(
                 STOPFOREGROUND_ACTION)) {
             Log.i(TAG, "Received Stop Foreground Intent");
+            unregisterListener();
             stopForeground(true);
-            unregisterReceiver(mReceiver);
-            mWakeLock.release();
             stopSelf();
         }
         return START_STICKY;
@@ -158,17 +119,8 @@ public class LocalService  extends Service implements SensorEventListener {
             stepCounterSteps = event.values[0] + offset;
             broadcastSteps.putExtra("steps", stepCounterSteps);
             this.sendBroadcast(broadcastSteps);
-        }
-        else if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR)
-        {
-            Intent broadcastSteps = new Intent();
-            broadcastSteps.setAction("halfWayThere.stepDetector");
-            countOfSteps += event.values.length;
-            broadcastSteps.putExtra("steps", countOfSteps);
-            this.sendBroadcast(broadcastSteps);
             updateProgress();
         }
-
         Log.i(TAG, "Event:" + event.values[0]);
     }
 
@@ -182,15 +134,6 @@ public class LocalService  extends Service implements SensorEventListener {
         super.onCreate();
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
-        PowerManager manager =
-                (PowerManager) getSystemService(Context.POWER_SERVICE);
-        mWakeLock = manager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
-    }
-
-    @Override
-    public void onDestroy() {
-        unregisterListener();
     }
 
     @Override

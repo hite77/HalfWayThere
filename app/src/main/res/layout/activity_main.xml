@@ -73,14 +73,7 @@ tools:context=".MainActivity">
         android:layout_below="@+id/OffsetText"
         android:layout_alignParentLeft="true" />
 
-    <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:id="@+id/DetectedSteps"
-        android:layout_below="@+id/Offset"
-        android:layout_alignParentLeft="true" />
-
-    <Button
+   <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
