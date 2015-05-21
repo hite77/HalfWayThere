@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
-import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +19,7 @@ import javax.inject.Inject;
 
 public class MainActivity extends ActionBarActivity {
 
-    private int mInterval = 5000; // 5 seconds by default, can be changed later
+    private int mInterval = 1000; // 5 seconds by default, can be changed later
     private Handler mHandler;
 
     LocalService mService;
@@ -35,25 +34,6 @@ public class MainActivity extends ActionBarActivity {
     private QuickDialogUtility quickDialogUtility;
     private InjectableApplication Application;
 
-    public void initializeListeners()
-    {
-        Sensor defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        TextView stepsText = (TextView) findViewById(R.id.steps_title);
-        stepSensorChange.setOutputView((TextView) findViewById(R.id.step_value));
-        stepSensorChange.setgoalStepsView((TextView) findViewById(R.id.goalStepValue));
-        stepSensorChange.setprogressView((CircularProgressBar) findViewById(R.id.circle_status));
-
-        if (defaultSensor==null)
-        {
-            stepsText.setText("Your device does not have Hardware Pedometer. Future versions of this software will have software pedometer and work with your device.");
-        }
-        else
-        {
-            stepsText.setText("Steps");
-            sensorManager.registerListener(stepSensorChange, defaultSensor, SensorManager.SENSOR_DELAY_UI);
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,8 +44,6 @@ public class MainActivity extends ActionBarActivity {
         quickDialogUtility = new QuickDialogUtility(Application);
 
         Application.inject(this);
-
-        initializeListeners();
 
         mHandler = new Handler();
     }
@@ -82,6 +60,7 @@ public class MainActivity extends ActionBarActivity {
     {
         if (mBound) {
             ((TextView) findViewById(R.id.GoodText)).setText(String.format("%.0f", mService.getSteps()));
+            ((TextView) findViewById(R.id.SoftwareStepsView)).setText("SoftwareSteps:" + String.format("%.0f", mService.getSoftwareSteps()));
         }
     }
 
@@ -134,8 +113,6 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
-//        Toast.makeText(getApplicationContext(), "onStart", Toast.LENGTH_LONG).show();
-        // Bind to LocalService
         Intent intent = new Intent(this, LocalService.class);
         startService(intent);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -144,7 +121,6 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        // Unbind from the service
         if (mBound) {
             unbindService(mConnection);
             mBound = false;

@@ -37,7 +37,7 @@ public class QuickDialogUtility
                     public void onClick(DialogInterface dialog, int whichButton) {
                         Editable value = input.getText();
                         float countOfSteps = Float.valueOf(value.toString());
-                        stepSensorChange.setNumberOfSteps(countOfSteps);
+//                        stepSensorChange.setNumberOfSteps(countOfSteps);
                         selectedSteps = countOfSteps;
                         mService.setSteps(selectedSteps);
                     }
