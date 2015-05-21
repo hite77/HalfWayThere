@@ -12,7 +12,7 @@ import dagger.Provides;
  */
 @Module(
         includes = StepSensorChangeModule.class,
-        injects = MainActivityFragment.class,
+        injects = {MainActivityFragment.class, StepService.class},
         overrides = true
 )
 public class TestModule{

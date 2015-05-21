@@ -44,7 +44,7 @@ public class SensorHandlerUnitTest
     }
 
     @Test
-    public void whenAppAndActivityAreConstructedTheSensorManagerAsksForStepCounter()
+    public void whenAppAndActivityAreConstructedTheSensorManagerAsksForStepCounter() // this has hopefully been replicated.
     {
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         verify(sensorManager, times(1)).getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
