@@ -51,7 +51,7 @@ public class SensorHandlerUnitTest
     }
 
     @Test
-    public void whenAppAndActivityAreConstructedThenSensorManagerRegistersForUpdates()
+    public void whenAppAndActivityAreConstructedThenSensorManagerRegistersForUpdates() // this has hopefully been replicated.
     {
         Sensor sensor = Mockito.mock(Sensor.class);
         when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(sensor);
