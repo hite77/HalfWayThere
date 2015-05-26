@@ -65,4 +65,13 @@ public class StepServiceUnitTest
         stepService.onCreate();
         verify(sensorManager, times(1)).registerListener(any(SensorEventListener.class), eq(sensor), eq(SensorManager.SENSOR_DELAY_UI));
     }
+
+    @Test
+    public void whenStartedAndNoStepCountThenShouldNotRegisterForUpdates()
+    {
+        when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(null);
+        StepService stepService = new StepService();
+        stepService.onCreate();
+        verify(sensorManager, times(0)).registerListener(any(SensorEventListener.class), any(Sensor.class), eq(SensorManager.SENSOR_DELAY_UI));
+    }
 }

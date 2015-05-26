@@ -22,7 +22,10 @@ public class StepService extends Service implements SensorEventListener
     {
         ((InjectableApplication)getApplication()).inject(this);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+        if (null != sensor)
+        {
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+        }
     }
 
     @Override
@@ -47,6 +50,6 @@ public class StepService extends Service implements SensorEventListener
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        
+
     }
 }

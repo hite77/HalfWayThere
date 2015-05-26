@@ -70,7 +70,7 @@ public class SensorHandlerUnitTest
     }
 
     @Test
-    public void whenStartedAndNoStepCountThenShouldNotRegisterForUpdates()
+    public void whenStartedAndNoStepCountThenShouldNotRegisterForUpdates()  // this has hopefully been replicated.
     {
         when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(null);
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
