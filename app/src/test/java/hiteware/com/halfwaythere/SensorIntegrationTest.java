@@ -23,20 +23,20 @@ public class SensorIntegrationTest
     public MainActivity CreatedActivity;
     public TestInjectableApplication application;
 
-    StepSensorChange stepSensorChange;
+    StepService stepService;
 
     @Before
     public void setUp()
     {
         application = (TestInjectableApplication) RuntimeEnvironment.application;
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
-        stepSensorChange = application.stepSensorChangeModule.provideStepSensorChange();
+        stepService = application.stepServiceModule.provideStepService();
     }
 
     @Test
     public void whenAStepCounterValueIsInjectedTheDisplayIsUpdated()
     {
-        stepSensorChange.onSensorChanged(SensorValue.CreateSensorEvent(23));
+        stepService.onSensorChanged(SensorValue.CreateSensorEvent(23));
         assertThat(((TextView) CreatedActivity.findViewById(R.id.step_value)).getText().toString(), equalTo("23"));
     }
 }

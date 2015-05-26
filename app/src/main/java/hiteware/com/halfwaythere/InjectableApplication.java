@@ -10,7 +10,7 @@ import dagger.ObjectGraph;
 public class InjectableApplication extends Application {
 
     public ProductionModule productionModule =new ProductionModule(this);
-    public StepSensorChangeModule stepSensorChangeModule = new StepSensorChangeModule();
+    public StepServiceModule stepServiceModule = new StepServiceModule();
 
     private ObjectGraph graph = null;
     protected boolean useMockSensorManager = false;
@@ -26,9 +26,9 @@ public class InjectableApplication extends Application {
         if (graph == null)
         {
             if (useMockSensorManager) {
-                graph = ObjectGraph.create(mockSensorManagerModule, stepSensorChangeModule);
+                graph = ObjectGraph.create(mockSensorManagerModule, stepServiceModule);
             } else {
-               graph = ObjectGraph.create(productionModule, stepSensorChangeModule);
+               graph = ObjectGraph.create(productionModule, stepServiceModule);
             }
         }
     }

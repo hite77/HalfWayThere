@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Created by jasonhite on 4/29/15.
  */
-public class StepSensorChangeTest
+public class StepServiceChangeStepTest
 {
     @Test
     public void OnSensorChangeWillUpdateTheValueOfStepsOnOutputTextView() throws NoSuchFieldException, IllegalAccessException{
@@ -28,9 +28,9 @@ public class StepSensorChangeTest
         float[] value = {14};
         valuesField.set(sensorEvent, value);
 
-        StepSensorChange stepSensorChange = new StepSensorChange();
-        stepSensorChange.setOutputView(outputView);
-        stepSensorChange.onSensorChanged(sensorEvent);
+        StepService stepService = new StepService();
+        stepService.setOutputView(outputView);
+        stepService.onSensorChanged(sensorEvent);
 
         verify(outputView, times(1)).setText("14");
     }

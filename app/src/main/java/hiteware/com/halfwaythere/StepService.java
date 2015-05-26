@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -15,6 +16,8 @@ import javax.inject.Inject;
  */
 public class StepService extends Service implements SensorEventListener
 {
+    private TextView OutputView;
+
     @Inject
     SensorManager sensorManager;
 
@@ -45,11 +48,19 @@ public class StepService extends Service implements SensorEventListener
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
+        if (null != OutputView)
+        {
+            OutputView.setText(String.format("%.0f", event.values[0]));
+        }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    public void setOutputView(TextView outputView)
+    {
+        OutputView = outputView;
     }
 }

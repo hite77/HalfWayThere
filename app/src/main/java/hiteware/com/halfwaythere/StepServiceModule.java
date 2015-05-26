@@ -9,13 +9,13 @@ import dagger.Provides;
 @Module(
         library = true
 )
-public class StepSensorChangeModule
+public class StepServiceModule
 {
-    StepSensorChange stepSensorChange = new StepSensorChange();
+    StepService stepService = new StepService();
 
     @Provides
-    public StepSensorChange provideStepSensorChange()
+    public StepService provideStepService()
     {
-        return stepSensorChange;
+        return stepService;
     }
 }
