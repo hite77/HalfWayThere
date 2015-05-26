@@ -15,3 +15,26 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-injars      build/intermediates/classes
+-outjars     bin/classes-processed.jar
+-libraryjars /usr/local/java/android-sdk/platforms/android-9/android.jar
+
+-dontpreverify
+-repackageclasses ''
+-allowaccessmodification
+-optimizations !code/simplification/arithmetic
+
+-keep public class hiteware.com.halfwaythere.MainActivity
+
+-keep class **$$ModuleAdapter
+-keep class **$$InjectAdapter
+-keep class **$$StaticInjection
+
+-keep class hiteware.com.halfwaythere.TestModule
+-keep class hiteware.com.halfwaythere.TestInjectableApplication
+-keep class hiteware.com.halfwaythere.StepSensorChangeModule
+-keep class hiteware.com.halfwaythere.ProductionModule
+-keep class hiteware.com.halfwaythere.InjectableApplication
+
+-keep class dagger.Lazy
