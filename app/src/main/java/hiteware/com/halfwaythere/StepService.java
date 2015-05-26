@@ -47,6 +47,12 @@ public class StepService extends Service implements SensorEventListener
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
+
+    @Override
     public void onSensorChanged(SensorEvent event) {
         if (null != OutputView)
         {

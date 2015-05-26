@@ -1,5 +1,6 @@
 package hiteware.com.halfwaythere;
 
+import android.app.Service;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
@@ -73,5 +74,13 @@ public class StepServiceUnitTest
         StepService stepService = new StepService();
         stepService.onCreate();
         verify(sensorManager, times(0)).registerListener(any(SensorEventListener.class), any(Sensor.class), eq(SensorManager.SENSOR_DELAY_UI));
+    }
+
+    @Test
+    public void whenStartedThenItIsStartedAsSticky()
+    {
+        StepService stepService = new StepService();
+        int returnValue = stepService.onStartCommand(null, 0, 0);
+        assertThat(returnValue, equalTo(Service.START_STICKY));
     }
 }
