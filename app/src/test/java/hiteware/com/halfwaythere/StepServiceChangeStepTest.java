@@ -17,7 +17,7 @@ public class StepServiceChangeStepTest
     @Test
     public void OnSensorChangeWillUpdateTheValueOfStepsOnOutputTextView() {
         TextView outputView = mock(TextView.class);
-        
+
         StepService stepService = new StepService();
         stepService.setOutputView(outputView);
         SensorEvent sensorValue = SensorValue.CreateSensorEvent(14);

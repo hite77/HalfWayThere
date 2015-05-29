@@ -1,5 +1,6 @@
 package hiteware.com.halfwaythere;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.widget.TextView;
@@ -11,9 +12,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.util.ActivityController;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -73,5 +77,16 @@ public class OnScreenTextTest {
         controller.resume();
 
         assertThat(((TextView) CreatedActivity.findViewById(R.id.steps_title)).getText().toString(), equalTo("Steps"));
+    }
+
+    @Test
+    public void whenTheAppIsRunningTheServiceWillBeStarted()
+    {
+        ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();
+        CreatedActivity = (MainActivity) controller.get();
+        controller.resume();
+        ShadowActivity shadowActivity = Shadows.shadowOf(CreatedActivity);
+        Intent startedIntent = shadowActivity.getNextStartedService();
+        assertNotNull(startedIntent);
     }
 }

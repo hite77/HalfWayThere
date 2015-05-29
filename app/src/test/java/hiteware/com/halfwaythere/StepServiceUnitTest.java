@@ -8,7 +8,6 @@ import android.hardware.SensorManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -16,6 +15,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,7 +60,7 @@ public class StepServiceUnitTest
     @Test
     public void whenAppAndActivityAreConstructedThenSensorManagerRegistersForUpdates()
     {
-        Sensor sensor = Mockito.mock(Sensor.class);
+        Sensor sensor = mock(Sensor.class);
         when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(sensor);
         StepService stepService = new StepService();
         stepService.onCreate();

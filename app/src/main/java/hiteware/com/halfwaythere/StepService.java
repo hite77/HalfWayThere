@@ -16,6 +16,21 @@ import javax.inject.Inject;
  */
 public class StepService extends Service implements SensorEventListener
 {
+//    private final IBinder mBinder = new LocalBinder();
+
+//    public class LocalBinder extends Binder {
+//        StepService getService() {
+//            // Return this instance of LocalService so clients can call public methods
+//            return StepService.this;
+//        }
+//   }
+
+//    @Override
+//    public IBinder onBind(Intent intent) {
+//        Toast.makeText(this, "binding", Toast.LENGTH_SHORT).show();
+//        return mBinder;
+//    }
+//
     private TextView OutputView;
 
     @Inject
@@ -47,12 +62,6 @@ public class StepService extends Service implements SensorEventListener
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        return START_STICKY;
-    }
-
-    @Override
     public void onSensorChanged(SensorEvent event) {
         if (null != OutputView)
         {
@@ -69,4 +78,9 @@ public class StepService extends Service implements SensorEventListener
     {
         OutputView = outputView;
     }
+
+//    public void killService()
+//    {
+//        stopSelf();
+//    }
 }

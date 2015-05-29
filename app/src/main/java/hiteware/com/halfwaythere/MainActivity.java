@@ -1,5 +1,6 @@
 package hiteware.com.halfwaythere;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +15,12 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent = new Intent(this, StepService.class);
+        startService(intent);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
