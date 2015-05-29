@@ -4,9 +4,6 @@ import android.hardware.SensorEvent;
 import android.widget.TextView;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-
-import java.lang.reflect.Field;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -18,19 +15,13 @@ import static org.mockito.Mockito.verify;
 public class StepServiceChangeStepTest
 {
     @Test
-    public void OnSensorChangeWillUpdateTheValueOfStepsOnOutputTextView() throws NoSuchFieldException, IllegalAccessException{
+    public void OnSensorChangeWillUpdateTheValueOfStepsOnOutputTextView() {
         TextView outputView = mock(TextView.class);
-
-        SensorEvent sensorEvent = Mockito.mock(SensorEvent.class);
-
-        Field valuesField = SensorEvent.class.getField("values");
-        valuesField.setAccessible(true);
-        float[] value = {14};
-        valuesField.set(sensorEvent, value);
-
+        
         StepService stepService = new StepService();
         stepService.setOutputView(outputView);
-        stepService.onSensorChanged(sensorEvent);
+        SensorEvent sensorValue = SensorValue.CreateSensorEvent(14);
+        stepService.onSensorChanged(sensorValue);
 
         verify(outputView, times(1)).setText("14");
     }
