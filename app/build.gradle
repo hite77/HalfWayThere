@@ -18,6 +18,10 @@ android {
                     'proguard-rules.pro'
         }
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 repositories {

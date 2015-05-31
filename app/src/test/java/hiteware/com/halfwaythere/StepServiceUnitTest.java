@@ -1,15 +1,23 @@
 package hiteware.com.halfwaythere;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowIntent;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,8 +33,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(CustomRobolectricRunner.class)
 @Config(constants = BuildConfig.class)
-public class StepServiceUnitTest
-{
+public class StepServiceUnitTest {
     public TestInjectableApplication application;
     SensorManager sensorManager;
 
@@ -38,8 +45,7 @@ public class StepServiceUnitTest
     }
 
     @Test
-    public void GivenStepServiceCreatedWhenStepsAreSetThenStepsCanBeRetrieved()
-    {
+    public void GivenStepServiceCreatedWhenStepsAreSetThenStepsCanBeRetrieved() {
         StepService stepService = new StepService();
         stepService.onCreate();
 
@@ -50,16 +56,14 @@ public class StepServiceUnitTest
     }
 
     @Test
-    public void GivenStepServiceCreatedThenTheSensorManagerAsksForStepCounter()
-    {
+    public void GivenStepServiceCreatedThenTheSensorManagerAsksForStepCounter() {
         StepService stepService = new StepService();
         stepService.onCreate();
         verify(sensorManager, times(1)).getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
     }
 
     @Test
-    public void whenAppAndActivityAreConstructedThenSensorManagerRegistersForUpdates()
-    {
+    public void whenAppAndActivityAreConstructedThenSensorManagerRegistersForUpdates() {
         Sensor sensor = mock(Sensor.class);
         when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(sensor);
         StepService stepService = new StepService();
@@ -68,8 +72,7 @@ public class StepServiceUnitTest
     }
 
     @Test
-    public void whenStartedAndNoStepCountThenShouldNotRegisterForUpdates()
-    {
+    public void whenStartedAndNoStepCountThenShouldNotRegisterForUpdates() {
         when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(null);
         StepService stepService = new StepService();
         stepService.onCreate();
@@ -77,10 +80,49 @@ public class StepServiceUnitTest
     }
 
     @Test
-    public void whenStartedThenItIsStartedAsSticky()
-    {
+    public void whenStartedThenItIsStartedAsSticky() {
         StepService stepService = new StepService();
         int returnValue = stepService.onStartCommand(null, 0, 0);
         assertThat(returnValue, equalTo(Service.START_STICKY));
+    }
+
+    @Test
+    public void whenStepEventComesOverThenServiceBroadCastsTheCountOfSteps() {
+        final StepService stepService = new StepService();
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        class MyBroadCastReceiver extends BroadcastReceiver {
+            boolean messageReceived = false;
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                messageReceived();
+                ShadowIntent shadowIntent = Shadows.shadowOf(intent);
+                assertThat(shadowIntent
+                                .hasExtra(stepService.STEPS_OCCURRED),
+                        equalTo(true));
+                float expected = 33;
+                float actual = shadowIntent.getFloatExtra(
+                        stepService.STEPS_OCCURRED, 0);
+                assertThat(actual, equalTo(expected));
+            }
+
+            public void messageReceived() {
+                messageReceived = true;
+            }
+
+            public boolean getMessageReceived() {
+                return messageReceived;
+            }
+        }
+
+        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver();
+
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(stepService.ACTION_STEPS_OCCURRED));
+
+        SensorEvent stepEvent = SensorValue.CreateSensorEvent(33);
+        stepService.onSensorChanged(stepEvent);
+
+        assertThat(testReceiver.getMessageReceived(), equalTo(true));
     }
 }

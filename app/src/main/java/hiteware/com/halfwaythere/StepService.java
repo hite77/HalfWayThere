@@ -31,6 +31,9 @@ public class StepService extends Service implements SensorEventListener
 //        return mBinder;
 //    }
 //
+    public String STEPS_OCCURRED = "steps";
+    public String ACTION_STEPS_OCCURRED = "halfWayThere.stepsOccurred";
+
     private TextView OutputView;
 
     @Inject
@@ -67,6 +70,11 @@ public class StepService extends Service implements SensorEventListener
         {
             OutputView.setText(String.format("%.0f", event.values[0]));
         }
+
+        Intent broadcastSteps = new Intent();
+        broadcastSteps.setAction(ACTION_STEPS_OCCURRED);
+        broadcastSteps.putExtra(STEPS_OCCURRED, event.values[0]);
+        this.sendBroadcast(broadcastSteps);
     }
 
     @Override
