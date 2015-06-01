@@ -38,18 +38,19 @@ public class StepService extends Service implements SensorEventListener
 
     public void setSteps(float newSteps)
     {
-        Intent broadcastSteps = new Intent();
-        broadcastSteps.setAction(ACTION_STEPS_OCCURRED);
         float onlyValueNeeded = 14;
-        broadcastSteps.putExtra(STEPS_OCCURRED, onlyValueNeeded);
-        this.sendBroadcast(broadcastSteps);
+        SendStepBroadcast(onlyValueNeeded);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        SendStepBroadcast(event.values[0]);
+    }
+
+    private void SendStepBroadcast(float steps) {
         Intent broadcastSteps = new Intent();
         broadcastSteps.setAction(ACTION_STEPS_OCCURRED);
-        broadcastSteps.putExtra(STEPS_OCCURRED, event.values[0]);
+        broadcastSteps.putExtra(STEPS_OCCURRED, steps);
         this.sendBroadcast(broadcastSteps);
     }
 
