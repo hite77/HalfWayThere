@@ -17,6 +17,7 @@ public class StepService extends Service implements SensorEventListener
 {
     public static String STEPS_OCCURRED = "steps";
     public static String ACTION_STEPS_OCCURRED = "halfWayThere.stepsOccurred";
+    private float offset = 0;
 
     @Inject
     SensorManager sensorManager;
@@ -38,13 +39,13 @@ public class StepService extends Service implements SensorEventListener
 
     public void setSteps(float newSteps)
     {
-        float onlyValueNeeded = 14;
-        SendStepBroadcast(onlyValueNeeded);
+        SendStepBroadcast(newSteps);
+        offset = -60;
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        SendStepBroadcast(event.values[0]);
+        SendStepBroadcast(event.values[0]+offset);
     }
 
     private void SendStepBroadcast(float steps) {

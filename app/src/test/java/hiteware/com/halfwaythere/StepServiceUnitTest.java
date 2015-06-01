@@ -131,4 +131,24 @@ public class StepServiceUnitTest {
 
         assertThat(testReceiver.getActualResult(), equalTo(expected));
     }
+
+    @Test
+    public void whenSetStepsIsSetAndAnotherStepEventOccursThenStepsAreOffsetCorrectly()
+    {
+        final StepService stepService = new StepService();
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(stepService);
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(stepService.ACTION_STEPS_OCCURRED));
+
+        SensorEvent stepEvent = SensorValue.CreateSensorEvent(85);
+        stepService.onSensorChanged(stepEvent);
+
+        float expected = 26;
+
+        stepService.setSteps(expected-1);
+        stepService.onSensorChanged(SensorValue.CreateSensorEvent(86));
+
+        assertThat(testReceiver.getActualResult(), equalTo(expected));
+    }
 }
