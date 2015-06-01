@@ -170,4 +170,23 @@ public class StepServiceUnitTest {
 
         assertThat(testReceiver.getActualResult(), equalTo(setStepsValue+addedSteps));
     }
+
+    @Test
+    public void GivenSetStepsIsCalledWithoutAnyStepEventsWhenAStepComesInThenValueIsEqualToTheStepsWeSet()
+    {
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(mStepService);
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
+
+        float setStepsValue = 10;
+
+        mStepService.setSteps(setStepsValue);
+
+        float anyValue = 109;
+
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(anyValue));
+
+        assertThat(testReceiver.getActualResult(), equalTo(setStepsValue + 1));
+    }
 }

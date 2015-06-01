@@ -49,12 +49,23 @@ public class StepService extends Service implements SensorEventListener
     public void onSensorChanged(SensorEvent event) {
         if (newStepCount > 0)
         {
-            offset = newStepCount - lastCount;
-            newStepCount = 0;
+            calculateOffsetForNewStepCount(event);
         }
         lastCount = event.values[0];
 
         SendStepBroadcast(lastCount+offset);
+    }
+
+    private void calculateOffsetForNewStepCount(SensorEvent event) {
+        if (lastCount > 0)
+        {
+            offset = newStepCount - lastCount;
+        }
+        else
+        {
+            offset = newStepCount + 1 - event.values[0];
+        }
+        newStepCount = 0;
     }
 
     private void SendStepBroadcast(float steps) {
