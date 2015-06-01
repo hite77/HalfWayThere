@@ -20,11 +20,6 @@ public class ProductionModule {
 
     private Context Activity;
 
-    public ProductionModule()
-    {
-
-    }
-
     public ProductionModule(Context activity) {
         Activity = activity;
     }

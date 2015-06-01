@@ -15,9 +15,6 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class MainActivityFragment extends Fragment{
 
     @Inject
@@ -37,7 +34,6 @@ public class MainActivityFragment extends Fragment{
     {
         Sensor defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         TextView stepsText = (TextView) getView().findViewById(R.id.steps_title);
-        stepService.setOutputView((TextView) getView().findViewById(R.id.step_value));
 
         if (defaultSensor==null)
         {
