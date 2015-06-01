@@ -77,14 +77,20 @@ public class StepServiceUnitTest {
     }
 
     @Test
-    public void GivenStepServiceCreatedWhenStepsAreSetThenStepsCanBeRetrieved() {
+    public void GivenStepServiceCreatedWhenStepsAreSetThenStepsAreEmitted() {
         StepService stepService = new StepService();
         stepService.onCreate();
 
         float expectedValue = 14;
-        stepService.setSteps(expectedValue);
 
-        assertThat(stepService.getSteps(), equalTo(expectedValue));
+        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(stepService, expectedValue);
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(stepService.ACTION_STEPS_OCCURRED));
+
+        stepService.setSteps(expectedValue);
+        
+        assertThat(testReceiver.getMessageReceived(), equalTo(true));
     }
 
     @Test

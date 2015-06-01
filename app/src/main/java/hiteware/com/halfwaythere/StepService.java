@@ -38,12 +38,11 @@ public class StepService extends Service implements SensorEventListener
 
     public void setSteps(float newSteps)
     {
-
-    }
-
-    public float getSteps()
-    {
-        return 14;
+        Intent broadcastSteps = new Intent();
+        broadcastSteps.setAction(ACTION_STEPS_OCCURRED);
+        float onlyValueNeeded = 14;
+        broadcastSteps.putExtra(STEPS_OCCURRED, onlyValueNeeded);
+        this.sendBroadcast(broadcastSteps);
     }
 
     @Override
