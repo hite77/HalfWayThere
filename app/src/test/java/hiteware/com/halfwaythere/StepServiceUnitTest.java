@@ -37,6 +37,38 @@ public class StepServiceUnitTest {
     public TestInjectableApplication application;
     SensorManager sensorManager;
 
+    class MyBroadCastReceiver extends BroadcastReceiver {
+        private boolean messageReceived = false;
+        private StepService stepService;
+        private float expected;
+
+        public MyBroadCastReceiver(StepService stepService, float expected)
+        {
+            this.stepService = stepService;
+            this.expected = expected;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            messageReceived();
+            ShadowIntent shadowIntent = Shadows.shadowOf(intent);
+            assertThat(shadowIntent
+                            .hasExtra(stepService.STEPS_OCCURRED),
+                    equalTo(true));
+            float actual = shadowIntent.getFloatExtra(
+                    stepService.STEPS_OCCURRED, 0);
+            assertThat(actual, equalTo(expected));
+        }
+
+        public void messageReceived() {
+            messageReceived = true;
+        }
+
+        public boolean getMessageReceived() {
+            return messageReceived;
+        }
+    }
+
     @Before
     public void setUp() {
         application = (TestInjectableApplication) RuntimeEnvironment.application;
@@ -91,36 +123,12 @@ public class StepServiceUnitTest {
         final StepService stepService = new StepService();
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        class MyBroadCastReceiver extends BroadcastReceiver {
-            boolean messageReceived = false;
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                messageReceived();
-                ShadowIntent shadowIntent = Shadows.shadowOf(intent);
-                assertThat(shadowIntent
-                                .hasExtra(stepService.STEPS_OCCURRED),
-                        equalTo(true));
-                float expected = 33;
-                float actual = shadowIntent.getFloatExtra(
-                        stepService.STEPS_OCCURRED, 0);
-                assertThat(actual, equalTo(expected));
-            }
-
-            public void messageReceived() {
-                messageReceived = true;
-            }
-
-            public boolean getMessageReceived() {
-                return messageReceived;
-            }
-        }
-
-        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver();
+        float expected = 33;
+        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(stepService, expected);
 
         createdActivity.registerReceiver(testReceiver, new IntentFilter(stepService.ACTION_STEPS_OCCURRED));
 
-        SensorEvent stepEvent = SensorValue.CreateSensorEvent(33);
+        SensorEvent stepEvent = SensorValue.CreateSensorEvent(expected);
         stepService.onSensorChanged(stepEvent);
 
         assertThat(testReceiver.getMessageReceived(), equalTo(true));
