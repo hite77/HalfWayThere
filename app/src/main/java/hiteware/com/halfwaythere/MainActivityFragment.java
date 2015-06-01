@@ -1,5 +1,9 @@
 package hiteware.com.halfwaythere;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -21,6 +25,9 @@ public class MainActivityFragment extends Fragment{
 
     @Inject
     StepService stepService;
+
+    private statusReceiver mStatusReceiver = new statusReceiver();
+    private float currentSteps;
 
     public MainActivityFragment()
     {
@@ -45,6 +52,11 @@ public class MainActivityFragment extends Fragment{
     public void onResume() {
         super.onResume();
         initializeListeners();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(stepService.ACTION_STEPS_OCCURRED);
+
+        getView().getContext().registerReceiver(mStatusReceiver, filter);
     }
 
     @Override
@@ -56,5 +68,22 @@ public class MainActivityFragment extends Fragment{
         ((InjectableApplication)getActivity().getApplication()).inject(this);
 
         return view;
+    }
+
+    void updateStatus()
+    {
+        ((TextView) getView().findViewById(R.id.step_value)).setText(String.format("%.0f", currentSteps));
+    }
+
+    private class statusReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if (intent.getAction().equals("halfWayThere.stepsOccurred")) {
+                currentSteps = intent.getFloatExtra(StepService.STEPS_OCCURRED, 0);
+                updateStatus();
+            }
+        }
     }
 }

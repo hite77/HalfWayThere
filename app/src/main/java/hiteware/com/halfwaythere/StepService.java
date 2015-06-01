@@ -31,8 +31,8 @@ public class StepService extends Service implements SensorEventListener
 //        return mBinder;
 //    }
 //
-    public String STEPS_OCCURRED = "steps";
-    public String ACTION_STEPS_OCCURRED = "halfWayThere.stepsOccurred";
+    public static String STEPS_OCCURRED = "steps";
+    public static String ACTION_STEPS_OCCURRED = "halfWayThere.stepsOccurred";
 
     private TextView OutputView;
 
