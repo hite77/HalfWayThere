@@ -38,34 +38,26 @@ public class StepServiceUnitTest {
     SensorManager sensorManager;
 
     class MyBroadCastReceiver extends BroadcastReceiver {
-        private boolean messageReceived = false;
         private StepService stepService;
-        private float expected;
+        private float actual = -1;
 
-        public MyBroadCastReceiver(StepService stepService, float expected)
+        public MyBroadCastReceiver(StepService stepService)
         {
             this.stepService = stepService;
-            this.expected = expected;
         }
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            messageReceived();
             ShadowIntent shadowIntent = Shadows.shadowOf(intent);
             assertThat(shadowIntent
                             .hasExtra(stepService.STEPS_OCCURRED),
                     equalTo(true));
-            float actual = shadowIntent.getFloatExtra(
+            actual = shadowIntent.getFloatExtra(
                     stepService.STEPS_OCCURRED, 0);
-            assertThat(actual, equalTo(expected));
         }
 
-        public void messageReceived() {
-            messageReceived = true;
-        }
-
-        public boolean getMessageReceived() {
-            return messageReceived;
+        public float getActualResult() {
+            return actual;
         }
     }
 
@@ -83,14 +75,14 @@ public class StepServiceUnitTest {
 
         float expectedValue = 14;
 
-        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(stepService, expectedValue);
+        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(stepService);
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         createdActivity.registerReceiver(testReceiver, new IntentFilter(stepService.ACTION_STEPS_OCCURRED));
 
         stepService.setSteps(expectedValue);
-        
-        assertThat(testReceiver.getMessageReceived(), equalTo(true));
+
+        assertThat(testReceiver.getActualResult(), equalTo(expectedValue));
     }
 
     @Test
@@ -130,13 +122,13 @@ public class StepServiceUnitTest {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         float expected = 33;
-        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(stepService, expected);
+        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(stepService);
 
         createdActivity.registerReceiver(testReceiver, new IntentFilter(stepService.ACTION_STEPS_OCCURRED));
 
         SensorEvent stepEvent = SensorValue.CreateSensorEvent(expected);
         stepService.onSensorChanged(stepEvent);
 
-        assertThat(testReceiver.getMessageReceived(), equalTo(true));
+        assertThat(testReceiver.getActualResult(), equalTo(expected));
     }
 }
