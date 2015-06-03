@@ -1,6 +1,8 @@
 package hiteware.com.halfwaythere;
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import org.junit.Test;
@@ -8,7 +10,9 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowActivity;
+import org.robolectric.shadows.ShadowAlertDialog;
 import org.robolectric.util.ActivityController;
 
 import static junit.framework.Assert.assertNotNull;
@@ -21,14 +25,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(CustomRobolectricRunner.class)
 @Config(constants = BuildConfig.class)
-public class MainActivityFragmentUnitTest
-{
+public class MainActivityFragmentUnitTest {
     public MainActivity CreatedActivity;
 
 
     @Test
-    public void whenTheAppIsRunningTheServiceWillBeStarted()
-    {
+    public void whenTheAppIsRunningTheServiceWillBeStarted() {
         ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();
         MainActivity createdActivity = (MainActivity) controller.get();
         controller.resume();
@@ -38,8 +40,7 @@ public class MainActivityFragmentUnitTest
     }
 
     @Test
-    public void whenBroadcastOfStepsIsReceivedThenStepsAreDisplayed()
-    {
+    public void whenBroadcastOfStepsIsReceivedThenStepsAreDisplayed() {
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         Intent broadcastSteps = new Intent();
@@ -49,5 +50,15 @@ public class MainActivityFragmentUnitTest
         CreatedActivity.sendBroadcast(broadcastSteps);
 
         assertThat(((TextView) CreatedActivity.findViewById(R.id.step_value)).getText().toString(), equalTo("45"));
+    }
+
+    @Test
+    public void whenMenuItemForStepsIsSelectedThenActionDialogForStepsIsShown() {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        MenuItem item = new RoboMenuItem(R.id.action_set_current_steps);
+        CreatedActivity.onOptionsItemSelected(item);
+
+        AlertDialog shadow = ShadowAlertDialog.getLatestAlertDialog();
+        assertNotNull(shadow);
     }
 }
