@@ -20,8 +20,7 @@ public class MainActivityFragment extends Fragment{
     @Inject
     SensorManager sensorManager;
 
-    @Inject
-    StepService stepService;
+    StepService mStepService;
 
     private statusReceiver mStatusReceiver = new statusReceiver();
     private float currentSteps;
@@ -50,7 +49,7 @@ public class MainActivityFragment extends Fragment{
         initializeListeners();
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(stepService.ACTION_STEPS_OCCURRED);
+        filter.addAction(mStepService.ACTION_STEPS_OCCURRED);
 
         getView().getContext().registerReceiver(mStatusReceiver, filter);
     }

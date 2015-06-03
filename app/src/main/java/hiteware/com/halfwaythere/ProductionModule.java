@@ -12,8 +12,7 @@ import dagger.Provides;
  * Created by jasonhite on 4/25/15.
  */
 @Module(
-        includes = StepServiceModule.class,
-        injects = MainActivityFragment.class,
+        injects = {MainActivityFragment.class, StepService.class},
         overrides = false
 )
 public class ProductionModule {
