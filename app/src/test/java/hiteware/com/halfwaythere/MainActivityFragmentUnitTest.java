@@ -98,4 +98,15 @@ public class MainActivityFragmentUnitTest {
         ShadowAlertDialog shadow = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
         assertThat(shadow.getTitle().toString(), equalTo(CreatedActivity.getString(R.string.set_current_steps_title)));
     }
+
+    @Test
+    public void whenMenuItemForStepsIsSelectedThenActionDialogHasCorrectMessage()
+    {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        MenuItem item = new RoboMenuItem(R.id.action_set_current_steps);
+        CreatedActivity.onOptionsItemSelected(item);
+
+        ShadowAlertDialog shadow = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+        assertThat(shadow.getMessage().toString(), equalTo(CreatedActivity.getString(R.string.set_current_steps_message)));
+    }
 }

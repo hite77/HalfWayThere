@@ -16,8 +16,7 @@ public class DialogUtility
 //
         new AlertDialog.Builder(context)
                 .setTitle(context.getString(R.string.set_current_steps_title))
-                .show();
-//                .setMessage("Enter Steps:")
+                .setMessage(context.getString(R.string.set_current_steps_message))
 //                .setView(input)
 //                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 //                    public void onClick(DialogInterface dialog, int whichButton) {
@@ -30,7 +29,8 @@ public class DialogUtility
 //                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 //            public void onClick(DialogInterface dialog, int whichButton) {
 //            }
-//        }).show();
+//        })
+        .show();
     }
 
 
