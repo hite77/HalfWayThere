@@ -14,8 +14,9 @@ public class DialogUtility
 //        input.setInputType(InputType.TYPE_CLASS_NUMBER);
 //
 //
-        new AlertDialog.Builder(context).show();
-//                .setTitle("Current Step Count")
+        new AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.set_current_steps_title))
+                .show();
 //                .setMessage("Enter Steps:")
 //                .setView(input)
 //                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
