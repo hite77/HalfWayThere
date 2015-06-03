@@ -55,6 +55,12 @@ public class MainActivityFragment extends Fragment{
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        getView().getContext().unregisterReceiver(mStatusReceiver);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {

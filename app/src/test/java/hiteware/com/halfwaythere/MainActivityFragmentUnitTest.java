@@ -12,7 +12,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowAlertDialog;
+import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.util.ActivityController;
+
+import java.util.List;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -50,6 +53,20 @@ public class MainActivityFragmentUnitTest {
         CreatedActivity.sendBroadcast(broadcastSteps);
 
         assertThat(((TextView) CreatedActivity.findViewById(R.id.step_value)).getText().toString(), equalTo("45"));
+    }
+
+    @Test
+    public void whenActivityIsPausedItUnregistersReceiver() {
+        ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();
+        CreatedActivity = (MainActivity) controller.get();
+
+        controller.resume();
+
+        List<ShadowApplication.Wrapper> registeredReceivers = ShadowApplication.getInstance().getRegisteredReceivers();
+        assertThat(registeredReceivers.size(), equalTo(1));
+
+        controller.pause();
+        assertThat(ShadowApplication.getInstance().getRegisteredReceivers().size(), equalTo(0));
     }
 
     @Test
