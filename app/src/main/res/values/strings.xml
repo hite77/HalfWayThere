@@ -3,5 +3,6 @@
     <string name="steps">Steps</string>
     <string name="action_settings">Settings</string>
     <string name="action_set_current_steps">Set Current Steps</string>
+    <string name="action_set_goal_steps">Set Goal Steps</string>
     <string name="set_current_steps_title">Current Step Count</string>
 </resources>

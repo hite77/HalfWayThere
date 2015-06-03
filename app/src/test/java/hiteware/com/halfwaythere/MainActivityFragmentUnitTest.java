@@ -80,6 +80,16 @@ public class MainActivityFragmentUnitTest {
     }
 
     @Test
+    public void whenMenuItemForGoalIsSelectedThenActionDialogForGoalIsShown() {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        MenuItem item = new RoboMenuItem(R.id.action_set_goal_steps);
+        CreatedActivity.onOptionsItemSelected(item);
+
+        AlertDialog shadow = ShadowAlertDialog.getLatestAlertDialog();
+        assertNotNull(shadow);
+    }
+
+    @Test
     public void whenMenuItemForStepsIsSelectedThenActionDialogForStepsHasCorrectTitle() {
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         MenuItem item = new RoboMenuItem(R.id.action_set_current_steps);
