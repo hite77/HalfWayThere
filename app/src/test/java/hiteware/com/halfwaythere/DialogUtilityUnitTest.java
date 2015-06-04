@@ -1,6 +1,8 @@
 package hiteware.com.halfwaythere;
 
+import android.text.InputType;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -68,8 +70,19 @@ public class DialogUtilityUnitTest {
     public void whenMenuItemForStepsIsSelectedThenActionDialogHasCorrectMessage()
     {
         StartSetCurrentSteps();
-        
+
         ShadowAlertDialog shadow = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
         assertThat(shadow.getMessage().toString(), equalTo(CreatedActivity.getString(R.string.set_current_steps_message)));
+    }
+
+    @Test
+    public void whenMenuItemForStepsIsSelectedThenActionDialogHasEditTextForNumbers()
+    {
+        StartSetCurrentSteps();
+
+        ShadowAlertDialog shadow = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+        EditText editText = (EditText) shadow.getView();
+        assertNotNull(editText);
+        assertThat(editText.getInputType(), equalTo(InputType.TYPE_CLASS_NUMBER));
     }
 }
