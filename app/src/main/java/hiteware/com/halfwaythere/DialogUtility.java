@@ -3,6 +3,8 @@ package hiteware.com.halfwaythere;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.text.Editable;
 import android.text.InputType;
 import android.widget.EditText;
 
@@ -11,7 +13,14 @@ import android.widget.EditText;
  */
 public class DialogUtility
 {
-        public void CollectCurrentSteps(Context context)
+        private void SetSteps(Context context, float value) {
+            Intent broadcastSteps = new Intent();
+            broadcastSteps.setAction(StepService.ACTION_SET_STEPS);
+            broadcastSteps.putExtra(StepService.STEPS_OCCURRED, value);
+            context.sendBroadcast(broadcastSteps);
+        }
+
+        public void CollectCurrentSteps(final Context context)
     {
         final EditText input = new EditText(context);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -22,11 +31,9 @@ public class DialogUtility
                 .setView(input)
                 .setPositiveButton(context.getString(R.string.Ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-//                        Editable value = input.getText();
-//                        float countOfSteps = Float.valueOf(value.toString());
-////                        stepSensorChange.setNumberOfSteps(countOfSteps);
-//                        selectedSteps = countOfSteps;
-//                        mService.setSteps(selectedSteps);
+                        Editable value = input.getText();
+                        float countOfSteps = Float.valueOf(value.toString());
+                        SetSteps(context, countOfSteps);
                 }})
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {}})

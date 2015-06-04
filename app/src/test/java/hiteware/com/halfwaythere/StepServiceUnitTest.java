@@ -18,6 +18,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowIntent;
+import org.robolectric.shadows.ShadowLooper;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,11 +39,11 @@ public class StepServiceUnitTest {
     SensorManager sensorManager;
     StepService mStepService;
 
-    class MyBroadCastReceiver extends BroadcastReceiver {
+    class StepServiceUnitTestReceiver extends BroadcastReceiver {
         private StepService stepService;
         private float actual = -1;
 
-        public MyBroadCastReceiver(StepService stepService)
+        public StepServiceUnitTestReceiver(StepService stepService)
         {
             this.stepService = stepService;
         }
@@ -68,27 +69,33 @@ public class StepServiceUnitTest {
         application.setMockSensorManager();
         sensorManager = application.testModule.provideSensorManager();
         mStepService = new StepService();
+        mStepService.onCreate();
+    }
+
+    public void SetSteps(float value) {
+        Intent broadcastSteps = new Intent();
+        broadcastSteps.setAction(StepService.ACTION_SET_STEPS);
+        broadcastSteps.putExtra(StepService.STEPS_OCCURRED, value);
+        application.sendBroadcast(broadcastSteps);
     }
 
     @Test
     public void GivenStepServiceCreatedWhenStepsAreSetThenStepsAreEmitted() {
-        mStepService.onCreate();
-
         float expectedValue = 14;
 
-        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
 
-        mStepService.setSteps(expectedValue);
+        SetSteps(expectedValue);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         assertThat(testReceiver.getActualResult(), equalTo(expectedValue));
     }
 
     @Test
     public void GivenStepServiceCreatedThenTheSensorManagerAsksForStepCounter() {
-        mStepService.onCreate();
         verify(sensorManager, times(1)).getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
     }
 
@@ -118,7 +125,7 @@ public class StepServiceUnitTest {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         float expected = 33;
-        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
 
         createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
 
@@ -133,7 +140,7 @@ public class StepServiceUnitTest {
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
         createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
 
         float counterValue = 85;
@@ -143,7 +150,7 @@ public class StepServiceUnitTest {
 
         float expected = 26;
 
-        mStepService.setSteps(expected-1);
+        SetSteps(expected - 1);
         mStepService.onSensorChanged(SensorValue.CreateSensorEvent(counterValue+1));
 
         assertThat(testReceiver.getActualResult(), equalTo(expected));
@@ -154,7 +161,7 @@ public class StepServiceUnitTest {
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
         createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
 
         float valueWithoutSetSteps = 99;
@@ -165,7 +172,7 @@ public class StepServiceUnitTest {
         float setStepsValue = 10;
         float addedSteps = 2;
 
-        mStepService.setSteps(setStepsValue);
+        SetSteps(setStepsValue);
         mStepService.onSensorChanged(SensorValue.CreateSensorEvent(valueWithoutSetSteps+addedSteps));
 
         assertThat(testReceiver.getActualResult(), equalTo(setStepsValue+addedSteps));
@@ -176,12 +183,12 @@ public class StepServiceUnitTest {
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        MyBroadCastReceiver testReceiver = new MyBroadCastReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
         createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
 
         float setStepsValue = 10;
 
-        mStepService.setSteps(setStepsValue);
+        SetSteps(setStepsValue);
 
         float anyValue = 109;
 

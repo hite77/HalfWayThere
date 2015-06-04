@@ -1,7 +1,10 @@
 package hiteware.com.halfwaythere;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,6 +20,7 @@ public class StepService extends Service implements SensorEventListener
 {
     public static String STEPS_OCCURRED = "steps";
     public static String ACTION_STEPS_OCCURRED = "halfWayThere.stepsOccurred";
+    public static String ACTION_SET_STEPS = "halfWayThere.setSteps";
     private float offset = 0;
     private float newStepCount = 0;
     private float lastCount = 0;
@@ -32,6 +36,9 @@ public class StepService extends Service implements SensorEventListener
         {
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
         }
+
+        MyBroadCastReceiver receiver = new MyBroadCastReceiver();
+        registerReceiver(receiver, new IntentFilter(ACTION_SET_STEPS));
     }
 
     @Override
@@ -39,10 +46,15 @@ public class StepService extends Service implements SensorEventListener
         return null;
     }
 
-    public void setSteps(float newSteps)
-    {
-        SendStepBroadcast(newSteps);
-        newStepCount = newSteps;
+    class MyBroadCastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            float steps = intent.getFloatExtra(
+                    STEPS_OCCURRED, 0);
+            SendStepBroadcast(steps);
+            newStepCount = steps;
+        }
     }
 
     @Override
