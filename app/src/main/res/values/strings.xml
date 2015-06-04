@@ -7,4 +7,5 @@
     <string name="set_current_steps_title">Current Step Count</string>
     <string name="set_current_steps_message">Enter Steps:</string>
     <string name="Ok">Ok</string>
+    <string name="Cancel">Cancel</string>
 </resources>

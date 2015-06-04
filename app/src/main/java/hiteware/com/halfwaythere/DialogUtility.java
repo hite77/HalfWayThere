@@ -27,25 +27,13 @@ public class DialogUtility
 ////                        stepSensorChange.setNumberOfSteps(countOfSteps);
 //                        selectedSteps = countOfSteps;
 //                        mService.setSteps(selectedSteps);
-                    }})
-//                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int whichButton) {
-//            }
-//        })
+                }})
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {}})
                     .show();
-                }
-
-
     }
+}
 
-//        import android.app.AlertDialog;
-//        import android.content.Context;
-//        import android.content.DialogInterface;
-//        import android.text.Editable;
-//        import android.text.InputType;
-//        import android.widget.EditText;
-//
-//        import javax.inject.Inject;
 
 //    public float selectedSteps = 0;
 //    @Inject

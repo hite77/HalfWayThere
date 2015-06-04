@@ -99,4 +99,15 @@ public class DialogUtilityUnitTest {
         assertTrue(okButton.getVisibility() == Button.VISIBLE);
         assertThat(okButton.getText().toString(), equalTo(CreatedActivity.getString(R.string.Ok)));
     }
+
+    @Test
+    public void whenStepDialogIsDisplayedThenThereIsANegativeButton()
+    {
+        StartSetCurrentSteps();
+
+        Button cancelButton = ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_NEGATIVE);
+        assertNotNull(cancelButton);
+        assertTrue(cancelButton.getVisibility() == Button.VISIBLE);
+        assertThat(cancelButton.getText().toString(), equalTo(CreatedActivity.getString(R.string.Cancel)));
+    }
 }
