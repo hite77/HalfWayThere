@@ -1,7 +1,9 @@
 package hiteware.com.halfwaythere;
 
+import android.app.AlertDialog;
 import android.text.InputType;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
 
 import org.junit.Before;
@@ -13,6 +15,7 @@ import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowAlertDialog;
 
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.robolectric.Shadows.shadowOf;
@@ -84,5 +87,16 @@ public class DialogUtilityUnitTest {
         EditText editText = (EditText) shadow.getView();
         assertNotNull(editText);
         assertThat(editText.getInputType(), equalTo(InputType.TYPE_CLASS_NUMBER));
+    }
+
+    @Test
+    public void whenStepDialogIsDisplayedThenThereIsAPositiveButton()
+    {
+        StartSetCurrentSteps();
+
+        Button okButton = ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_POSITIVE);
+        assertNotNull(okButton);
+        assertTrue(okButton.getVisibility() == Button.VISIBLE);
+        assertThat(okButton.getText().toString(), equalTo(CreatedActivity.getString(R.string.Ok)));
     }
 }

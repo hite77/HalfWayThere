@@ -2,6 +2,7 @@ package hiteware.com.halfwaythere;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.text.InputType;
 import android.widget.EditText;
 
@@ -19,23 +20,23 @@ public class DialogUtility
                 .setTitle(context.getString(R.string.set_current_steps_title))
                 .setMessage(context.getString(R.string.set_current_steps_message))
                 .setView(input)
-//                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int whichButton) {
+                .setPositiveButton(context.getString(R.string.Ok), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
 //                        Editable value = input.getText();
 //                        float countOfSteps = Float.valueOf(value.toString());
 ////                        stepSensorChange.setNumberOfSteps(countOfSteps);
 //                        selectedSteps = countOfSteps;
 //                        mService.setSteps(selectedSteps);
-//                    }
+                    }})
 //                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 //            public void onClick(DialogInterface dialog, int whichButton) {
 //            }
 //        })
-        .show();
+                    .show();
+                }
+
+
     }
-
-
-}
 
 //        import android.app.AlertDialog;
 //        import android.content.Context;
