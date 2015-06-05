@@ -11,3 +11,7 @@ gradlew.bat
 gradlew
 /gradle
 *.iml
+test_servers
+screenshot_*.png
+compare_*.png
+
