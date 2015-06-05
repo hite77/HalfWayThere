@@ -23,6 +23,7 @@ public class DialogUtility
         public void CollectCurrentSteps(final Context context)
     {
         final EditText input = new EditText(context);
+        input.setContentDescription("StepsEditText");
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
         new AlertDialog.Builder(context)
