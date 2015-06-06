@@ -32,7 +32,7 @@ public class MainActivityFragmentUnitTest {
     public void whenTheAppIsRunningTheServiceWillBeStarted() {
         ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();
         MainActivity createdActivity = (MainActivity) controller.get();
-        controller.resume();
+        controller.start();
         ShadowActivity shadowActivity = shadowOf(createdActivity);
         Intent startedIntent = shadowActivity.getNextStartedService();
         assertNotNull(startedIntent);

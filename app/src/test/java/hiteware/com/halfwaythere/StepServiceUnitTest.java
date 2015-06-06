@@ -159,7 +159,7 @@ public class StepServiceUnitTest {
     }
 
     @Test
-    public void beforeSetStepsCountIsSolelyWhatSensorProvidesAfterSetStepsAdditionalStepsCountFromTheSetPoint()
+    public void GivenStepsHaveOccurredWhenYouSetStepsToAValueAndAStepHappensThenStepCountIsOneGreater()
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
@@ -172,7 +172,7 @@ public class StepServiceUnitTest {
         assertThat(testReceiver.getActualResult(), equalTo(valueWithoutSetSteps));
 
         float setStepsValue = 10;
-        float addedSteps = 2;
+        float addedSteps = 1;
 
         SetSteps(setStepsValue);
         mStepService.onSensorChanged(SensorValue.CreateSensorEvent(valueWithoutSetSteps+addedSteps));
@@ -210,15 +210,16 @@ public class StepServiceUnitTest {
         float setStepsValue = 10;
 
         SetSteps(setStepsValue);
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(setStepsValue));
 
         mStepService.onDestroy();
         mStepService.onCreate();
 
-        assertThat(testReceiver.getActualResult(), equalTo(setStepsValue));
+        assertThat(testReceiver.getActualResult(), equalTo(setStepsValue+1));
     }
 
     @Test
-    public void GivenSetStepsIsCalledAndServiceIsReconstructedThenAStepEventOccursThenTheCountShouldBeOneMoreThanTheSetValue()
+    public void GivenSetStepsIsCalledAndServiceIsReconstructedThenAStepEventOccursThenTheCountShouldBeTwoMoreThanTheSetValue()
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
@@ -229,16 +230,17 @@ public class StepServiceUnitTest {
 
         SetSteps(setStepsValue);
 
+        float anyValue = 145;
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(anyValue));
+
         mStepService.onDestroy();
         mStepService = null;
         mStepService = new StepService();
         mStepService.onCreate();
 
-        float anyValue = 145;
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(anyValue+1));
 
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(anyValue));
-
-        assertThat(testReceiver.getActualResult(), equalTo(setStepsValue + 1));
+        assertThat(testReceiver.getActualResult(), equalTo(setStepsValue + 2));
     }
 
     @Test
@@ -247,12 +249,14 @@ public class StepServiceUnitTest {
         float setStepsValue = 13;
 
         SetSteps(setStepsValue);
+        float arbitraryValue = 643;
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(arbitraryValue));
 
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
-        assertThat(stepValue.getText().toString(), equalTo("13"));
+        assertThat(stepValue.getText().toString(), equalTo("14"));
     }
 
     @Test
@@ -263,13 +267,33 @@ public class StepServiceUnitTest {
         SetSteps(setStepsValue);
         float anyValue = 104;
         mStepService.onSensorChanged(SensorValue.CreateSensorEvent(anyValue));
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(anyValue+1));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(anyValue + 1));
 
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
         assertThat(stepValue.getText().toString(), equalTo("17"));
+    }
+
+    @Test
+    public void GivenServiceGoesThroughTwoCreateDestroyCyclesWhenActivityReadsTheStepsItShouldBeCorrect()
+    {
+        float setStepsValue = 93;
+        SetSteps(setStepsValue);
+        float counterValue = 545;
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(counterValue));
+
+        mStepService.onDestroy();
+        mStepService.onCreate();
+        mStepService.onDestroy();
+        mStepService.onCreate();
+
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
+        assertThat(stepValue.getText().toString(), equalTo("94"));
     }
 
     @Test

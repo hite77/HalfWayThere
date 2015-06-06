@@ -24,15 +24,22 @@ public class StepService extends Service implements SensorEventListener
     public static String ACTION_SET_STEPS = "halfWayThere.setSteps";
     public static String ACTION_REQUEST_STEPS = "halfWayThere.requestSteps";
     private float offset = 0;
-    private float newStepCount = 0;
-    private float lastCount = 0;
+    private float currentSteps = 0;
+    private float setSteps = 0;
     private MyBroadCastReceiver receiver;
 
     @Inject
     SensorManager sensorManager;
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
+
     public void onCreate()
     {
+        super.onCreate();
         ((InjectableApplication)getApplication()).inject(this);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         if (null != sensor)
@@ -44,16 +51,14 @@ public class StepService extends Service implements SensorEventListener
         registerReceiver(receiver, new IntentFilter(ACTION_SET_STEPS));
         registerReceiver(receiver, new IntentFilter(ACTION_REQUEST_STEPS));
         SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-        newStepCount = prefs.getFloat("newStepCount", 0);
-        SendStepBroadcast(newStepCount);
+        offset = prefs.getFloat("offset", 0);
+        SendStepBroadcast(prefs.getFloat("currentSteps", 0));
     }
 
     @Override
     public void onDestroy() {
         unregisterReceiver(receiver);
         super.onDestroy();
-        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-        prefs.edit().putFloat("newStepCount", newStepCount).apply();
     }
 
     @Override
@@ -67,43 +72,29 @@ public class StepService extends Service implements SensorEventListener
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() == ACTION_REQUEST_STEPS)
             {
-                if (newStepCount == 0) {  
-                    SendStepBroadcast(lastCount + offset);
-                }
-                else {
-                    SendStepBroadcast(newStepCount);
-                }
+                SendStepBroadcast(currentSteps);
             }
-            else {
-                float steps = intent.getFloatExtra(
+            else if (intent.getAction() == ACTION_SET_STEPS)
+            {
+                setSteps = intent.getFloatExtra(
                         STEPS_OCCURRED, 0);
-                SendStepBroadcast(steps);
-                newStepCount = steps;
+                SendStepBroadcast(setSteps);
             }
         }
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (newStepCount > 0)
-        {
-            calculateOffsetForNewStepCount(event);
+        if (setSteps > 0) {
+            offset = setSteps - event.values[0] + 1;
+            SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+            prefs.edit().putFloat("offset", offset).apply();
+            setSteps = 0;
         }
-        lastCount = event.values[0];
-
-        SendStepBroadcast(lastCount+offset);
-    }
-
-    private void calculateOffsetForNewStepCount(SensorEvent event) {
-        if (lastCount > 0)
-        {
-            offset = newStepCount - lastCount;
-        }
-        else
-        {
-            offset = newStepCount + 1 - event.values[0];
-        }
-        newStepCount = 0;
+        currentSteps = event.values[0] + offset;
+        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+        prefs.edit().putFloat("currentSteps", currentSteps).apply();
+        SendStepBroadcast(currentSteps);
     }
 
     private void SendStepBroadcast(float steps) {
