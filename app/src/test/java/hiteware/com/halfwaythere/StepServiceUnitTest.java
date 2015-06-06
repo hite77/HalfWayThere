@@ -17,8 +17,11 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowLooper;
+
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -195,5 +198,55 @@ public class StepServiceUnitTest {
         mStepService.onSensorChanged(SensorValue.CreateSensorEvent(anyValue));
 
         assertThat(testReceiver.getActualResult(), equalTo(setStepsValue + 1));
+    }
+
+    @Test
+    public void GivenSetStepsIsCalledWhenStepServiceIsRestartedThenStepsComeBackUp()
+    {
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
+
+        float setStepsValue = 10;
+
+        SetSteps(setStepsValue);
+
+        mStepService.onDestroy();
+        mStepService.onCreate();
+
+        assertThat(testReceiver.getActualResult(), equalTo(setStepsValue));
+    }
+
+    @Test
+    public void GivenSetStepsIsCalledAndServiceIsReconstructedThenAStepEventOccursThenTheCountShouldBeOneMoreThanTheSetValue()
+    {
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
+
+        float setStepsValue = 13;
+
+        SetSteps(setStepsValue);
+
+        mStepService.onDestroy();
+        mStepService = null;
+        mStepService = new StepService();
+        mStepService.onCreate();
+
+        float anyValue = 145;
+
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(anyValue));
+
+        assertThat(testReceiver.getActualResult(), equalTo(setStepsValue + 1));
+    }
+
+    @Test
+    public void WhenStepServiceIsDestroyedThenRegisteredReceiversAreUnRegistered() {
+        List<ShadowApplication.Wrapper> registeredReceivers = ShadowApplication.getInstance().getRegisteredReceivers();
+        assertThat(registeredReceivers.size(), equalTo(1));
+        mStepService.onDestroy();
+        assertThat(ShadowApplication.getInstance().getRegisteredReceivers().size(), equalTo(0));
     }
 }

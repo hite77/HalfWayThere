@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -24,6 +25,7 @@ public class StepService extends Service implements SensorEventListener
     private float offset = 0;
     private float newStepCount = 0;
     private float lastCount = 0;
+    private MyBroadCastReceiver receiver;
 
     @Inject
     SensorManager sensorManager;
@@ -37,8 +39,19 @@ public class StepService extends Service implements SensorEventListener
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
         }
 
-        MyBroadCastReceiver receiver = new MyBroadCastReceiver();
+        receiver = new MyBroadCastReceiver();
         registerReceiver(receiver, new IntentFilter(ACTION_SET_STEPS));
+        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+        newStepCount = prefs.getFloat("newStepCount", 0);
+        SendStepBroadcast(newStepCount);
+    }
+
+    @Override
+    public void onDestroy() {
+        unregisterReceiver(receiver);
+        super.onDestroy();
+        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+        prefs.edit().putFloat("newStepCount", newStepCount).apply();
     }
 
     @Override
