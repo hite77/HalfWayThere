@@ -52,6 +52,13 @@ public class MainActivityFragment extends Fragment{
         filter.addAction(mStepService.ACTION_STEPS_OCCURRED);
 
         getView().getContext().registerReceiver(mStatusReceiver, filter);
+        requestStepsFromService();
+    }
+
+    private void requestStepsFromService() {
+        Intent requestSteps = new Intent();
+        requestSteps.setAction(StepService.ACTION_REQUEST_STEPS);
+        getView().getContext().sendBroadcast(requestSteps);
     }
 
     @Override

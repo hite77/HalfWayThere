@@ -9,6 +9,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +21,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowLooper;
-
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -243,9 +242,38 @@ public class StepServiceUnitTest {
     }
 
     @Test
-    public void WhenStepServiceIsDestroyedThenRegisteredReceiversAreUnRegistered() {
-        List<ShadowApplication.Wrapper> registeredReceivers = ShadowApplication.getInstance().getRegisteredReceivers();
-        assertThat(registeredReceivers.size(), equalTo(1));
+    public void GivenServiceIsRunningWhenActivityIsRestartedThenStepsAreRedisplayedFromService()
+    {
+        float setStepsValue = 13;
+
+        SetSteps(setStepsValue);
+
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
+        assertThat(stepValue.getText().toString(), equalTo("13"));
+    }
+
+    @Test
+    public void GivenServiceIsRunningAndStepsAreSetAndStepEventHappensTwiceWhenActivityIsRestartedThenStepsAreRedisplayedFromServiceAndIsIncremented()
+    {
+        float setStepsValue = 15;
+
+        SetSteps(setStepsValue);
+        float anyValue = 104;
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(anyValue));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(anyValue+1));
+
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
+        assertThat(stepValue.getText().toString(), equalTo("17"));
+    }
+
+    @Test
+    public void WhenStepServiceIsDestroyedThenNoReceiversAreRegistered() {
         mStepService.onDestroy();
         assertThat(ShadowApplication.getInstance().getRegisteredReceivers().size(), equalTo(0));
     }
