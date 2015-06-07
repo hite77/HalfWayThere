@@ -1,11 +1,13 @@
 package hiteware.com.halfwaythere;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -20,8 +22,6 @@ public class MainActivityFragment extends Fragment{
     @Inject
     SensorManager sensorManager;
 
-    StepService mStepService;
-
     private statusReceiver mStatusReceiver = new statusReceiver();
     private float currentSteps;
 
@@ -29,16 +29,15 @@ public class MainActivityFragment extends Fragment{
     {
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public void initializeListeners()
     {
         Sensor defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        TextView stepsText = (TextView) getView().findViewById(R.id.steps_title);
+        TextView stepsText = (TextView) getActivity().findViewById(R.id.steps_title);
 
-        if (defaultSensor==null)
-        {
+        if (defaultSensor == null) {
             stepsText.setText("Your device does not have Hardware Pedometer. Future versions of this software will have software pedometer and work with your device.");
-        } else
-        {
+        } else {
             stepsText.setText("Steps");
         }
     }
@@ -49,22 +48,22 @@ public class MainActivityFragment extends Fragment{
         initializeListeners();
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(mStepService.ACTION_STEPS_OCCURRED);
+        filter.addAction(StepService.ACTION_STEPS_OCCURRED);
 
-        getView().getContext().registerReceiver(mStatusReceiver, filter);
+        getActivity().registerReceiver(mStatusReceiver, filter);
         requestStepsFromService();
     }
 
     private void requestStepsFromService() {
         Intent requestSteps = new Intent();
         requestSteps.setAction(StepService.ACTION_REQUEST_STEPS);
-        getView().getContext().sendBroadcast(requestSteps);
+        getActivity().sendBroadcast(requestSteps);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        getView().getContext().unregisterReceiver(mStatusReceiver);
+        getActivity().unregisterReceiver(mStatusReceiver);
     }
 
     @Override
@@ -80,7 +79,7 @@ public class MainActivityFragment extends Fragment{
 
     void updateStatus()
     {
-        ((TextView) getView().findViewById(R.id.step_value)).setText(String.format("%.0f", currentSteps));
+        ((TextView) getActivity().findViewById(R.id.step_value)).setText(String.format("%.0f", currentSteps));
     }
 
     private class statusReceiver extends BroadcastReceiver

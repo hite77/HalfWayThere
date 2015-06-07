@@ -1,7 +1,7 @@
 package hiteware.com.halfwaythere;
 
 /**
- * Created by jasonhite on 4/23/15.
+ * Created on 4/23/15.
  */
 public class TestInjectableApplication extends InjectableApplication {
 

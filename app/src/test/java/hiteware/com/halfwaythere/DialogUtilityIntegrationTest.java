@@ -21,7 +21,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.robolectric.Shadows.shadowOf;
 
 /**
- * Created by jasonhite on 6/3/15.
+ * Created on 6/3/15.
  */
 
 @RunWith(CustomRobolectricRunner.class)

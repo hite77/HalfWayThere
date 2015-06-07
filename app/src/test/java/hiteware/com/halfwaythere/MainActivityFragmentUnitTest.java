@@ -19,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
 /**
- * Created by jasonhite on 5/31/15.
+ * Created on 5/31/15.
  */
 
 @RunWith(CustomRobolectricRunner.class)

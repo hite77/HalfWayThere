@@ -9,7 +9,7 @@ import android.text.InputType;
 import android.widget.EditText;
 
 /**
- * Created by jasonhite on 6/3/15.
+ * Created on 6/3/15.
  */
 public class DialogUtility
 {
@@ -30,14 +30,16 @@ public class DialogUtility
                 .setTitle(context.getString(R.string.set_current_steps_title))
                 .setMessage(context.getString(R.string.set_current_steps_message))
                 .setView(input)
-                .setPositiveButton(context.getString(R.string.Ok), new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         Editable value = input.getText();
                         float countOfSteps = Float.valueOf(value.toString());
                         SetSteps(context, countOfSteps);
                 }})
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}})
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                })
                     .show();
     }
 }

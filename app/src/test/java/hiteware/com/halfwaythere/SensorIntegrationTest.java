@@ -13,7 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
- * Created by jasonhite on 4/29/15.
+ * Created on 4/29/15.
  */
 
 @RunWith(CustomRobolectricRunner.class)

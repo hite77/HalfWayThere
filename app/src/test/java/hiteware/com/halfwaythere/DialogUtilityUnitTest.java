@@ -21,7 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
 /**
- * Created by jasonhite on 6/3/15.
+ * Created on 6/3/15.
  */
 @RunWith(CustomRobolectricRunner.class)
 @Config(constants = BuildConfig.class)
@@ -97,7 +97,7 @@ public class DialogUtilityUnitTest {
         Button okButton = ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_POSITIVE);
         assertNotNull(okButton);
         assertTrue(okButton.getVisibility() == Button.VISIBLE);
-        assertThat(okButton.getText().toString(), equalTo(CreatedActivity.getString(R.string.Ok)));
+        assertThat(okButton.getText().toString(), equalTo("OK"));
     }
 
     @Test
@@ -108,6 +108,6 @@ public class DialogUtilityUnitTest {
         Button cancelButton = ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_NEGATIVE);
         assertNotNull(cancelButton);
         assertTrue(cancelButton.getVisibility() == Button.VISIBLE);
-        assertThat(cancelButton.getText().toString(), equalTo(CreatedActivity.getString(R.string.Cancel)));
+        assertThat(cancelButton.getText().toString(), equalTo("Cancel"));
     }
 }

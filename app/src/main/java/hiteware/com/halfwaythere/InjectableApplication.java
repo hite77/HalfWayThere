@@ -5,7 +5,7 @@ import android.app.Application;
 import dagger.ObjectGraph;
 
 /**
- * Created by jasonhite on 4/23/15.
+ * Created on 4/23/15.
  */
 public class InjectableApplication extends Application {
 
@@ -15,10 +15,6 @@ public class InjectableApplication extends Application {
     protected boolean useMockSensorManager = false;
 
     protected Object mockSensorManagerModule;
-
-    @Override public void onCreate() {
-        super.onCreate();
-    }
 
     private void buildGraph()
     {

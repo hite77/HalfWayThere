@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 import java.lang.reflect.Field;
 
 /**
- * Created by jasonhite on 4/29/15.
+ * Created on 4/29/15.
  */
 public class SensorValue
 {

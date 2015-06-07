@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jasonhite on 5/14/15.
+ * Created on 5/14/15.
  */
 @RunWith(CustomRobolectricRunner.class)
 @Config(constants = BuildConfig.class)
@@ -54,10 +54,10 @@ public class StepServiceUnitTest {
         public void onReceive(Context context, Intent intent) {
             ShadowIntent shadowIntent = Shadows.shadowOf(intent);
             assertThat(shadowIntent
-                            .hasExtra(stepService.STEPS_OCCURRED),
+                            .hasExtra(StepService.STEPS_OCCURRED),
                     equalTo(true));
             actual = shadowIntent.getFloatExtra(
-                    stepService.STEPS_OCCURRED, 0);
+                    StepService.STEPS_OCCURRED, 0);
         }
 
         public float getActualResult() {
@@ -88,7 +88,7 @@ public class StepServiceUnitTest {
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         SetSteps(expectedValue);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -129,7 +129,7 @@ public class StepServiceUnitTest {
         float expected = 33;
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
 
-        createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         SensorEvent stepEvent = SensorValue.CreateSensorEvent(expected);
         mStepService.onSensorChanged(stepEvent);
@@ -143,7 +143,7 @@ public class StepServiceUnitTest {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
-        createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         float counterValue = 85;
 
@@ -164,7 +164,7 @@ public class StepServiceUnitTest {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
-        createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         float valueWithoutSetSteps = 99;
 
@@ -186,7 +186,7 @@ public class StepServiceUnitTest {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
-        createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         float setStepsValue = 10;
 
@@ -205,7 +205,7 @@ public class StepServiceUnitTest {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
-        createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         float setStepsValue = 10;
 
@@ -224,7 +224,7 @@ public class StepServiceUnitTest {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
-        createdActivity.registerReceiver(testReceiver, new IntentFilter(mStepService.ACTION_STEPS_OCCURRED));
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         float setStepsValue = 13;
 

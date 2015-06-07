@@ -9,7 +9,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by jasonhite on 4/25/15.
+ * Created on 4/25/15.
  */
 @Module(
         injects = {MainActivityFragment.class, StepService.class},

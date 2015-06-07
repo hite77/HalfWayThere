@@ -1,5 +1,6 @@
 package hiteware.com.halfwaythere;
 
+import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,12 +11,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.IBinder;
 
 import javax.inject.Inject;
 
 /**
- * Created by jasonhite on 5/14/15.
+ * Created on 5/14/15.
  */
 public class StepService extends Service implements SensorEventListener
 {
@@ -37,6 +39,7 @@ public class StepService extends Service implements SensorEventListener
         return START_STICKY;
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public void onCreate()
     {
         super.onCreate();
@@ -70,11 +73,11 @@ public class StepService extends Service implements SensorEventListener
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() == ACTION_REQUEST_STEPS)
+            if (intent.getAction().equals(ACTION_REQUEST_STEPS))
             {
                 SendStepBroadcast(currentSteps);
             }
-            else if (intent.getAction() == ACTION_SET_STEPS)
+            else if (intent.getAction().equals(ACTION_SET_STEPS))
             {
                 setSteps = intent.getFloatExtra(
                         STEPS_OCCURRED, -1);

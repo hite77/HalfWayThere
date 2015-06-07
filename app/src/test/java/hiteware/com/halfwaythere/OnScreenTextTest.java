@@ -20,7 +20,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jasonhite on 5/26/15.
+ * Created on 5/26/15.
  */
 
 @RunWith(CustomRobolectricRunner.class)
