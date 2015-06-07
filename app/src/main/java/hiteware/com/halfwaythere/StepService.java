@@ -25,7 +25,7 @@ public class StepService extends Service implements SensorEventListener
     public static String ACTION_REQUEST_STEPS = "halfWayThere.requestSteps";
     private float offset = 0;
     private float currentSteps = 0;
-    private float setSteps = 0;
+    private float setSteps = -1;
     private MyBroadCastReceiver receiver;
 
     @Inject
@@ -44,7 +44,7 @@ public class StepService extends Service implements SensorEventListener
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         if (null != sensor)
         {
-            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
 
         receiver = new MyBroadCastReceiver();
@@ -77,7 +77,7 @@ public class StepService extends Service implements SensorEventListener
             else if (intent.getAction() == ACTION_SET_STEPS)
             {
                 setSteps = intent.getFloatExtra(
-                        STEPS_OCCURRED, 0);
+                        STEPS_OCCURRED, -1);
                 SendStepBroadcast(setSteps);
             }
         }
@@ -85,11 +85,11 @@ public class StepService extends Service implements SensorEventListener
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (setSteps > 0) {
+        if (setSteps > -1) {
             offset = setSteps - event.values[0] + 1;
             SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
             prefs.edit().putFloat("offset", offset).apply();
-            setSteps = 0;
+            setSteps = -1;
         }
         currentSteps = event.values[0] + offset;
         SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);

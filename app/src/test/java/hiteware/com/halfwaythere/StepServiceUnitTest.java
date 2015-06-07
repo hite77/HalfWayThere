@@ -106,14 +106,14 @@ public class StepServiceUnitTest {
         Sensor sensor = mock(Sensor.class);
         when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(sensor);
         mStepService.onCreate();
-        verify(sensorManager, times(1)).registerListener(any(SensorEventListener.class), eq(sensor), eq(SensorManager.SENSOR_DELAY_UI));
+        verify(sensorManager, times(1)).registerListener(any(SensorEventListener.class), eq(sensor), eq(SensorManager.SENSOR_DELAY_NORMAL));
     }
 
     @Test
     public void whenStartedAndNoStepCountThenShouldNotRegisterForUpdates() {
         when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(null);
         mStepService.onCreate();
-        verify(sensorManager, times(0)).registerListener(any(SensorEventListener.class), any(Sensor.class), eq(SensorManager.SENSOR_DELAY_UI));
+        verify(sensorManager, times(0)).registerListener(any(SensorEventListener.class), any(Sensor.class), eq(SensorManager.SENSOR_DELAY_NORMAL));
     }
 
     @Test
@@ -294,6 +294,26 @@ public class StepServiceUnitTest {
 
         TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
         assertThat(stepValue.getText().toString(), equalTo("94"));
+    }
+
+    @Test
+    public void GivenStepsAreSetToAValueWhenStepsAreSetToZeroThenNextStepWillOutputOne()
+    {
+        float setStepsValue = 45;
+        SetSteps(setStepsValue);
+
+        float counterValue = 678;
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(counterValue));
+
+        float zeroValue = 0;
+        SetSteps(zeroValue);
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(counterValue+1));
+
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
+        assertThat(stepValue.getText().toString(), equalTo("1"));
     }
 
     @Test
