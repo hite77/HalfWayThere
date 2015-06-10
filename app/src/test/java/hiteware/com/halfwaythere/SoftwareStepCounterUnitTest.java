@@ -42,13 +42,41 @@ public class SoftwareStepCounterUnitTest {
     @Test
     public void WhenThreeSetsAreSentAllXValuesWithAPeakThenTheCountGoesUpByTwo()
     {
-        float valueForThreeG = CalculateValueForGivenGValue(3);
-        float xPeak[] = {valueForThreeG, 0, 0};
+        float valueForFourG = CalculateValueForGivenGValue(4);
+        float xPeak[] = {valueForFourG, 0, 0};
         float lowValue[] = {0, 0, 0};
         softwareStepCounter.SensorUpdate(lowValue);
         softwareStepCounter.SensorUpdate(xPeak);
         softwareStepCounter.SensorUpdate(lowValue);
 
+        assertThat(softwareStepCounter.GetSteps(), equalTo(2));
+    }
+
+    @Test
+    public void WhenThreeSetsAreSentWithNoPeakInTheMiddleThenStepsDoNotGoUp()
+    {
+        float valueForThreeG = CalculateValueForGivenGValue(3);
+        float xValue[] = {valueForThreeG, 0, 0};
+        softwareStepCounter.SensorUpdate(xValue);
+        softwareStepCounter.SensorUpdate(xValue);
+        softwareStepCounter.SensorUpdate(xValue);
+
+        assertThat(softwareStepCounter.GetSteps(), equalTo(0));
+    }
+
+    @Test
+    public void WhenFourValuesAreSetFirstThreeHadAStepAndThereIsNotANewStepCausedByTheFourthThenItDoesNotSAddSteps()
+    {
+        float valueForThreeG = CalculateValueForGivenGValue(3);
+        float higherValue[] = {valueForThreeG, 0, 0};
+        float lowerValue[] = {CalculateValueForGivenGValue(1), 0, 0};
+
+        softwareStepCounter.SensorUpdate(lowerValue);
+        softwareStepCounter.SensorUpdate(higherValue);
+        softwareStepCounter.SensorUpdate(lowerValue);
+        assertThat(softwareStepCounter.GetSteps(), equalTo(2));
+
+        softwareStepCounter.SensorUpdate(lowerValue);
         assertThat(softwareStepCounter.GetSteps(), equalTo(2));
     }
 
@@ -69,4 +97,31 @@ public class SoftwareStepCounterUnitTest {
         softwareStepCounter.SensorUpdate(values2);
         assertThat(softwareStepCounter.GetSteps(), equalTo(0));
     }
+
+    @Test
+    public void WhenThreeSetsAreSentAllYValuesWithAPeakThenTheCountGoesUpByTwo()
+    {
+        float valueForFourG = CalculateValueForGivenGValue(4);
+        float yPeak[] = {0, valueForFourG, 0};
+        float lowValue[] = {0, 0, 0};
+        softwareStepCounter.SensorUpdate(lowValue);
+        softwareStepCounter.SensorUpdate(yPeak);
+        softwareStepCounter.SensorUpdate(lowValue);
+
+        assertThat(softwareStepCounter.GetSteps(), equalTo(2));
+    }
+
+    @Test
+    public void WhenThreeSetsAreSentAllZValuesWithAPeakThenTheCountGoesUpByTwo()
+    {
+        float valueForFourG = CalculateValueForGivenGValue(4);
+        float zPeak[] = {0, 0, valueForFourG};
+        float lowValue[] = {0, 0, 0};
+        softwareStepCounter.SensorUpdate(lowValue);
+        softwareStepCounter.SensorUpdate(zPeak);
+        softwareStepCounter.SensorUpdate(lowValue);
+
+        assertThat(softwareStepCounter.GetSteps(), equalTo(2));
+    }
+
 }
