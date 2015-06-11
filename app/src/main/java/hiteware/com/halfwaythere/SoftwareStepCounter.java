@@ -26,7 +26,10 @@ public class SoftwareStepCounter implements SoftwareStepCounterInterface{
         float g = (x * x + y * y + z * z) / (SensorManager.GRAVITY_EARTH* SensorManager.GRAVITY_EARTH);
 
         if (AllPreviousGValuesStored(g)) {
-            if ((previousGValues[1] > previousGValues[0]) && (previousGValues[1] > g)) {
+            if (
+                    (previousGValues[1] > 2) &&
+                    (previousGValues[1] > previousGValues[0]) &&
+                    (previousGValues[1] > g)) {
                 steps++;
                 steps++;
             }

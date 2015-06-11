@@ -19,6 +19,11 @@ public class SoftwareStepCounterUnitTest {
         return (float) Math.sqrt(g * SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
     }
 
+    public float CalculateForceToApplyOnEachAxisToGiveGValue(float g)
+    {
+        return (float) Math.sqrt(g * SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH / 3);
+    }
+
     @Before
     public void Setup()
     {
@@ -53,6 +58,24 @@ public class SoftwareStepCounterUnitTest {
     }
 
     @Test
+    public void WhenTheStepIsSetToAValueAndAStepHappensThenTheValueGoesUpByTwo()
+    {
+        int setSteps = 47;
+        int expectedSteps = setSteps + 2;
+
+        softwareStepCounter.SetSteps(setSteps);
+
+        float valueForFourG = CalculateValueForGivenGValue(4);
+        float xPeak[] = {valueForFourG, 0, 0};
+        float lowValue[] = {0, 0, 0};
+        softwareStepCounter.SensorUpdate(lowValue);
+        softwareStepCounter.SensorUpdate(xPeak);
+        softwareStepCounter.SensorUpdate(lowValue);
+
+        assertThat(softwareStepCounter.GetSteps(), equalTo(expectedSteps));
+    }
+
+    @Test
     public void WhenThreeSetsAreSentWithNoPeakInTheMiddleThenStepsDoNotGoUp()
     {
         float valueForThreeG = CalculateValueForGivenGValue(3);
@@ -65,7 +88,7 @@ public class SoftwareStepCounterUnitTest {
     }
 
     @Test
-    public void WhenFourValuesAreSetFirstThreeHadAStepAndThereIsNotANewStepCausedByTheFourthThenItDoesNotSAddSteps()
+    public void WhenFourValuesAreSetFirstThreeHadAStepAndThereIsNotANewStepCausedByTheFourthThenItDoesNotAddSteps()
     {
         float valueForThreeG = CalculateValueForGivenGValue(3);
         float higherValue[] = {valueForThreeG, 0, 0};
@@ -78,6 +101,24 @@ public class SoftwareStepCounterUnitTest {
 
         softwareStepCounter.SensorUpdate(lowerValue);
         assertThat(softwareStepCounter.GetSteps(), equalTo(2));
+    }
+
+    @Test
+    public void WhenTwoSetsOfPeaksAreSentInThenThereAreTwoSetsOfSteps()
+    {
+        float valueForThreeG = CalculateValueForGivenGValue(3);
+        float higherValue[] = {valueForThreeG, 0, 0};
+        float lowerValue[] = {CalculateValueForGivenGValue(1), 0, 0};
+
+        softwareStepCounter.SensorUpdate(lowerValue);
+        softwareStepCounter.SensorUpdate(higherValue);
+        softwareStepCounter.SensorUpdate(lowerValue);
+        assertThat(softwareStepCounter.GetSteps(), equalTo(2));
+
+        softwareStepCounter.SensorUpdate(higherValue);
+        assertThat(softwareStepCounter.GetSteps(), equalTo(2));
+        softwareStepCounter.SensorUpdate(lowerValue);
+        assertThat(softwareStepCounter.GetSteps(), equalTo(4));
     }
 
     @Test
@@ -124,4 +165,33 @@ public class SoftwareStepCounterUnitTest {
         assertThat(softwareStepCounter.GetSteps(), equalTo(2));
     }
 
+    @Test
+    public void WhenThePeakIsLessThanTwoGForceThenNoStepsGenerated()
+    {
+        float gForce = (float) 1.9;
+        float componentValue = CalculateForceToApplyOnEachAxisToGiveGValue(gForce);
+        float peak[] = {componentValue, componentValue, componentValue};
+        float lowValue[] = {0, 0, 0};
+
+        softwareStepCounter.SensorUpdate(lowValue);
+        softwareStepCounter.SensorUpdate(peak);
+        softwareStepCounter.SensorUpdate(lowValue);
+
+        assertThat(softwareStepCounter.GetSteps(), equalTo(0));
+    }
+
+    @Test
+    public void WhenThePeakIsMoreThanTwoGForceThenNoStepsGenerated()
+    {
+        float gForce = (float) 2.01;
+        float componentValue = CalculateForceToApplyOnEachAxisToGiveGValue(gForce);
+        float peak[] = {componentValue, componentValue, componentValue};
+        float lowValue[] = {0, 0, 0};
+
+        softwareStepCounter.SensorUpdate(lowValue);
+        softwareStepCounter.SensorUpdate(peak);
+        softwareStepCounter.SensorUpdate(lowValue);
+
+        assertThat(softwareStepCounter.GetSteps(), equalTo(2));
+    }
 }
