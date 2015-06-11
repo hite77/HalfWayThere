@@ -19,7 +19,11 @@ public class TestModule{
     }
 
     private final SensorManager sensorManager = Mockito.mock(SensorManager.class);
+    private final SoftwareStepCounterInterface softwareStepCounter = Mockito.mock(SoftwareStepCounterInterface.class);
 
     @Provides
     public SensorManager provideSensorManager() { return sensorManager; }
+
+    @Provides
+    public SoftwareStepCounterInterface provideSoftwareStepCounter() { return softwareStepCounter;}
 }

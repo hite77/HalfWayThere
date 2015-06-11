@@ -194,4 +194,17 @@ public class SoftwareStepCounterUnitTest {
 
         assertThat(softwareStepCounter.GetSteps(), equalTo(2));
     }
+
+    @Test
+    public void WhenValuesPassedToStepCounterAreNotThreeAxisThenNoStepsAreGenerated()
+    {
+        float peak[] ={15};
+        float low[] = {0};
+
+        softwareStepCounter.SensorUpdate(low);
+        softwareStepCounter.SensorUpdate(peak);
+        softwareStepCounter.SensorUpdate(low);
+
+        assertThat(softwareStepCounter.GetSteps(), equalTo(0));
+    }
 }

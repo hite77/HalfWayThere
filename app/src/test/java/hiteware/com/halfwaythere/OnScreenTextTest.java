@@ -34,7 +34,7 @@ public class OnScreenTextTest {
     @Before
     public void setUp() {
         application = (TestInjectableApplication) RuntimeEnvironment.application;
-        application.setMockSensorManager();
+        application.setMock();
         sensorManager = application.testModule.provideSensorManager();
     }
 

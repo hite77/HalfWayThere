@@ -13,8 +13,8 @@ public class TestInjectableApplication extends InjectableApplication {
         testModule = new TestModule();
     }
 
-    public void setMockSensorManager() {
-        useMockSensorManager = true;
-        mockSensorManagerModule = testModule;
+    public void setMock() {
+        useMock = true;
+        mockModule = testModule;
     }
 }

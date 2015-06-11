@@ -42,13 +42,7 @@ public class StepServiceUnitTest {
     private StepService mStepService;
 
     class StepServiceUnitTestReceiver extends BroadcastReceiver {
-        private final StepService stepService;
         private float actual = -1;
-
-        public StepServiceUnitTestReceiver(StepService stepService)
-        {
-            this.stepService = stepService;
-        }
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -68,7 +62,7 @@ public class StepServiceUnitTest {
     @Before
     public void setUp() {
         application = (TestInjectableApplication) RuntimeEnvironment.application;
-        application.setMockSensorManager();
+        application.setMock();
         sensorManager = application.testModule.provideSensorManager();
         mStepService = new StepService();
         mStepService.onCreate();
@@ -82,10 +76,20 @@ public class StepServiceUnitTest {
     }
 
     @Test
+    public void WhenOnSensorChangedIsCalledThenSoftwareStepCounterIsCalledByStepService()
+    {
+        float[] expectedValues = {0, 1, 2};
+        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(expectedValues));
+
+        verify(softwareStepCounter, times(1)).SensorUpdate(expectedValues);
+    }
+
+    @Test
     public void GivenStepServiceCreatedWhenStepsAreSetThenStepsAreEmitted() {
         float expectedValue = 14;
 
-        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
@@ -97,21 +101,21 @@ public class StepServiceUnitTest {
     }
 
     @Test
-    public void GivenStepServiceCreatedThenTheSensorManagerAsksForStepCounter() {
-        verify(sensorManager, times(1)).getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+    public void GivenStepServiceCreatedThenTheSensorManagerAsksForAccelerometer() {
+        verify(sensorManager, times(1)).getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
     @Test
     public void whenAppAndActivityAreConstructedThenSensorManagerRegistersForUpdates() {
         Sensor sensor = mock(Sensor.class);
-        when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(sensor);
+        when(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)).thenReturn(sensor);
         mStepService.onCreate();
         verify(sensorManager, times(1)).registerListener(any(SensorEventListener.class), eq(sensor), eq(SensorManager.SENSOR_DELAY_NORMAL));
     }
 
     @Test
     public void whenStartedAndNoStepCountThenShouldNotRegisterForUpdates() {
-        when(sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)).thenReturn(null);
+        when(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)).thenReturn(null);
         mStepService.onCreate();
         verify(sensorManager, times(0)).registerListener(any(SensorEventListener.class), any(Sensor.class), eq(SensorManager.SENSOR_DELAY_NORMAL));
     }
@@ -127,7 +131,7 @@ public class StepServiceUnitTest {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
         float expected = 33;
-        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
 
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
@@ -142,7 +146,7 @@ public class StepServiceUnitTest {
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         float counterValue = 85;
@@ -163,7 +167,7 @@ public class StepServiceUnitTest {
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         float valueWithoutSetSteps = 99;
@@ -185,7 +189,7 @@ public class StepServiceUnitTest {
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         float setStepsValue = 10;
@@ -204,7 +208,7 @@ public class StepServiceUnitTest {
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         float setStepsValue = 10;
@@ -223,7 +227,7 @@ public class StepServiceUnitTest {
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver(mStepService);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
 
         float setStepsValue = 13;

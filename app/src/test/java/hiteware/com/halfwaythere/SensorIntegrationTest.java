@@ -31,6 +31,7 @@ public class SensorIntegrationTest
         application = (TestInjectableApplication) RuntimeEnvironment.application;
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         stepService = new StepService();
+        stepService.onCreate();
     }
 
     @Test

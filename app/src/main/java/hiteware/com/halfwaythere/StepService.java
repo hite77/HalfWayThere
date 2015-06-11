@@ -1,6 +1,5 @@
 package hiteware.com.halfwaythere;
 
-import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,7 +10,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
 import android.os.IBinder;
 
 import javax.inject.Inject;
@@ -33,18 +31,20 @@ public class StepService extends Service implements SensorEventListener
     @Inject
     SensorManager sensorManager;
 
+    @Inject
+    SoftwareStepCounterInterface softwareStepCounter;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     public void onCreate()
     {
         super.onCreate();
         ((InjectableApplication)getApplication()).inject(this);
-        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (null != sensor)
         {
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -88,6 +88,8 @@ public class StepService extends Service implements SensorEventListener
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        softwareStepCounter.SensorUpdate(event.values);
+
         if (setSteps > -1) {
             offset = setSteps - event.values[0] + 1;
             SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);

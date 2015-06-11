@@ -12,16 +12,16 @@ class InjectableApplication extends Application {
     private final ProductionModule productionModule =new ProductionModule(this);
 
     private ObjectGraph graph = null;
-    boolean useMockSensorManager = false;
+    boolean useMock = false;
 
-    Object mockSensorManagerModule;
+    Object mockModule;
 
     private void buildGraph()
     {
         if (graph == null)
         {
-            if (useMockSensorManager) {
-                graph = ObjectGraph.create(mockSensorManagerModule);
+            if (useMock) {
+                graph = ObjectGraph.create(mockModule);
             } else {
                graph = ObjectGraph.create(productionModule);
             }

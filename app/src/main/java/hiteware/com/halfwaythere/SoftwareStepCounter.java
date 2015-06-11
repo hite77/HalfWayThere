@@ -19,6 +19,8 @@ public class SoftwareStepCounter implements SoftwareStepCounterInterface{
     }
 
     public void SensorUpdate(float[] values) {
+        if (values.length < 3) return;
+
         float x = values[0];
         float y = values[1];
         float z = values[2];
