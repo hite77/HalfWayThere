@@ -17,7 +17,7 @@ import dagger.Provides;
 )
 public class ProductionModule {
 
-    private Context Activity;
+    private final Context Activity;
 
     public ProductionModule(Context activity) {
         Activity = activity;

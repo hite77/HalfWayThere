@@ -18,7 +18,7 @@ public class TestModule{
     public TestModule() {
     }
 
-    private SensorManager sensorManager = Mockito.mock(SensorManager.class);
+    private final SensorManager sensorManager = Mockito.mock(SensorManager.class);
 
     @Provides
     public SensorManager provideSensorManager() { return sensorManager; }

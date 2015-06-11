@@ -27,7 +27,7 @@ import static org.robolectric.Shadows.shadowOf;
 @Config(constants = BuildConfig.class)
 public class DialogUtilityUnitTest {
 
-    public MainActivity CreatedActivity;
+    private MainActivity CreatedActivity;
 
     @Before
     public void Setup()

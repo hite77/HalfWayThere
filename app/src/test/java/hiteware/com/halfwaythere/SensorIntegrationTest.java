@@ -20,10 +20,10 @@ import static org.hamcrest.core.IsEqual.equalTo;
 @Config(constants = BuildConfig.class)
 public class SensorIntegrationTest
 {
-    public MainActivity CreatedActivity;
-    public TestInjectableApplication application;
+    private MainActivity CreatedActivity;
+    private TestInjectableApplication application;
 
-    StepService stepService;
+    private StepService stepService;
 
     @Before
     public void setUp()

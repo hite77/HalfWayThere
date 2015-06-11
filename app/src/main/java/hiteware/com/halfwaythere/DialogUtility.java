@@ -11,7 +11,7 @@ import android.widget.EditText;
 /**
  * Created on 6/3/15.
  */
-public class DialogUtility
+class DialogUtility
 {
         private void SetSteps(Context context, float value) {
             Intent broadcastSteps = new Intent();

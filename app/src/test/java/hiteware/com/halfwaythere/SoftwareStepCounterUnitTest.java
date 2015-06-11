@@ -12,14 +12,14 @@ import static org.hamcrest.core.IsEqual.equalTo;
  * Created on 6/10/15.
  */
 public class SoftwareStepCounterUnitTest {
-    SoftwareStepCounter softwareStepCounter;
+    private SoftwareStepCounter softwareStepCounter;
 
-    public float CalculateValueForGivenGValue(float g)
+    private float CalculateValueForGivenGValue(float g)
     {
         return (float) Math.sqrt(g * SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
     }
 
-    public float CalculateForceToApplyOnEachAxisToGiveGValue(float g)
+    private float CalculateForceToApplyOnEachAxisToGiveGValue(float g)
     {
         return (float) Math.sqrt(g * SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH / 3);
     }

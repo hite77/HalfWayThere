@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
 /**
  * Created on 4/29/15.
  */
-public class SensorValue
+class SensorValue
 {
     public static SensorEvent CreateSensorEvent(float value){
         SensorEvent sensorEvent = Mockito.mock(SensorEvent.class);

@@ -8,7 +8,7 @@ import android.hardware.SensorManager;
 public class SoftwareStepCounter implements SoftwareStepCounterInterface{
     private int steps = 0;
     private int previousValuesCounter = 0;
-    private float[] previousGValues = {0, 0};
+    private final float[] previousGValues = {0, 0};
 
     public int GetSteps() {
         return steps;

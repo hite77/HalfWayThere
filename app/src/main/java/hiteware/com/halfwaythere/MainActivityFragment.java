@@ -22,7 +22,7 @@ public class MainActivityFragment extends Fragment{
     @Inject
     SensorManager sensorManager;
 
-    private statusReceiver mStatusReceiver = new statusReceiver();
+    private final statusReceiver mStatusReceiver = new statusReceiver();
     private float currentSteps;
 
     public MainActivityFragment()
@@ -30,7 +30,7 @@ public class MainActivityFragment extends Fragment{
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    public void initializeListeners()
+    private void initializeListeners()
     {
         Sensor defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         TextView stepsText = (TextView) getActivity().findViewById(R.id.steps_title);
@@ -77,7 +77,7 @@ public class MainActivityFragment extends Fragment{
         return view;
     }
 
-    void updateStatus()
+    private void updateStatus()
     {
         ((TextView) getActivity().findViewById(R.id.step_value)).setText(String.format("%.0f", currentSteps));
     }

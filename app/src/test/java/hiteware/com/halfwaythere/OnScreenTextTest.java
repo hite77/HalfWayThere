@@ -26,10 +26,10 @@ import static org.mockito.Mockito.when;
 @RunWith(CustomRobolectricRunner.class)
 @Config(constants = BuildConfig.class)
 public class OnScreenTextTest {
-    SensorManager sensorManager;
+    private SensorManager sensorManager;
 
-    public MainActivity CreatedActivity;
-    public TestInjectableApplication application;
+    private MainActivity CreatedActivity;
+    private TestInjectableApplication application;
 
     @Before
     public void setUp() {

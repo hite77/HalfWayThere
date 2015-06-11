@@ -21,10 +21,10 @@ import javax.inject.Inject;
  */
 public class StepService extends Service implements SensorEventListener
 {
-    public static String STEPS_OCCURRED = "steps";
-    public static String ACTION_STEPS_OCCURRED = "halfWayThere.stepsOccurred";
-    public static String ACTION_SET_STEPS = "halfWayThere.setSteps";
-    public static String ACTION_REQUEST_STEPS = "halfWayThere.requestSteps";
+    public static final String STEPS_OCCURRED = "steps";
+    public static final String ACTION_STEPS_OCCURRED = "halfWayThere.stepsOccurred";
+    public static final String ACTION_SET_STEPS = "halfWayThere.setSteps";
+    public static final String ACTION_REQUEST_STEPS = "halfWayThere.requestSteps";
     private float offset = 0;
     private float currentSteps = 0;
     private float setSteps = -1;

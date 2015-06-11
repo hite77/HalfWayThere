@@ -37,12 +37,12 @@ import static org.mockito.Mockito.when;
 @RunWith(CustomRobolectricRunner.class)
 @Config(constants = BuildConfig.class)
 public class StepServiceUnitTest {
-    public TestInjectableApplication application;
-    SensorManager sensorManager;
-    StepService mStepService;
+    private TestInjectableApplication application;
+    private SensorManager sensorManager;
+    private StepService mStepService;
 
     class StepServiceUnitTestReceiver extends BroadcastReceiver {
-        private StepService stepService;
+        private final StepService stepService;
         private float actual = -1;
 
         public StepServiceUnitTestReceiver(StepService stepService)

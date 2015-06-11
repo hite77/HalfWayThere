@@ -7,14 +7,14 @@ import dagger.ObjectGraph;
 /**
  * Created on 4/23/15.
  */
-public class InjectableApplication extends Application {
+class InjectableApplication extends Application {
 
-    public ProductionModule productionModule =new ProductionModule(this);
+    private final ProductionModule productionModule =new ProductionModule(this);
 
     private ObjectGraph graph = null;
-    protected boolean useMockSensorManager = false;
+    boolean useMockSensorManager = false;
 
-    protected Object mockSensorManagerModule;
+    Object mockSensorManagerModule;
 
     private void buildGraph()
     {

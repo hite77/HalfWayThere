@@ -25,7 +25,7 @@ import static org.robolectric.Shadows.shadowOf;
 @RunWith(CustomRobolectricRunner.class)
 @Config(constants = BuildConfig.class)
 public class MainActivityFragmentUnitTest {
-    public MainActivity CreatedActivity;
+    private MainActivity CreatedActivity;
 
 
     @Test
