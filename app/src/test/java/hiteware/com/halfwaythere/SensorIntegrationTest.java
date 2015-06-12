@@ -35,9 +35,14 @@ public class SensorIntegrationTest
     }
 
     @Test
-    public void whenAStepCounterValueIsInjectedTheDisplayIsUpdated()
+    public void whenAStepCountHappensThenDisplayIsUpdated()
     {
-        stepService.onSensorChanged(SensorValue.CreateSensorEvent(23));
-        assertThat(((TextView) CreatedActivity.findViewById(R.id.step_value)).getText().toString(), equalTo("23"));
+        float value = SensorValue.CalculateForceToApplyOnEachAxisToGiveGValue(3);
+
+        stepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{0, 0, 0}));
+        stepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{value, value, value}));
+        stepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{0, 0, 0}));
+
+        assertThat(((TextView) CreatedActivity.findViewById(R.id.step_value)).getText().toString(), equalTo("2"));
     }
 }

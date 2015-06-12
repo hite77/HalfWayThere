@@ -38,14 +38,14 @@ public class DialogUtilityIntegrationTest {
         controller.resume();
     }
 
-    public void SetCurrentSteps(float steps)
+    public void SetCurrentSteps(int steps)
     {
         MenuItem item = new RoboMenuItem(R.id.action_set_current_steps);
         CreatedActivity.onOptionsItemSelected(item);
 
         ShadowAlertDialog shadow = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
         EditText editText = (EditText) shadow.getView();
-        editText.setText(Float.toString(steps));
+        editText.setText(Integer.toString(steps));
 
         Button okButton = ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_POSITIVE);
         okButton.performClick();
@@ -57,7 +57,7 @@ public class DialogUtilityIntegrationTest {
         StepService mStepService = new StepService();
         mStepService.onCreate();
 
-        float expected = 66;
+        int expected = 66;
         SetCurrentSteps(expected);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertThat(((TextView) CreatedActivity.findViewById(R.id.step_value)).getText().toString(), equalTo("66"));

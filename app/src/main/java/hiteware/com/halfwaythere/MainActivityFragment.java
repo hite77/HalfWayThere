@@ -23,7 +23,7 @@ public class MainActivityFragment extends Fragment{
     SensorManager sensorManager;
 
     private final statusReceiver mStatusReceiver = new statusReceiver();
-    private float currentSteps;
+    private int currentSteps;
 
     public MainActivityFragment()
     {
@@ -79,7 +79,7 @@ public class MainActivityFragment extends Fragment{
 
     private void updateStatus()
     {
-        ((TextView) getActivity().findViewById(R.id.step_value)).setText(String.format("%.0f", currentSteps));
+        ((TextView) getActivity().findViewById(R.id.step_value)).setText(Integer.toString(currentSteps));
     }
 
     private class statusReceiver extends BroadcastReceiver
@@ -88,7 +88,7 @@ public class MainActivityFragment extends Fragment{
         public void onReceive(Context context, Intent intent)
         {
             if (intent.getAction().equals("halfWayThere.stepsOccurred")) {
-                currentSteps = intent.getFloatExtra(StepService.STEPS_OCCURRED, 0);
+                currentSteps = intent.getIntExtra(StepService.STEPS_OCCURRED, 0);
                 updateStatus();
             }
         }

@@ -7,7 +7,7 @@ import dagger.ObjectGraph;
 /**
  * Created on 4/23/15.
  */
-class InjectableApplication extends Application {
+public class InjectableApplication extends Application {
 
     private final ProductionModule productionModule =new ProductionModule(this);
 

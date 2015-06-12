@@ -23,9 +23,7 @@ public class StepService extends Service implements SensorEventListener
     public static final String ACTION_STEPS_OCCURRED = "halfWayThere.stepsOccurred";
     public static final String ACTION_SET_STEPS = "halfWayThere.setSteps";
     public static final String ACTION_REQUEST_STEPS = "halfWayThere.requestSteps";
-    private float offset = 0;
-    private float currentSteps = 0;
-    private float setSteps = -1;
+    private int currentSteps = 0;
     private MyBroadCastReceiver receiver;
 
     @Inject
@@ -54,8 +52,8 @@ public class StepService extends Service implements SensorEventListener
         registerReceiver(receiver, new IntentFilter(ACTION_SET_STEPS));
         registerReceiver(receiver, new IntentFilter(ACTION_REQUEST_STEPS));
         SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-        offset = prefs.getFloat("offset", 0);
-        SendStepBroadcast(prefs.getFloat("currentSteps", 0));
+//        offset = prefs.getFloat("offset", 0);
+        SendStepBroadcast(prefs.getInt("currentSteps", 0));
     }
 
     @Override
@@ -79,9 +77,10 @@ public class StepService extends Service implements SensorEventListener
             }
             else if (intent.getAction().equals(ACTION_SET_STEPS))
             {
-                setSteps = intent.getFloatExtra(
-                        STEPS_OCCURRED, -1);
-                SendStepBroadcast(setSteps);
+                SendStepBroadcast(intent.getIntExtra(
+                        STEPS_OCCURRED, -1));
+                softwareStepCounter.SetSteps(intent.getIntExtra(
+                                STEPS_OCCURRED, -1));
             }
         }
     }
@@ -89,20 +88,13 @@ public class StepService extends Service implements SensorEventListener
     @Override
     public void onSensorChanged(SensorEvent event) {
         softwareStepCounter.SensorUpdate(event.values);
-
-        if (setSteps > -1) {
-            offset = setSteps - event.values[0] + 1;
-            SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-            prefs.edit().putFloat("offset", offset).apply();
-            setSteps = -1;
-        }
-        currentSteps = event.values[0] + offset;
-        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-        prefs.edit().putFloat("currentSteps", currentSteps).apply();
-        SendStepBroadcast(currentSteps);
+        SendStepBroadcast(softwareStepCounter.GetSteps());
+//            SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+//            prefs.edit().putFloat("offset", offset).apply();
+//        prefs.edit().putFloat("currentSteps", currentSteps).apply();
     }
 
-    private void SendStepBroadcast(float steps) {
+    private void SendStepBroadcast(int steps) {
         Intent broadcastSteps = new Intent();
         broadcastSteps.setAction(ACTION_STEPS_OCCURRED);
         broadcastSteps.putExtra(STEPS_OCCURRED, steps);

@@ -1,6 +1,7 @@
 package hiteware.com.halfwaythere;
 
 import android.hardware.SensorEvent;
+import android.hardware.SensorManager;
 
 import org.mockito.Mockito;
 
@@ -47,5 +48,15 @@ class SensorValue
         }
 
         return sensorEvent;
+    }
+
+    public static float CalculateValueForGivenGValue(float g)
+    {
+        return (float) Math.sqrt(g * SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+    }
+
+    public static float CalculateForceToApplyOnEachAxisToGiveGValue(float g)
+    {
+        return (float) Math.sqrt(g * SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH / 3);
     }
 }

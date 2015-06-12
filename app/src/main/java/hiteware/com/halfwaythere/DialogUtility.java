@@ -13,7 +13,7 @@ import android.widget.EditText;
  */
 class DialogUtility
 {
-        private void SetSteps(Context context, float value) {
+        private void SetSteps(Context context, int value) {
             Intent broadcastSteps = new Intent();
             broadcastSteps.setAction(StepService.ACTION_SET_STEPS);
             broadcastSteps.putExtra(StepService.STEPS_OCCURRED, value);
@@ -33,7 +33,7 @@ class DialogUtility
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         Editable value = input.getText();
-                        float countOfSteps = Float.valueOf(value.toString());
+                        int countOfSteps = Integer.parseInt(value.toString());
                         SetSteps(context, countOfSteps);
                 }})
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

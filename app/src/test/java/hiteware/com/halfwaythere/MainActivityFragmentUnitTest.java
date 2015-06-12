@@ -44,7 +44,7 @@ public class MainActivityFragmentUnitTest {
 
         Intent broadcastSteps = new Intent();
         broadcastSteps.setAction(StepService.ACTION_STEPS_OCCURRED);
-        float expected = 45;
+        int expected = 45;
         broadcastSteps.putExtra(StepService.STEPS_OCCURRED, expected);
         CreatedActivity.sendBroadcast(broadcastSteps);
 
