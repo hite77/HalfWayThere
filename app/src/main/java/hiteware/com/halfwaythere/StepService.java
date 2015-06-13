@@ -52,8 +52,8 @@ public class StepService extends Service implements SensorEventListener
         registerReceiver(receiver, new IntentFilter(ACTION_SET_STEPS));
         registerReceiver(receiver, new IntentFilter(ACTION_REQUEST_STEPS));
         SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-//        offset = prefs.getFloat("offset", 0);
-        SendStepBroadcast(prefs.getInt("currentSteps", 0));
+        currentSteps = prefs.getInt("currentSteps", 0);
+        SendStepBroadcast(currentSteps);
     }
 
     @Override
@@ -77,10 +77,12 @@ public class StepService extends Service implements SensorEventListener
             }
             else if (intent.getAction().equals(ACTION_SET_STEPS))
             {
-                SendStepBroadcast(intent.getIntExtra(
-                        STEPS_OCCURRED, -1));
-                softwareStepCounter.SetSteps(intent.getIntExtra(
-                                STEPS_OCCURRED, -1));
+                currentSteps = intent.getIntExtra(
+                        STEPS_OCCURRED, -1);
+                SendStepBroadcast(currentSteps);
+                softwareStepCounter.SetSteps(currentSteps);
+                SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+                prefs.edit().putInt("currentSteps", currentSteps).apply();
             }
         }
     }
@@ -88,11 +90,11 @@ public class StepService extends Service implements SensorEventListener
     @Override
     public void onSensorChanged(SensorEvent event) {
         softwareStepCounter.SensorUpdate(event.values);
-        SendStepBroadcast(softwareStepCounter.GetSteps());
-//            SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-//            prefs.edit().putFloat("offset", offset).apply();
-//        prefs.edit().putFloat("currentSteps", currentSteps).apply();
-    }
+        currentSteps = softwareStepCounter.GetSteps();
+        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+        prefs.edit().putInt("currentSteps", currentSteps).apply();
+        SendStepBroadcast(currentSteps);
+   }
 
     private void SendStepBroadcast(int steps) {
         Intent broadcastSteps = new Intent();
