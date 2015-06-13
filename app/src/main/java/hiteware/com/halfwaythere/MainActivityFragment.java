@@ -1,13 +1,9 @@
 package hiteware.com.halfwaythere;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,12 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import javax.inject.Inject;
-
 public class MainActivityFragment extends Fragment{
-
-    @Inject
-    SensorManager sensorManager;
 
     private final statusReceiver mStatusReceiver = new statusReceiver();
     private int currentSteps;
@@ -29,23 +20,9 @@ public class MainActivityFragment extends Fragment{
     {
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private void initializeListeners()
-    {
-        Sensor defaultSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        TextView stepsText = (TextView) getActivity().findViewById(R.id.steps_title);
-
-        if (defaultSensor == null) {
-            stepsText.setText("Your device does not have Hardware Pedometer. Future versions of this software will have software pedometer and work with your device.");
-        } else {
-            stepsText.setText("Steps");
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-        initializeListeners();
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(StepService.ACTION_STEPS_OCCURRED);
@@ -71,9 +48,6 @@ public class MainActivityFragment extends Fragment{
                              Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-
-        ((InjectableApplication)getActivity().getApplication()).inject(this);
-
         return view;
     }
 
