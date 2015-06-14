@@ -15,6 +15,7 @@ public class MainActivityFragment extends Fragment{
 
     private final statusReceiver mStatusReceiver = new statusReceiver();
     private int currentSteps;
+    private int goal;
 
     public MainActivityFragment()
     {
@@ -26,15 +27,23 @@ public class MainActivityFragment extends Fragment{
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(StepService.ACTION_STEPS_OCCURRED);
+        filter.addAction(StepService.ACTION_GOAL_CHANGED);
 
         getActivity().registerReceiver(mStatusReceiver, filter);
         requestStepsFromService();
+        requestGoalFromService();
     }
 
     private void requestStepsFromService() {
         Intent requestSteps = new Intent();
         requestSteps.setAction(StepService.ACTION_REQUEST_STEPS);
         getActivity().sendBroadcast(requestSteps);
+    }
+
+    private void requestGoalFromService() {
+        Intent requestGoal = new Intent();
+        requestGoal.setAction(StepService.ACTION_GOAL_REQUEST);
+        getActivity().sendBroadcast(requestGoal);
     }
 
     @Override
@@ -54,6 +63,7 @@ public class MainActivityFragment extends Fragment{
     private void updateStatus()
     {
         ((TextView) getActivity().findViewById(R.id.step_value)).setText(Integer.toString(currentSteps));
+        ((TextView) getActivity().findViewById(R.id.goal_value)).setText(Integer.toString(goal));
     }
 
     private class statusReceiver extends BroadcastReceiver
@@ -61,8 +71,12 @@ public class MainActivityFragment extends Fragment{
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (intent.getAction().equals("halfWayThere.stepsOccurred")) {
+            if (intent.getAction().equals(StepService.ACTION_STEPS_OCCURRED)) {
                 currentSteps = intent.getIntExtra(StepService.STEPS_OCCURRED, 0);
+                updateStatus();
+            }
+            else if(intent.getAction().equals(StepService.ACTION_GOAL_CHANGED)) {
+                goal = intent.getIntExtra(StepService.GOAL_SET, 0);
                 updateStatus();
             }
         }

@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (id == R.id.action_set_goal_steps) {
             DialogUtility util = new DialogUtility();
-            util.CollectCurrentSteps(this); // note calling incorrect method.
+            util.CollectGoalSteps(this);
             return true;
         }
 

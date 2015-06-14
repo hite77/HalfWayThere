@@ -5,4 +5,7 @@
     <string name="action_set_goal_steps">Set Goal Steps</string>
     <string name="set_current_steps_title">Current Step Count</string>
     <string name="set_current_steps_message">Enter Steps:</string>
+    <string name="set_goal_steps_title">Set Goal Step Count</string>
+    <string name="set_goal_steps_message">Enter Steps:</string>
+    <string name="goal_title">Goal</string>
 </resources>

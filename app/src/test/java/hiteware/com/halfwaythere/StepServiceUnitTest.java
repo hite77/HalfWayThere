@@ -41,21 +41,27 @@ public class StepServiceUnitTest {
     private StepService mStepService;
 
     class StepServiceUnitTestReceiver extends BroadcastReceiver {
-        private int actual = -1;
+        private int actualSteps = -1;
+        private int actualGoal = -1;
 
         @Override
         public void onReceive(Context context, Intent intent) {
             ShadowIntent shadowIntent = Shadows.shadowOf(intent);
-            assertThat(shadowIntent
-                            .hasExtra(StepService.STEPS_OCCURRED),
-                    equalTo(true));
-            actual = shadowIntent.getIntExtra(
-                    StepService.STEPS_OCCURRED, 0);
+            if (shadowIntent.hasExtra(StepService.STEPS_OCCURRED))
+            {
+                actualSteps = shadowIntent.getIntExtra(
+                        StepService.STEPS_OCCURRED, 0);
+            }
+            if (shadowIntent.hasExtra(StepService.GOAL_SET))
+            {
+                actualGoal = shadowIntent.getIntExtra(StepService.GOAL_SET, 0);
+            }
         }
 
-        public int getActualResult() {
-            return actual;
+        public int getActualSteps() {
+            return actualSteps;
         }
+        public int getActualGoal() { return actualGoal; }
     }
 
     @Before
@@ -74,38 +80,11 @@ public class StepServiceUnitTest {
         application.sendBroadcast(broadcastSteps);
     }
 
-    @Test
-    public void WhenOnSensorChangedIsCalledThenSoftwareStepCounterIsCalledToUpdateAndGetSteps()
-    {
-        float[] expectedValues = {0, 1, 2};
-        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(expectedValues));
-
-        verify(softwareStepCounter, times(1)).SensorUpdate(expectedValues);
-        verify(softwareStepCounter, times(1)).GetSteps();
-    }
-
-    @Test
-    public void WhenSoftwareStepCounterReturnsAValueDuringOnSensorChangeThenStepsAreOutput()
-    {
-        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
-        when(softwareStepCounter.GetSteps()).thenReturn(13);
-        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
-
-        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
-        float[] expectedValues = {0, 1, 2};
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(expectedValues));
-        assertThat(testReceiver.getActualResult(), equalTo(13));
-    }
-
-    @Test
-    public void WhenStepsAreSetThenTheSoftwareStepCountIsCalledByStepService()
-    {
-        int expectedSteps = 5;
-        SetSteps(expectedSteps);
-        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
-        verify(softwareStepCounter, times(1)).SetSteps(expectedSteps);
+    private void SetGoal(int goal) {
+        Intent broadcastGoal = new Intent();
+        broadcastGoal.setAction(StepService.ACTION_GOAL_SET);
+        broadcastGoal.putExtra(StepService.GOAL_SET, goal);
+        application.sendBroadcast(broadcastGoal);
     }
 
     @Test
@@ -135,6 +114,40 @@ public class StepServiceUnitTest {
     }
 
     @Test
+    public void WhenOnSensorChangedIsCalledThenSoftwareStepCounterIsCalledToUpdateAndGetSteps()
+    {
+        float[] expectedValues = {0, 1, 2};
+        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(expectedValues));
+
+        verify(softwareStepCounter, times(1)).SensorUpdate(expectedValues);
+        verify(softwareStepCounter, times(1)).GetSteps();
+    }
+
+    @Test
+    public void WhenSoftwareStepCounterReturnsAValueDuringOnSensorChangeThenStepsAreOutput()
+    {
+        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
+        when(softwareStepCounter.GetSteps()).thenReturn(13);
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
+        float[] expectedValues = {0, 1, 2};
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(expectedValues));
+        assertThat(testReceiver.getActualSteps(), equalTo(13));
+    }
+
+    @Test
+    public void WhenStepsAreSetThenTheSoftwareStepCountIsCalledByStepService()
+    {
+        int expectedSteps = 5;
+        SetSteps(expectedSteps);
+        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
+        verify(softwareStepCounter, times(1)).SetSteps(expectedSteps);
+    }
+
+    @Test
     public void GivenSetStepsIsCalledWhenStepServiceIsRestartedThenStepsComeBackUp()
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
@@ -149,7 +162,7 @@ public class StepServiceUnitTest {
         mStepService.onDestroy();
         mStepService.onCreate();
 
-        assertThat(testReceiver.getActualResult(), equalTo(setStepsValue));
+        assertThat(testReceiver.getActualSteps(), equalTo(setStepsValue));
     }
 
     @Test
@@ -188,5 +201,74 @@ public class StepServiceUnitTest {
     public void WhenStepServiceIsDestroyedThenNoReceiversAreRegistered() {
         mStepService.onDestroy();
         assertThat(ShadowApplication.getInstance().getRegisteredReceivers().size(), equalTo(0));
+    }
+
+    @Test
+    public void WhenGoalsAreSetTheGoalIsOutput() {
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_GOAL_CHANGED));
+
+        int expectedGoal = 15000;
+        SetGoal(expectedGoal);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertThat(testReceiver.getActualGoal(), equalTo(expectedGoal));
+    }
+
+    @Test
+    public void GivenSetGoalIsCalledWhenStepServiceIsRestartedThenGoalComesBackUp()
+    {
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_GOAL_CHANGED));
+
+        int goal = 10;
+
+        SetGoal(goal);
+
+        mStepService.onDestroy();
+        mStepService.onCreate();
+
+        assertThat(testReceiver.getActualGoal(), equalTo(goal));
+    }
+
+    @Test
+    public void GivenServiceIsRunningWhenActivityIsRestartedThenGoalIsRedisplayedFromService()
+    {
+        int setGoalValue = 13000;
+
+        SetGoal(setGoalValue);
+
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        TextView goalValue = (TextView) createdActivity.findViewById(R.id.goal_value);
+        assertThat(goalValue.getText().toString(), equalTo("13000"));
+    }
+
+    @Test
+    public void GivenServiceGoesThroughTwoCreateDestroyCyclesWhenActivityReadsTheGoalItShouldBeCorrect()
+    {
+        int setGoal = 93;
+        SetGoal(setGoal);
+
+        mStepService.onDestroy();
+        mStepService = null;
+        mStepService = new StepService();
+        mStepService.onCreate();
+        mStepService.onDestroy();
+        mStepService = null;
+        mStepService = new StepService();
+        mStepService.onCreate();
+
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        TextView goalValue = (TextView) createdActivity.findViewById(R.id.goal_value);
+        assertThat(goalValue.getText().toString(), equalTo("93"));
     }
 }

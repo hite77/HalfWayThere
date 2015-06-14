@@ -110,4 +110,54 @@ public class DialogUtilityUnitTest {
         assertTrue(cancelButton.getVisibility() == Button.VISIBLE);
         assertThat(cancelButton.getText().toString(), equalTo("Cancel"));
     }
+
+    @Test
+    public void whenMenuItemForGoalStepsIsSelectedThenActionDialogForGoalStepsHasCorrectTitle() {
+        StartSetGoalSteps();
+
+        ShadowAlertDialog shadow = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+        assertThat(shadow.getTitle().toString(), equalTo(CreatedActivity.getString(R.string.set_goal_steps_title)));
+    }
+
+    @Test
+    public void whenMenuItemForGoalStepsIsSelectedThenActionDialogHasCorrectMessage()
+    {
+        StartSetGoalSteps();
+
+        ShadowAlertDialog shadow = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+        assertThat(shadow.getMessage().toString(), equalTo(CreatedActivity.getString(R.string.set_goal_steps_message)));
+    }
+
+    @Test
+    public void whenMenuItemForGoalStepsIsSelectedThenActionDialogHasEditTextForNumbers()
+    {
+        StartSetGoalSteps();
+
+        ShadowAlertDialog shadow = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+        EditText editText = (EditText) shadow.getView();
+        assertNotNull(editText);
+        assertThat(editText.getInputType(), equalTo(InputType.TYPE_CLASS_NUMBER));
+    }
+
+    @Test
+    public void whenGoalStepDialogIsDisplayedThenThereIsAPositiveButton()
+    {
+        StartSetGoalSteps();
+
+        Button okButton = ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_POSITIVE);
+        assertNotNull(okButton);
+        assertTrue(okButton.getVisibility() == Button.VISIBLE);
+        assertThat(okButton.getText().toString(), equalTo("OK"));
+    }
+
+    @Test
+    public void whenGoalStepDialogIsDisplayedThenThereIsANegativeButton()
+    {
+        StartSetGoalSteps();
+
+        Button cancelButton = ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_NEGATIVE);
+        assertNotNull(cancelButton);
+        assertTrue(cancelButton.getVisibility() == Button.VISIBLE);
+        assertThat(cancelButton.getText().toString(), equalTo("Cancel"));
+    }
 }

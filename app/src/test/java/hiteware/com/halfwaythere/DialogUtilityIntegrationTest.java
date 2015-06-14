@@ -51,6 +51,19 @@ public class DialogUtilityIntegrationTest {
         okButton.performClick();
     }
 
+    public void SetGoalSteps(int goal)
+    {
+        MenuItem item = new RoboMenuItem(R.id.action_set_goal_steps);
+        CreatedActivity.onOptionsItemSelected(item);
+
+        ShadowAlertDialog shadow = shadowOf(ShadowAlertDialog.getLatestAlertDialog());
+        EditText editText = (EditText) shadow.getView();
+        editText.setText(Integer.toString(goal));
+
+        Button okButton = ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_POSITIVE);
+        okButton.performClick();
+    }
+
     @Test
     public void WhenStepsAreSetInTheDialogThenTheStepsAreDisplayedOnScreen()
     {
@@ -61,5 +74,17 @@ public class DialogUtilityIntegrationTest {
         SetCurrentSteps(expected);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertThat(((TextView) CreatedActivity.findViewById(R.id.step_value)).getText().toString(), equalTo("66"));
+    }
+
+    @Test
+    public void WhenGoalStepsAreSetInTheDialogThenTheGoalStepAreDisplayedOnScreen()
+    {
+        StepService mStepService = new StepService();
+        mStepService.onCreate();
+
+        int expected = 11000;
+        SetGoalSteps(expected);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertThat(((TextView) CreatedActivity.findViewById(R.id.goal_value)).getText().toString(), equalTo("11000"));
     }
 }

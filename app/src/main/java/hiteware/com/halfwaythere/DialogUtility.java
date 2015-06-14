@@ -20,6 +20,13 @@ class DialogUtility
             context.sendBroadcast(broadcastSteps);
         }
 
+        private void SetGoal(Context context, int value) {
+            Intent broadcastGoal = new Intent();
+            broadcastGoal.setAction(StepService.ACTION_GOAL_SET);
+            broadcastGoal.putExtra(StepService.GOAL_SET, value);
+            context.sendBroadcast(broadcastGoal);
+        }
+
         public void CollectCurrentSteps(final Context context)
     {
         final EditText input = new EditText(context);
@@ -27,8 +34,8 @@ class DialogUtility
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
         new AlertDialog.Builder(context)
-                .setTitle(context.getString(R.string.set_current_steps_title))
-                .setMessage(context.getString(R.string.set_current_steps_message))
+                .setTitle(R.string.set_current_steps_title)
+                .setMessage(R.string.set_current_steps_message)
                 .setView(input)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -42,37 +49,33 @@ class DialogUtility
                 })
                     .show();
     }
+
+    public void CollectGoalSteps(final Context context) {
+
+        final EditText input = new EditText(context);
+        input.setContentDescription("GoalEditText");
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        new AlertDialog.Builder(context)
+                .setTitle(R.string.set_goal_steps_title)
+                .setMessage(R.string.set_goal_steps_message)
+                .setView(input)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Editable value = input.getText();
+                        int goal = Integer.parseInt(value.toString());
+                        SetGoal(context, goal);
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                    }
+                })
+                .show();
+    }
 }
 
-
-//    public float selectedSteps = 0;
-//    @Inject
-//    StepSensorChange stepSensorChange;
-//
-//    public QuickDialogUtility(InjectableApplication application)
-//    {
-//        application.inject(this);
-//    }
-//
-//
-//    public void CollectGoalSteps(Context context)
-//    {
-//        final EditText input = new EditText(context);
-//        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-//
-//        new AlertDialog.Builder(context)
-//                .setTitle("Set Goal Step Count")
-//                .setMessage("Enter Steps:")
-//                .setView(input)
-//                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int whichButton) {
-//                        Editable value = input.getText();
-//                        float goalSteps = Float.valueOf(value.toString());
-//                        stepSensorChange.SetGoalSteps(goalSteps);
-//                    }
-//                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 //            public void onClick(DialogInterface dialog, int whichButton) {
 //            }
-//        }).show();
-//    }
-//}
+//        })

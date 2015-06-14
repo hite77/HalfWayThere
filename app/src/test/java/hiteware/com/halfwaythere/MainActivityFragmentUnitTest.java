@@ -52,6 +52,19 @@ public class MainActivityFragmentUnitTest {
     }
 
     @Test
+    public void whenBroadcastOfGoalIsReceivedThenGoalIsDisplayed() {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        Intent broadcastGoal = new Intent();
+        broadcastGoal.setAction(StepService.ACTION_GOAL_CHANGED);
+        int expected = 14000;
+        broadcastGoal.putExtra(StepService.GOAL_SET, expected);
+        CreatedActivity.sendBroadcast(broadcastGoal);
+
+        assertThat(((TextView) CreatedActivity.findViewById(R.id.goal_value)).getText().toString(), equalTo("14000"));
+    }
+
+    @Test
     public void whenActivityIsPausedItUnregistersReceiver() {
         ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();
         CreatedActivity = (MainActivity) controller.get();
