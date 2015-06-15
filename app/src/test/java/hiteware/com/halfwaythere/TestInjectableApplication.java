@@ -15,6 +15,10 @@ public class TestInjectableApplication extends InjectableApplication {
 
     public void setMock() {
         useMock = true;
-        mockModule = testModule;
+        objectsToCreate.add(testModule);
+    }
+
+    public void setRealSoftwareStepCounter() {
+        objectsToCreate.add(new SoftwareStepCounterModule());
     }
 }

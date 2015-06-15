@@ -70,7 +70,7 @@ public class StepServiceUnitTest {
         application.setMock();
         sensorManager = application.testModule.provideSensorManager();
         mStepService = new StepService();
-        mStepService.onCreate();
+        mStepService.onStartCommand(new Intent(), 0, 0);
     }
 
     public void SetSteps(int value) {
@@ -96,14 +96,14 @@ public class StepServiceUnitTest {
     public void whenAppAndActivityAreConstructedThenSensorManagerRegistersForUpdates() {
         Sensor sensor = mock(Sensor.class);
         when(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)).thenReturn(sensor);
-        mStepService.onCreate();
+        mStepService.onStartCommand(new Intent(), 0, 0);
         verify(sensorManager, times(1)).registerListener(any(SensorEventListener.class), eq(sensor), eq(SensorManager.SENSOR_DELAY_NORMAL));
     }
 
     @Test
     public void whenStartedAndNoStepCountThenShouldNotRegisterForUpdates() {
         when(sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)).thenReturn(null);
-        mStepService.onCreate();
+        mStepService.onStartCommand(new Intent(), 0, 0);
         verify(sensorManager, times(0)).registerListener(any(SensorEventListener.class), any(Sensor.class), eq(SensorManager.SENSOR_DELAY_NORMAL));
     }
 
@@ -160,7 +160,7 @@ public class StepServiceUnitTest {
         SetSteps(setStepsValue);
 
         mStepService.onDestroy();
-        mStepService.onCreate();
+        mStepService.onStartCommand(new Intent(), 0, 0);
 
         assertThat(testReceiver.getActualSteps(), equalTo(setStepsValue));
     }
@@ -186,9 +186,9 @@ public class StepServiceUnitTest {
         SetSteps(setStepsValue);
 
         mStepService.onDestroy();
-        mStepService.onCreate();
+        mStepService.onStartCommand(new Intent(), 0, 0);
         mStepService.onDestroy();
-        mStepService.onCreate();
+        mStepService.onStartCommand(new Intent(), 0, 0);
 
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -231,7 +231,7 @@ public class StepServiceUnitTest {
         SetGoal(goal);
 
         mStepService.onDestroy();
-        mStepService.onCreate();
+        mStepService.onStartCommand(new Intent(), 0, 0);
 
         assertThat(testReceiver.getActualGoal(), equalTo(goal));
     }
@@ -259,16 +259,51 @@ public class StepServiceUnitTest {
         mStepService.onDestroy();
         mStepService = null;
         mStepService = new StepService();
-        mStepService.onCreate();
+        mStepService.onStartCommand(new Intent(), 0, 0);
         mStepService.onDestroy();
         mStepService = null;
         mStepService = new StepService();
-        mStepService.onCreate();
+        mStepService.onStartCommand(new Intent(), 0, 0);
 
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         TextView goalValue = (TextView) createdActivity.findViewById(R.id.goal_value);
         assertThat(goalValue.getText().toString(), equalTo("93"));
+    }
+
+    @Test
+    public void GivenServiceGoesThroughACreateDestroyCycleAndSensorEventOccursThenSetStepsGetsCalledAgain()
+    {
+        int steps = 93;
+        SetSteps(steps);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
+        verify(softwareStepCounter, times(1)).SetSteps(steps);
+
+        mStepService.onDestroy();
+        mStepService = null;
+        mStepService = new StepService();
+        mStepService.onStartCommand(new Intent(), 0, 0);
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{0, 0, 0}));
+
+        verify(softwareStepCounter, times(2)).SetSteps(steps);
+    }
+
+    @Test
+    public void GivenOnSensorEventOccursWhenThisDoesNotChangeTheStepCountThenBroadcastDoesNotOccur()
+    {
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
+
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{0, 0, 0}));
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertThat(testReceiver.getActualSteps(), equalTo(-1));
     }
 }

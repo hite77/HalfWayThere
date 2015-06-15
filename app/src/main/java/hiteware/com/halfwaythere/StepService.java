@@ -40,12 +40,6 @@ public class StepService extends Service implements SensorEventListener
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        return START_STICKY;
-    }
-
-    public void onCreate()
-    {
-        super.onCreate();
         ((InjectableApplication)getApplication()).inject(this);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (null != sensor)
@@ -59,10 +53,15 @@ public class StepService extends Service implements SensorEventListener
         registerReceiver(receiver, new IntentFilter(ACTION_GOAL_SET));
         registerReceiver(receiver, new IntentFilter(ACTION_GOAL_REQUEST));
         SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+
         currentSteps = prefs.getInt("currentSteps", 0);
         SendStepBroadcast(currentSteps);
+        softwareStepCounter.SetSteps(currentSteps);
+
         goal = prefs.getInt("goal", 0);
         SendGoalBroadcast(goal);
+
+        return START_STICKY;
     }
 
     @Override
@@ -110,10 +109,12 @@ public class StepService extends Service implements SensorEventListener
     @Override
     public void onSensorChanged(SensorEvent event) {
         softwareStepCounter.SensorUpdate(event.values);
-        currentSteps = softwareStepCounter.GetSteps();
-        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-        prefs.edit().putInt("currentSteps", currentSteps).apply();
-        SendStepBroadcast(currentSteps);
+        if (softwareStepCounter.GetSteps() != currentSteps) {
+            currentSteps = softwareStepCounter.GetSteps();
+            SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+            prefs.edit().putInt("currentSteps", currentSteps).apply();
+            SendStepBroadcast(currentSteps);
+        }
    }
 
     private void SendStepBroadcast(int steps) {

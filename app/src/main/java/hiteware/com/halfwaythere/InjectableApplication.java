@@ -2,6 +2,9 @@ package hiteware.com.halfwaythere;
 
 import android.app.Application;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dagger.ObjectGraph;
 
 /**
@@ -11,20 +14,19 @@ public class InjectableApplication extends Application {
 
     private final ProductionModule productionModule =new ProductionModule(this);
 
+    List<Object> objectsToCreate = new ArrayList<>();
+
     private ObjectGraph graph = null;
     boolean useMock = false;
-
-    Object mockModule;
 
     private void buildGraph()
     {
         if (graph == null)
         {
-            if (useMock) {
-                graph = ObjectGraph.create(mockModule);
-            } else {
-               graph = ObjectGraph.create(productionModule);
+            if (!useMock) {
+                objectsToCreate.add(productionModule);
             }
+                graph = ObjectGraph.create(objectsToCreate.toArray());
         }
     }
 

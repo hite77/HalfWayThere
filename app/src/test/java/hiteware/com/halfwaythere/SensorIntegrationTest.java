@@ -1,6 +1,7 @@
 package hiteware.com.halfwaythere;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +18,8 @@ import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowAlertDialog;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.util.ActivityController;
+
+import javax.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -35,17 +38,22 @@ public class SensorIntegrationTest
     private ActivityController controller;
     private StepService stepService;
 
+    @Inject
+    SoftwareStepCounterInterface softwareStepCount;
+
     @Before
     public void setUp()
     {
         application = (TestInjectableApplication) RuntimeEnvironment.application;
+        application.setRealSoftwareStepCounter();
+        application.inject(this);
 
         controller = Robolectric.buildActivity(MainActivity.class).create().start();
         CreatedActivity = (MainActivity) controller.get();
         controller.postResume();
 
         stepService = new StepService();
-        stepService.onCreate();
+        stepService.onStartCommand(new Intent(), 0, 0);
     }
 
     public void SetCurrentSteps(int steps)
@@ -138,7 +146,7 @@ public class SensorIntegrationTest
         controller.restart();
 
         stepService = new StepService();
-        stepService.onCreate();
+        stepService.onStartCommand(new Intent(), 0, 0);
 
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -158,7 +166,6 @@ public class SensorIntegrationTest
 
         float value = SensorValue.CalculateForceToApplyOnEachAxisToGiveGValue(4);
 
-
         stepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{0, 0, 0}));
         stepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{value, value, value}));
         stepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{0, 0, 0}));
@@ -166,4 +173,27 @@ public class SensorIntegrationTest
         assertThat(((TextView) CreatedActivity.findViewById(R.id.step_value)).getText().toString(), equalTo("12"));
     }
 
+    @Test
+    public void GivenServiceGoesThroughACreateDestroyCycleAndSensorEventOccursThenActivityReadsTheSteps()
+    {
+        int steps = 93;
+        SetCurrentSteps(steps);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        stepService.onDestroy();
+        stepService = null;
+
+        softwareStepCount.SetSteps(0); // only way I could find to replicate application going down.
+
+        stepService = new StepService();
+        stepService.onStartCommand(new Intent(), 0, 0);
+        stepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{0, 0, 0}));
+
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
+        assertThat(stepValue.getText().toString(), CoreMatchers.equalTo("93"));
+    }
 }

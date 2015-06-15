@@ -1,6 +1,7 @@
 package hiteware.com.halfwaythere;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
@@ -68,7 +69,7 @@ public class DialogUtilityIntegrationTest {
     public void WhenStepsAreSetInTheDialogThenTheStepsAreDisplayedOnScreen()
     {
         StepService mStepService = new StepService();
-        mStepService.onCreate();
+        mStepService.onStartCommand(new Intent(), 0, 0);
 
         int expected = 66;
         SetCurrentSteps(expected);
@@ -80,7 +81,7 @@ public class DialogUtilityIntegrationTest {
     public void WhenGoalStepsAreSetInTheDialogThenTheGoalStepAreDisplayedOnScreen()
     {
         StepService mStepService = new StepService();
-        mStepService.onCreate();
+        mStepService.onStartCommand(new Intent(),0, 0);
 
         int expected = 11000;
         SetGoalSteps(expected);
