@@ -15,7 +15,7 @@ import dagger.Provides;
         injects = StepService.class,
         overrides = false
 )
-public class ProductionModule {
+class ProductionModule {
 
     private final Context Activity;
 
@@ -25,10 +25,5 @@ public class ProductionModule {
 
     @Provides @Singleton SensorManager provideSensorManager() { // note to self: should this be a singleton for the real thing?
         return (SensorManager) Activity.getSystemService(Context.SENSOR_SERVICE);
-    }
-
-    @Provides @Singleton SoftwareStepCounterInterface provideSoftwareStepCounter()
-    {
-        return new SoftwareStepCounter();
     }
 }

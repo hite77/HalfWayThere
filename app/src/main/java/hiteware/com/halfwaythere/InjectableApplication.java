@@ -14,7 +14,7 @@ public class InjectableApplication extends Application {
 
     private final ProductionModule productionModule =new ProductionModule(this);
 
-    List<Object> objectsToCreate = new ArrayList<>();
+    final List<Object> objectsToCreate = new ArrayList<>();
 
     private ObjectGraph graph = null;
     boolean useMock = false;

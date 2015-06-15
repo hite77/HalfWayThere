@@ -35,13 +35,13 @@ public class DialogUtilityUnitTest {
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
     }
 
-    public void StartSetCurrentSteps()
+    private void StartSetCurrentSteps()
     {
         MenuItem item = new RoboMenuItem(R.id.action_set_current_steps);
         CreatedActivity.onOptionsItemSelected(item);
     }
 
-    public void StartSetGoalSteps()
+    private void StartSetGoalSteps()
     {
         MenuItem item = new RoboMenuItem(R.id.action_set_goal_steps);
         CreatedActivity.onOptionsItemSelected(item);

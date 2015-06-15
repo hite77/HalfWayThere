@@ -114,40 +114,6 @@ public class StepServiceUnitTest {
     }
 
     @Test
-    public void WhenOnSensorChangedIsCalledThenSoftwareStepCounterIsCalledToUpdateAndGetSteps()
-    {
-        float[] expectedValues = {0, 1, 2};
-        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(expectedValues));
-
-        verify(softwareStepCounter, times(1)).SensorUpdate(expectedValues);
-        verify(softwareStepCounter, times(1)).GetSteps();
-    }
-
-    @Test
-    public void WhenSoftwareStepCounterReturnsAValueDuringOnSensorChangeThenStepsAreOutput()
-    {
-        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
-        when(softwareStepCounter.GetSteps()).thenReturn(13);
-        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
-
-        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
-        float[] expectedValues = {0, 1, 2};
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(expectedValues));
-        assertThat(testReceiver.getActualSteps(), equalTo(13));
-    }
-
-    @Test
-    public void WhenStepsAreSetThenTheSoftwareStepCountIsCalledByStepService()
-    {
-        int expectedSteps = 5;
-        SetSteps(expectedSteps);
-        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
-        verify(softwareStepCounter, times(1)).SetSteps(expectedSteps);
-    }
-
-    @Test
     public void GivenSetStepsIsCalledWhenStepServiceIsRestartedThenStepsComeBackUp()
     {
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
@@ -270,26 +236,6 @@ public class StepServiceUnitTest {
 
         TextView goalValue = (TextView) createdActivity.findViewById(R.id.goal_value);
         assertThat(goalValue.getText().toString(), equalTo("93"));
-    }
-
-    @Test
-    public void GivenServiceGoesThroughACreateDestroyCycleAndSensorEventOccursThenSetStepsGetsCalledAgain()
-    {
-        int steps = 93;
-        SetSteps(steps);
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        SoftwareStepCounterInterface softwareStepCounter = application.testModule.provideSoftwareStepCounter();
-        verify(softwareStepCounter, times(1)).SetSteps(steps);
-
-        mStepService.onDestroy();
-        mStepService = null;
-        mStepService = new StepService();
-        mStepService.onStartCommand(new Intent(), 0, 0);
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{0, 0, 0}));
-
-        verify(softwareStepCounter, times(2)).SetSteps(steps);
     }
 
     @Test

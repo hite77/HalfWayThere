@@ -14,16 +14,12 @@ import dagger.Provides;
         injects = {MainActivityFragment.class, StepService.class},
         overrides = true
 )
-public class TestModule{
+class TestModule{
     public TestModule() {
     }
 
     private final SensorManager sensorManager = Mockito.mock(SensorManager.class);
-    private final SoftwareStepCounterInterface softwareStepCounter = Mockito.mock(SoftwareStepCounterInterface.class);
 
     @Provides
     public SensorManager provideSensorManager() { return sensorManager; }
-
-    @Provides
-    public SoftwareStepCounterInterface provideSoftwareStepCounter() { return softwareStepCounter;}
 }

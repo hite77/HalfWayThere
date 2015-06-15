@@ -12,14 +12,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowAlertDialog;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.util.ActivityController;
-
-import javax.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -34,20 +31,12 @@ import static org.robolectric.Shadows.shadowOf;
 public class SensorIntegrationTest
 {
     private MainActivity CreatedActivity;
-    private TestInjectableApplication application;
     private ActivityController controller;
     private StepService stepService;
-
-    @Inject
-    SoftwareStepCounterInterface softwareStepCount;
 
     @Before
     public void setUp()
     {
-        application = (TestInjectableApplication) RuntimeEnvironment.application;
-        application.setRealSoftwareStepCounter();
-        application.inject(this);
-
         controller = Robolectric.buildActivity(MainActivity.class).create().start();
         CreatedActivity = (MainActivity) controller.get();
         controller.postResume();
@@ -183,9 +172,6 @@ public class SensorIntegrationTest
 
         stepService.onDestroy();
         stepService = null;
-
-        softwareStepCount.SetSteps(0); // only way I could find to replicate application going down.
-
         stepService = new StepService();
         stepService.onStartCommand(new Intent(), 0, 0);
         stepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{0, 0, 0}));

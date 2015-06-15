@@ -34,8 +34,7 @@ public class StepService extends Service implements SensorEventListener
     @Inject
     SensorManager sensorManager;
 
-    @Inject
-    SoftwareStepCounterInterface softwareStepCounter;
+    private final SoftwareStepCounterInterface softwareStepCounter = new SoftwareStepCounter();
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
