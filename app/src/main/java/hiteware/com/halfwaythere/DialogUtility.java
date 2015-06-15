@@ -74,8 +74,3 @@ class DialogUtility
                 .show();
     }
 }
-
-//                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int whichButton) {
-//            }
-//        })
