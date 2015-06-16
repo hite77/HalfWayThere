@@ -11,11 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 public class MainActivityFragment extends Fragment{
 
     private final statusReceiver mStatusReceiver = new statusReceiver();
     private int currentSteps;
     private int goal;
+
+    @Inject
+    ProgressUpdateInterface mProgressUpdate;
 
     public MainActivityFragment()
     {
@@ -28,6 +33,9 @@ public class MainActivityFragment extends Fragment{
         IntentFilter filter = new IntentFilter();
         filter.addAction(StepService.ACTION_STEPS_OCCURRED);
         filter.addAction(StepService.ACTION_GOAL_CHANGED);
+
+        ((InjectableApplication)getActivity().getApplication()).inject(this);
+        mProgressUpdate.SetCircularProgress((CircularProgressWithHalfWay) getView().findViewById(R.id.circularProgressWithHalfWay));
 
         getActivity().registerReceiver(mStatusReceiver, filter);
         requestStepsFromService();
@@ -63,7 +71,9 @@ public class MainActivityFragment extends Fragment{
     private void updateStatus()
     {
         ((TextView) getActivity().findViewById(R.id.step_value)).setText(Integer.toString(currentSteps));
+        mProgressUpdate.SetSteps(currentSteps);
         ((TextView) getActivity().findViewById(R.id.goal_value)).setText(Integer.toString(goal));
+        mProgressUpdate.SetGoal(goal);
     }
 
     private class statusReceiver extends BroadcastReceiver

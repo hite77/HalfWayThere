@@ -12,7 +12,7 @@ import dagger.Provides;
  * Created on 4/25/15.
  */
 @Module(
-        injects = StepService.class,
+        injects = {StepService.class, MainActivityFragment.class},
         overrides = false
 )
 class ProductionModule {
@@ -23,7 +23,11 @@ class ProductionModule {
         Activity = activity;
     }
 
-    @Provides @Singleton SensorManager provideSensorManager() { // note to self: should this be a singleton for the real thing?
+    @Provides @Singleton SensorManager provideSensorManager() {
         return (SensorManager) Activity.getSystemService(Context.SENSOR_SERVICE);
+    }
+
+    @Provides @Singleton ProgressUpdateInterface provideProgressUpdate() {
+        return new ProgressUpdate();
     }
 }

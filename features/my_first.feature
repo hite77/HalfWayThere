@@ -10,5 +10,5 @@ Feature: Initial Screen
 	And I touch the "Set Goal Steps" text
 	And I enter "10000" into "GoalEditText"
 	And I touch the "Ok" text
-	
-	Then I expect atmost "2%" difference when comparing with "initial_screen.png"
+
+	Then I expect atmost "1%" difference when comparing with "initial_screen.png"

@@ -19,7 +19,11 @@ class TestModule{
     }
 
     private final SensorManager sensorManager = Mockito.mock(SensorManager.class);
+    private final ProgressUpdateInterface progressUpdateMock = Mockito.mock(ProgressUpdateInterface.class);
 
     @Provides
     public SensorManager provideSensorManager() { return sensorManager; }
+
+    @Provides
+    public ProgressUpdateInterface provideProgressUpdate() { return progressUpdateMock;}
 }
