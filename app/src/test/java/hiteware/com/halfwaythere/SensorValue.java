@@ -18,9 +18,8 @@ class SensorValue
         try {
             Field valuesField = SensorEvent.class.getField("values");
             valuesField.setAccessible(true);
-            float[] sensorValues = values;
             try {
-                valuesField.set(sensorEvent, sensorValues);
+                valuesField.set(sensorEvent, values);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

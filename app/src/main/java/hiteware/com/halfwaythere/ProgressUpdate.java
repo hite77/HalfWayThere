@@ -4,11 +4,11 @@ package hiteware.com.halfwaythere;
  * Created on 6/15/15.
  */
 public class ProgressUpdate implements ProgressUpdateInterface {
-    CircularProgressWithHalfWay progress;
-    int Steps;
-    int Goal;
-    boolean GoalSet = false;
-    boolean StepsSet = false;
+    private CircularProgressWithHalfWay progress;
+    private int Steps;
+    private int Goal;
+    private boolean GoalSet = false;
+    private boolean StepsSet = false;
 
     private void SetStatus() {
         float percentage;

@@ -12,11 +12,6 @@ import static org.mockito.Mockito.verify;
  */
 public class ProgressUpdateUnitTest {
 
-    private float CalculateProgress(int currentSteps, int goalSteps)
-    {
-        return ((float) currentSteps / goalSteps) * 100;
-    }
-
     @Test
     public void WhenSetStatusIsSetThenCircularProgressGetsUpdated()
     {
@@ -26,7 +21,7 @@ public class ProgressUpdateUnitTest {
 
         progressUpdate.SetSteps(10);
         progressUpdate.SetGoal(100);
-        verify(progressIndication, times(1)).setProgress(CalculateProgress(10, 100));
+        verify(progressIndication, times(1)).setProgress(10);
     }
 
     @Test

@@ -14,16 +14,19 @@ import android.view.View;
  */
 
 public class CircularProgressWithHalfWay extends View {
-     private float strokeWidth = 4;
+    private float strokeWidth = 4;
     private float progress = 0;
     private int min = 0;
     private int max = 100;
-    private int startAngle = -90;
     private int color = Color.GREEN;
-    private int backgroundColor = Color.DKGRAY;
     private RectF rectF;
     private Paint backgroundPaint;
     private Paint foregroundPaint;
+
+    public CircularProgressWithHalfWay(Context context)
+    {
+        super(context);
+    }
 
     public CircularProgressWithHalfWay(Context context, AttributeSet attrs)
     {
@@ -44,10 +47,10 @@ public class CircularProgressWithHalfWay extends View {
         } finally {
             typedArray.recycle();
         }
-
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        backgroundPaint.setColor(adjustAlpha(backgroundColor, 0.3f));
+        int backgroundColor = Color.DKGRAY;
+        backgroundPaint.setColor(adjustAlpha(backgroundColor));
         backgroundPaint.setStyle(Paint.Style.STROKE);
         backgroundPaint.setStrokeWidth(strokeWidth);
 
@@ -57,9 +60,9 @@ public class CircularProgressWithHalfWay extends View {
         foregroundPaint.setStrokeWidth(strokeWidth);
     }
 
-    private int adjustAlpha(int color, float factor)
+    private int adjustAlpha(int color)
     {
-        int alpha = Math.round(Color.alpha(color) * factor);
+        int alpha = Math.round(Color.alpha(color) * 0.3f);
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
@@ -82,6 +85,7 @@ public class CircularProgressWithHalfWay extends View {
 
         canvas.drawOval(rectF, backgroundPaint);
         float angle = 360 * progress / max;
+        int startAngle = -90;
         canvas.drawArc(rectF, startAngle, angle, false, foregroundPaint);
     }
 

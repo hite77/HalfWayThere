@@ -35,7 +35,10 @@ public class MainActivityFragment extends Fragment{
         filter.addAction(StepService.ACTION_GOAL_CHANGED);
 
         ((InjectableApplication)getActivity().getApplication()).inject(this);
-        mProgressUpdate.SetCircularProgress((CircularProgressWithHalfWay) getView().findViewById(R.id.circularProgressWithHalfWay));
+
+        if (null != getView() && null != getView().findViewById(R.id.circularProgressWithHalfWay)) {
+            mProgressUpdate.SetCircularProgress((CircularProgressWithHalfWay) getView().findViewById(R.id.circularProgressWithHalfWay));
+        }
 
         getActivity().registerReceiver(mStatusReceiver, filter);
         requestStepsFromService();
@@ -64,8 +67,7 @@ public class MainActivityFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
     private void updateStatus()
