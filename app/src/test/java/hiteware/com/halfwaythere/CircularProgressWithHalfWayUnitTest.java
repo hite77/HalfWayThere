@@ -1,14 +1,17 @@
 package hiteware.com.halfwaythere;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.AttributeSet;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -21,6 +24,8 @@ import static org.mockito.Mockito.verify;
  * Created on 6/16/15.
  */
 
+@RunWith(CustomRobolectricRunner.class)
+@Config(constants = BuildConfig.class)
 public class CircularProgressWithHalfWayUnitTest {
     CircularProgressWithHalfWay progress;
     Canvas mockCanvas;
@@ -28,14 +33,18 @@ public class CircularProgressWithHalfWayUnitTest {
     @Before
     public void Setup()
     {
-        Context context = Mockito.mock(Context.class);
-        progress = new CircularProgressWithHalfWay(context);
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        AttributeSet attributes = Mockito.mock(AttributeSet.class);
+
+        progress = new CircularProgressWithHalfWay(createdActivity, attributes);
         mockCanvas = Mockito.mock(Canvas.class);
     }
+
 
     @SuppressLint("WrongCall") //onDraw uses the passed canvas, draw does not.
     private void DrawToMockCanvas()
     {
+        progress.onMeasure(300, 300);
         progress.onDraw(mockCanvas);
     }
 

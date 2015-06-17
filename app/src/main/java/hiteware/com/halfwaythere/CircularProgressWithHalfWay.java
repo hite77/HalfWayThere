@@ -23,11 +23,6 @@ public class CircularProgressWithHalfWay extends View {
     private Paint backgroundPaint;
     private Paint foregroundPaint;
 
-    public CircularProgressWithHalfWay(Context context)
-    {
-        super(context);
-    }
-
     public CircularProgressWithHalfWay(Context context, AttributeSet attrs)
     {
         super(context, attrs);
