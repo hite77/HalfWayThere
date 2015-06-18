@@ -45,4 +45,22 @@ public class ProgressUpdate implements ProgressUpdateInterface {
             SetStatus();
         }
     }
+
+    @Override
+    public boolean SetHalfWay(int halfway) {
+        if (0 == Goal || halfway > Goal || null == progress)
+        {
+            return false;
+        }
+        float angle = ((float)halfway/Goal) * 360;
+        progress.setHalfWay(angle);
+        return true;
+    }
+
+    @Override
+    public void ClearHalfWay() {
+        if (null != progress) {
+            progress.clearHalfWay();
+        }
+    }
 }
