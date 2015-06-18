@@ -25,4 +25,13 @@ public class OnScreenTextTest {
 
         assertThat(((TextView) createdActivity.findViewById(R.id.steps_title)).getText().toString(), equalTo("Steps"));
     }
+
+    @Test
+    public void whenStartedHalfWayThereButtonIsDisplayed()
+    {
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        assertThat(((TextView) createdActivity.findViewById(R.id.HalfWayToggle)).getText().toString(), equalTo("HalfWayThere"));
+        assertThat(((TextView) createdActivity.findViewById(R.id.HalfWayValue)).getText().toString(), equalTo(""));
+    }
 }

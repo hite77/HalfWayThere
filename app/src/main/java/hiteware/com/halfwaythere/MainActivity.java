@@ -9,6 +9,8 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    final DialogUtility util = new DialogUtility();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,12 +39,11 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_set_current_steps) {
-            DialogUtility util = new DialogUtility();
+
             util.CollectCurrentSteps(this);
             return true;
         }
         if (id == R.id.action_set_goal_steps) {
-            DialogUtility util = new DialogUtility();
             util.CollectGoalSteps(this);
             return true;
         }

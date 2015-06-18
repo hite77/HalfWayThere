@@ -14,13 +14,13 @@
         android:layout_height="200dp"
         app:progress= "35"
         app:progressBarThickness="4dp"
-        android:layout_alignParentBottom="true"
         android:layout_below="@+id/goal_value"
+        android:id="@+id/circularProgressWithHalfWay"
+        android:layout_above="@+id/HalfWayToggle"
+        android:layout_alignRight="@+id/goal_value"
+        android:layout_alignEnd="@+id/goal_value"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:id="@+id/circularProgressWithHalfWay"/>
+        android:layout_alignParentStart="true" />
 
     <TextView android:text="@string/steps" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,18 +36,32 @@
         android:layout_height="wrap_content"
         android:text="@string/goal_title"
         android:id="@+id/textView"
-        android:layout_below="@+id/step_value"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/circularProgressWithHalfWay"
+        android:layout_alignEnd="@+id/circularProgressWithHalfWay" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/goal_value"
         android:layout_below="@+id/textView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/half_way_there_button"
+        android:id="@+id/HalfWayToggle"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/HalfWayValue"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

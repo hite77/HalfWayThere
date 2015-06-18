@@ -99,6 +99,30 @@ public class MainActivityFragmentUnitTest {
     }
 
     @Test
+    public void whenHalfWayButtonIsClickedThenBroadcastIsSentToService()
+    {
+
+    }
+
+//    @Test
+//    public void whenHalfWayButtonIsClickedThenCountIsUpdatedForHalfWayAndProgressUpdateIsUpdated()
+//    {
+//
+//    }
+//
+//    @Test
+//    public void whenHalfWayButtonIsClickedAndIsInvalidFromProgressUpdateThenNoBroadcast()
+//    {
+//
+//    }
+//
+//    @Test
+//    public void whenServiceBroadcastsAClearThenTextIsClearedAndProgressUpdateIsCleared()
+//    {
+//
+//    }
+
+    @Test
     public void whenActivityIsPausedItUnregistersReceiver() {
         ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();
         CreatedActivity = (MainActivity) controller.get();
