@@ -111,4 +111,8 @@ public class CircularProgressWithHalfWay extends View {
         halfWaySet = true;
         invalidate();
     }
+
+    public void clearHalfWay() {
+        halfWaySet = false;
+    }
 }

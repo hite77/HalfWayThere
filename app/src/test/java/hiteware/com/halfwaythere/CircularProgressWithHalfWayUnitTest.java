@@ -167,4 +167,14 @@ public class CircularProgressWithHalfWayUnitTest {
 
         verify(mockCanvas, times(0)).drawLine(anyFloat(),anyFloat(),anyFloat(),anyFloat(),any(Paint.class));
     }
+
+    @Test
+    public void WhenAngleIsSetAndThenIsClearedThenLineIsNotDrawn()
+    {
+        progress.setHalfWay(15);
+        progress.clearHalfWay();
+
+        DrawToMockCanvas();
+        verify(mockCanvas, times(0)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), any(Paint.class));
+    }
 }
