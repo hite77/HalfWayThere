@@ -22,6 +22,8 @@ public class CircularProgressWithHalfWay extends View {
     private RectF rectF;
     private Paint backgroundPaint;
     private Paint foregroundPaint;
+    private float halfWay;
+    private boolean halfWaySet = false;
 
     public CircularProgressWithHalfWay(Context context, AttributeSet attrs)
     {
@@ -74,19 +76,39 @@ public class CircularProgressWithHalfWay extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas)
-    {
+    protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
         canvas.drawOval(rectF, backgroundPaint);
         float angle = 360 * progress / max;
         int startAngle = -90;
         canvas.drawArc(rectF, startAngle, angle, false, foregroundPaint);
+
+        if (halfWaySet) {
+            DrawHalfWayLine(canvas);
+        }
+    }
+
+    private void DrawHalfWayLine(Canvas canvas) {
+        float angleRadian = (float) (halfWay * (3.14156) / 180);
+        float radius = rectF.centerY() - rectF.top;
+        canvas.drawLine(rectF.centerX(),
+                rectF.centerY(),
+                rectF.centerX() + radius * ((float) Math.sin(angleRadian)),
+                rectF.centerY() - radius * ((float) Math.cos(angleRadian)),
+                foregroundPaint);
     }
 
     public void setProgress(float progress)
     {
         this.progress = progress;
+        invalidate();
+    }
+
+    public void setHalfWay(float halfWay)
+    {
+        this.halfWay = halfWay;
+        halfWaySet = true;
         invalidate();
     }
 }

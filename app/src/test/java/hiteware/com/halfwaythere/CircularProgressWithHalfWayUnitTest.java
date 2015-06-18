@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
@@ -29,6 +30,25 @@ import static org.mockito.Mockito.verify;
 public class CircularProgressWithHalfWayUnitTest {
     CircularProgressWithHalfWay progress;
     Canvas mockCanvas;
+
+    class LineEndpoints {
+        public final float centerX;
+        public final float centerY;
+        public final float stopX;
+        public final float stopY;
+
+        public LineEndpoints(float angle, RectF rectF)
+        {
+            centerX = rectF.centerX();
+            centerY = rectF.centerY();
+
+            float radius = centerY-rectF.top;
+            float angleRadians = (float)(angle*(3.14156)/180);
+
+            stopX = centerX+radius*(float)Math.sin(angleRadians);
+            stopY = centerY-radius*(float)Math.cos(angleRadians);
+        }
+    }
 
     @Before
     public void Setup()
@@ -98,5 +118,53 @@ public class CircularProgressWithHalfWayUnitTest {
     {
         DrawToMockCanvas();
         verify(mockCanvas).drawOval(any(RectF.class), any(Paint.class));
+    }
+
+    @Test
+    public void WhenAngleIsSetForHalfWayThenLineIsDrawnAtTheAngleSpecified()
+    {
+        float angleForHalfWay = 180;
+        progress.setHalfWay(angleForHalfWay);
+
+        DrawToMockCanvas();
+        ArgumentCaptor<RectF> rectF = ArgumentCaptor.forClass(RectF.class);
+        verify(mockCanvas).drawOval(rectF.capture(), any(Paint.class));
+
+        LineEndpoints lineEndpoints = new LineEndpoints(angleForHalfWay,rectF.getValue());
+
+        verify(mockCanvas).drawLine(
+                eq(lineEndpoints.centerX),
+                eq(lineEndpoints.centerY),
+                eq(lineEndpoints.stopX),
+                eq(lineEndpoints.stopY),
+                any(Paint.class));
+    }
+
+    @Test
+    public void WhenAngleIsSetToAnArbitraryAngleThenLineIsDrawnAtTheAngleSpecified()
+    {
+        float angle = 115;
+        progress.setHalfWay(angle);
+
+        DrawToMockCanvas();
+        ArgumentCaptor<RectF> rectF = ArgumentCaptor.forClass(RectF.class);
+        verify(mockCanvas).drawOval(rectF.capture(), any(Paint.class));
+
+        LineEndpoints lineEndpoints = new LineEndpoints(angle,rectF.getValue());
+
+        verify(mockCanvas).drawLine(
+                eq(lineEndpoints.centerX),
+                eq(lineEndpoints.centerY),
+                eq(lineEndpoints.stopX),
+                eq(lineEndpoints.stopY),
+                any(Paint.class));
+    }
+
+    @Test
+    public void WhenAngleIsNotSetForHalfWayThenLineIsNotDrawn()
+    {
+        DrawToMockCanvas();
+
+        verify(mockCanvas, times(0)).drawLine(anyFloat(),anyFloat(),anyFloat(),anyFloat(),any(Paint.class));
     }
 }
