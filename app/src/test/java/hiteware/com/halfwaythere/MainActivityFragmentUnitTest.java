@@ -1,6 +1,7 @@
 package hiteware.com.halfwaythere;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ import org.robolectric.util.ActivityController;
 import java.util.List;
 
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNotSame;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.atLeastOnce;
@@ -32,7 +34,6 @@ import static org.robolectric.Shadows.shadowOf;
 @Config(constants = BuildConfig.class)
 public class MainActivityFragmentUnitTest {
     private MainActivity CreatedActivity;
-
 
     @Test
     public void whenTheAppIsRunningTheServiceWillBeStarted() {
@@ -101,22 +102,54 @@ public class MainActivityFragmentUnitTest {
     @Test
     public void whenHalfWayButtonIsClickedThenBroadcastIsSentToService()
     {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        CreatedActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
 
+        CreatedActivity.findViewById(R.id.HalfWayToggle).performClick();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertNotSame(testReceiver.getActualHalfWay(), -1);
     }
 
-//    @Test
-//    public void whenHalfWayButtonIsClickedThenCountIsUpdatedForHalfWayAndProgressUpdateIsUpdated()
-//    {
+    @Test
+    public void whenHalfWayButtonIsClickedThenCountIsUpdatedForHalfWayAndProgressUpdateIsUpdated()
+    {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        Intent broadcastSteps = new Intent();
+        broadcastSteps.setAction(StepService.ACTION_STEPS_OCCURRED);
+        int steps = 1000;
+        broadcastSteps.putExtra(StepService.STEPS_OCCURRED, steps);
+        CreatedActivity.sendBroadcast(broadcastSteps);
+
+        Intent broadcastGoal = new Intent();
+        broadcastGoal.setAction(StepService.ACTION_GOAL_CHANGED);
+        int goal = 14000;
+        broadcastGoal.putExtra(StepService.GOAL_SET, goal);
+        CreatedActivity.sendBroadcast(broadcastGoal);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        CreatedActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
+
+        CreatedActivity.findViewById(R.id.HalfWayToggle).performClick();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        TextView halfWayValue = (TextView) CreatedActivity.findViewById(R.id.HalfWayValue);
+
+        assertThat(testReceiver.getActualHalfWay(), equalTo(1000 + (13000 / 2)));
+        assertThat(halfWayValue.getText().toString(), equalTo("7500"));
+    }
 //
-//    }
-//
-//    @Test
+//    @Test //TODO: whenHalfWayButtonIsClickedAndIsInvalidFromProgressUpdateThenNoBroadcast
 //    public void whenHalfWayButtonIsClickedAndIsInvalidFromProgressUpdateThenNoBroadcast()
 //    {
 //
 //    }
 //
-//    @Test
+//    @Test //TODO: whenServiceBroadcastsAClearThenTextIsClearedAndProgressUpdateIsCleared
 //    public void whenServiceBroadcastsAClearThenTextIsClearedAndProgressUpdateIsCleared()
 //    {
 //

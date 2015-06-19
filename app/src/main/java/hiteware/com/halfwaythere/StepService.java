@@ -27,6 +27,8 @@ public class StepService extends Service implements SensorEventListener
     public static final String GOAL_SET = "goal.set";
     public static final String ACTION_GOAL_REQUEST = "halfWayThere.requestGoal";
     public static final String ACTION_GOAL_CHANGED = "halfWayThere.changed";
+    public static final String ACTION_HALF_WAY_SET = "halfWayThere.halfWaySet";
+    public static final String HALF_WAY_VALUE = "halfWayValue";
     private int currentSteps = 0;
     private int goal = 0;
     private MyBroadCastReceiver receiver;

@@ -1,8 +1,6 @@
 package hiteware.com.halfwaythere;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
@@ -15,10 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
-import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowLooper;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -39,30 +35,6 @@ public class StepServiceUnitTest {
     private TestInjectableApplication application;
     private SensorManager sensorManager;
     private StepService mStepService;
-
-    class StepServiceUnitTestReceiver extends BroadcastReceiver {
-        private int actualSteps = -1;
-        private int actualGoal = -1;
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ShadowIntent shadowIntent = Shadows.shadowOf(intent);
-            if (shadowIntent.hasExtra(StepService.STEPS_OCCURRED))
-            {
-                actualSteps = shadowIntent.getIntExtra(
-                        StepService.STEPS_OCCURRED, 0);
-            }
-            if (shadowIntent.hasExtra(StepService.GOAL_SET))
-            {
-                actualGoal = shadowIntent.getIntExtra(StepService.GOAL_SET, 0);
-            }
-        }
-
-        public int getActualSteps() {
-            return actualSteps;
-        }
-        public int getActualGoal() { return actualGoal; }
-    }
 
     @Before
     public void setUp() {

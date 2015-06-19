@@ -43,6 +43,19 @@ public class MainActivityFragment extends Fragment{
         getActivity().registerReceiver(mStatusReceiver, filter);
         requestStepsFromService();
         requestGoalFromService();
+
+        getView().findViewById(R.id.HalfWayToggle).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent halfWaySet = new Intent();
+                halfWaySet.setAction(StepService.ACTION_HALF_WAY_SET);
+                int halfWayValue = currentSteps + (goal-currentSteps)/2;
+                halfWaySet.putExtra(StepService.HALF_WAY_VALUE, halfWayValue);
+                getActivity().sendBroadcast(halfWaySet);
+                ((TextView)getActivity().findViewById(R.id.HalfWayValue)).setText(Integer.toString(halfWayValue));
+            }
+        });
+
     }
 
     private void requestStepsFromService() {
