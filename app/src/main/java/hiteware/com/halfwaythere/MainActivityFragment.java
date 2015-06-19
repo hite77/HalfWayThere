@@ -53,6 +53,7 @@ public class MainActivityFragment extends Fragment{
                 halfWaySet.putExtra(StepService.HALF_WAY_VALUE, halfWayValue);
                 getActivity().sendBroadcast(halfWaySet);
                 ((TextView)getActivity().findViewById(R.id.HalfWayValue)).setText(Integer.toString(halfWayValue));
+                mProgressUpdate.SetHalfWay(halfWayValue);
             }
         });
 

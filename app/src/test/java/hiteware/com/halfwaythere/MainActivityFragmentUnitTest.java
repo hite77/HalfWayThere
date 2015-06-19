@@ -115,7 +115,9 @@ public class MainActivityFragmentUnitTest {
     @Test
     public void whenHalfWayButtonIsClickedThenCountIsUpdatedForHalfWayAndProgressUpdateIsUpdated()
     {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        ((TestInjectableApplication) RuntimeEnvironment.application).setMock();
+
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
 
         Intent broadcastSteps = new Intent();
         broadcastSteps.setAction(StepService.ACTION_STEPS_OCCURRED);
@@ -134,6 +136,8 @@ public class MainActivityFragmentUnitTest {
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         CreatedActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
 
+        ProgressUpdateInterface progressUpdate = ((TestInjectableApplication) RuntimeEnvironment.application).testModule.provideProgressUpdate();
+
         CreatedActivity.findViewById(R.id.HalfWayToggle).performClick();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -141,6 +145,8 @@ public class MainActivityFragmentUnitTest {
 
         assertThat(testReceiver.getActualHalfWay(), equalTo(1000 + (13000 / 2)));
         assertThat(halfWayValue.getText().toString(), equalTo("7500"));
+
+        verify(progressUpdate, atLeastOnce()).SetHalfWay(7500);
     }
 //
 //    @Test //TODO: whenHalfWayButtonIsClickedAndIsInvalidFromProgressUpdateThenNoBroadcast
