@@ -3,7 +3,6 @@ package hiteware.com.halfwaythere;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.text.Editable;
 import android.text.InputType;
 import android.widget.EditText;
@@ -13,20 +12,6 @@ import android.widget.EditText;
  */
 class DialogUtility
 {
-        private void SetSteps(Context context, int value) {
-            Intent broadcastSteps = new Intent();
-            broadcastSteps.setAction(StepService.ACTION_SET_STEPS);
-            broadcastSteps.putExtra(StepService.STEPS_OCCURRED, value);
-            context.sendBroadcast(broadcastSteps);
-        }
-
-        private void SetGoal(Context context, int value) {
-            Intent broadcastGoal = new Intent();
-            broadcastGoal.setAction(StepService.ACTION_GOAL_SET);
-            broadcastGoal.putExtra(StepService.GOAL_SET, value);
-            context.sendBroadcast(broadcastGoal);
-        }
-
         public void CollectCurrentSteps(final Context context)
     {
         final EditText input = new EditText(context);
@@ -41,8 +26,8 @@ class DialogUtility
                     public void onClick(DialogInterface dialog, int whichButton) {
                         Editable value = input.getText();
                         int countOfSteps = Integer.parseInt(value.toString());
-                        SetSteps(context, countOfSteps);
-                }})
+                        BroadcastHelper.sendBroadcast(context, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, countOfSteps);
+                    }})
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                     }
@@ -64,7 +49,7 @@ class DialogUtility
                     public void onClick(DialogInterface dialog, int whichButton) {
                         Editable value = input.getText();
                         int goal = Integer.parseInt(value.toString());
-                        SetGoal(context, goal);
+                        BroadcastHelper.sendBroadcast(context, StepService.ACTION_GOAL_SET, StepService.GOAL_SET, goal);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

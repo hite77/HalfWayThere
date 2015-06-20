@@ -34,13 +34,6 @@ import static org.robolectric.Shadows.shadowOf;
 public class MainActivityFragmentUnitTest {
     private MainActivity CreatedActivity;
 
-    private void sendBroadcast(String action, String extra, int value) {
-        Intent broadcast = new Intent();
-        broadcast.setAction(action);
-        broadcast.putExtra(extra, value);
-        CreatedActivity.sendBroadcast(broadcast);
-    }
-
     @Test
     public void whenTheAppIsRunningTheServiceWillBeStarted() {
         ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();
@@ -55,7 +48,7 @@ public class MainActivityFragmentUnitTest {
     public void whenBroadcastOfStepsIsReceivedThenStepsAreDisplayed() {
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        sendBroadcast(StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 45);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 45);
 
         assertThat(((TextView) CreatedActivity.findViewById(R.id.step_value)).getText().toString(), equalTo("45"));
     }
@@ -68,8 +61,8 @@ public class MainActivityFragmentUnitTest {
 
         int expected = 45;
         int expectedGoal = 14000;
-        sendBroadcast(StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, expected);
-        sendBroadcast(StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, expectedGoal);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, expected);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, expectedGoal);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -85,7 +78,7 @@ public class MainActivityFragmentUnitTest {
     public void whenBroadcastOfGoalIsReceivedThenGoalIsDisplayed() {
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-        sendBroadcast(StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
 
         assertThat(((TextView) CreatedActivity.findViewById(R.id.goal_value)).getText().toString(), equalTo("14000"));
     }
@@ -95,8 +88,8 @@ public class MainActivityFragmentUnitTest {
     {
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
 
-        sendBroadcast(StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 1000);
-        sendBroadcast(StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 1000);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -117,8 +110,8 @@ public class MainActivityFragmentUnitTest {
 
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
 
-        sendBroadcast(StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 4653);
-        sendBroadcast(StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 5778);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 4653);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 5778);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -133,8 +126,8 @@ public class MainActivityFragmentUnitTest {
     {
         CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
 
-        sendBroadcast(StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 1333);
-        sendBroadcast(StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 2000);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 1333);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 2000);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -147,8 +140,25 @@ public class MainActivityFragmentUnitTest {
         assertThat(halfWayValue.getText().toString(), equalTo("1666"));
     }
 
-//    @Test //TODO: whenHalfWayButtonIsClickedAndIsInvalidFromProgressUpdateThenNoBroadcast
-//    public void whenHalfWayButtonIsClickedAndIsInvalidFromProgressUpdateThenNoBroadcast()
+    @Test
+    public void whenHalfWayButtonIsClickedAndIsInvalidBecauseGoalIsZeroThenNoBroadcast()
+    {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 0);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        CreatedActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
+
+        CreatedActivity.findViewById(R.id.HalfWayToggle).performClick();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertThat(testReceiver.getActualHalfWay(), equalTo(-1));
+    }
+    // no setting of text when Invalid.
+
 //    {
 //
 //    }

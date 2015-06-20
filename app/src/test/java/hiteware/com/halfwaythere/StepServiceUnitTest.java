@@ -45,20 +45,6 @@ public class StepServiceUnitTest {
         mStepService.onStartCommand(new Intent(), 0, 0);
     }
 
-    public void SetSteps(int value) {
-        Intent broadcastSteps = new Intent();
-        broadcastSteps.setAction(StepService.ACTION_SET_STEPS);
-        broadcastSteps.putExtra(StepService.STEPS_OCCURRED, value);
-        application.sendBroadcast(broadcastSteps);
-    }
-
-    private void SetGoal(int goal) {
-        Intent broadcastGoal = new Intent();
-        broadcastGoal.setAction(StepService.ACTION_GOAL_SET);
-        broadcastGoal.putExtra(StepService.GOAL_SET, goal);
-        application.sendBroadcast(broadcastGoal);
-    }
-
     @Test
     public void GivenStepServiceCreatedThenTheSensorManagerAsksForAccelerometer() {
         verify(sensorManager, times(1)).getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -95,7 +81,7 @@ public class StepServiceUnitTest {
 
         int setStepsValue = 10;
 
-        SetSteps(setStepsValue);
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, setStepsValue);
 
         mStepService.onDestroy();
         mStepService.onStartCommand(new Intent(), 0, 0);
@@ -108,7 +94,7 @@ public class StepServiceUnitTest {
     {
         int setStepsValue = 13;
 
-        SetSteps(setStepsValue);
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, setStepsValue);
 
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -121,7 +107,7 @@ public class StepServiceUnitTest {
     public void GivenServiceGoesThroughTwoCreateDestroyCyclesWhenActivityReadsTheStepsItShouldBeCorrect()
     {
         int setStepsValue = 93;
-        SetSteps(setStepsValue);
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, setStepsValue);
 
         mStepService.onDestroy();
         mStepService.onStartCommand(new Intent(), 0, 0);
@@ -149,7 +135,7 @@ public class StepServiceUnitTest {
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_GOAL_CHANGED));
 
         int expectedGoal = 15000;
-        SetGoal(expectedGoal);
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_GOAL_SET, StepService.GOAL_SET, expectedGoal);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -166,7 +152,7 @@ public class StepServiceUnitTest {
 
         int goal = 10;
 
-        SetGoal(goal);
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_GOAL_SET, StepService.GOAL_SET, goal);
 
         mStepService.onDestroy();
         mStepService.onStartCommand(new Intent(), 0, 0);
@@ -179,7 +165,7 @@ public class StepServiceUnitTest {
     {
         int setGoalValue = 13000;
 
-        SetGoal(setGoalValue);
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_GOAL_SET, StepService.GOAL_SET, setGoalValue);
 
         MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -192,7 +178,7 @@ public class StepServiceUnitTest {
     public void GivenServiceGoesThroughTwoCreateDestroyCyclesWhenActivityReadsTheGoalItShouldBeCorrect()
     {
         int setGoal = 93;
-        SetGoal(setGoal);
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_GOAL_SET, StepService.GOAL_SET, setGoal);
 
         mStepService.onDestroy();
         mStepService = null;

@@ -47,28 +47,25 @@ public class MainActivityFragment extends Fragment{
         getView().findViewById(R.id.HalfWayToggle).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent halfWaySet = new Intent();
-                halfWaySet.setAction(StepService.ACTION_HALF_WAY_SET);
-                int halfWayValue = currentSteps + (goal-currentSteps)/2;
-                halfWaySet.putExtra(StepService.HALF_WAY_VALUE, halfWayValue);
-                getActivity().sendBroadcast(halfWaySet);
+                int halfWayValue = currentSteps + (goal - currentSteps) / 2;
+                boolean isOK = mProgressUpdate.SetHalfWay(halfWayValue);
+
+                if (isOK) {
+                    BroadcastHelper.sendBroadcast(getActivity(), StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, halfWayValue);
+                }
                 ((TextView)getActivity().findViewById(R.id.HalfWayValue)).setText(Integer.toString(halfWayValue));
-                mProgressUpdate.SetHalfWay(halfWayValue);
+
             }
         });
 
     }
 
     private void requestStepsFromService() {
-        Intent requestSteps = new Intent();
-        requestSteps.setAction(StepService.ACTION_REQUEST_STEPS);
-        getActivity().sendBroadcast(requestSteps);
+        BroadcastHelper.sendBroadcast(getActivity(), StepService.ACTION_REQUEST_STEPS);
     }
 
     private void requestGoalFromService() {
-        Intent requestGoal = new Intent();
-        requestGoal.setAction(StepService.ACTION_GOAL_REQUEST);
-        getActivity().sendBroadcast(requestGoal);
+        BroadcastHelper.sendBroadcast(getActivity(), StepService.ACTION_GOAL_REQUEST);
     }
 
     @Override

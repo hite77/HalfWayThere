@@ -56,11 +56,11 @@ public class StepService extends Service implements SensorEventListener
         SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
 
         currentSteps = prefs.getInt("currentSteps", 0);
-        SendStepBroadcast(currentSteps);
+        BroadcastHelper.sendBroadcast(this, ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
         softwareStepCounter.SetSteps(currentSteps);
 
         goal = prefs.getInt("goal", 0);
-        SendGoalBroadcast(goal);
+        BroadcastHelper.sendBroadcast(this, ACTION_GOAL_CHANGED, GOAL_SET, goal);
 
         return START_STICKY;
     }
@@ -82,17 +82,17 @@ public class StepService extends Service implements SensorEventListener
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ACTION_REQUEST_STEPS))
             {
-                SendStepBroadcast(currentSteps);
+                BroadcastHelper.sendBroadcast(getApplication(), ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
             }
             else if (intent.getAction().equals(ACTION_GOAL_REQUEST))
             {
-                SendGoalBroadcast(goal);
+                BroadcastHelper.sendBroadcast(getApplication(), ACTION_GOAL_CHANGED, GOAL_SET, goal);
             }
             else if (intent.getAction().equals(ACTION_SET_STEPS))
             {
                 currentSteps = intent.getIntExtra(
                         STEPS_OCCURRED, -1);
-                SendStepBroadcast(currentSteps);
+                BroadcastHelper.sendBroadcast(getApplication(), ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
                 softwareStepCounter.SetSteps(currentSteps);
                 SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
                 prefs.edit().putInt("currentSteps", currentSteps).apply();
@@ -100,7 +100,7 @@ public class StepService extends Service implements SensorEventListener
             else if (intent.getAction().equals(ACTION_GOAL_SET))
             {
                 goal = intent.getIntExtra(GOAL_SET, -1);
-                SendGoalBroadcast(goal);
+                BroadcastHelper.sendBroadcast(getApplication(),ACTION_GOAL_CHANGED,GOAL_SET,goal);
                 SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
                 prefs.edit().putInt("goal", goal).apply();
             }
@@ -114,22 +114,8 @@ public class StepService extends Service implements SensorEventListener
             currentSteps = softwareStepCounter.GetSteps();
             SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
             prefs.edit().putInt("currentSteps", currentSteps).apply();
-            SendStepBroadcast(currentSteps);
+            BroadcastHelper.sendBroadcast(this, ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
         }
-   }
-
-    private void SendStepBroadcast(int steps) {
-        Intent broadcastSteps = new Intent();
-        broadcastSteps.setAction(ACTION_STEPS_OCCURRED);
-        broadcastSteps.putExtra(STEPS_OCCURRED, steps);
-        this.sendBroadcast(broadcastSteps);
-    }
-
-    private void SendGoalBroadcast(int goal) {
-        Intent broadcastGoal = new Intent();
-        broadcastGoal.setAction(ACTION_GOAL_CHANGED);
-        broadcastGoal.putExtra(GOAL_SET, goal);
-        this.sendBroadcast(broadcastGoal);
     }
 
     @Override
