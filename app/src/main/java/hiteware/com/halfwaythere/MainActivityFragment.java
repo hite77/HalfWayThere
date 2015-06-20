@@ -52,9 +52,13 @@ public class MainActivityFragment extends Fragment{
 
                 if (isOK) {
                     BroadcastHelper.sendBroadcast(getActivity(), StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, halfWayValue);
+                    ((TextView)getActivity().findViewById(R.id.HalfWayValue)).setText(Integer.toString(halfWayValue));
                 }
-                ((TextView)getActivity().findViewById(R.id.HalfWayValue)).setText(Integer.toString(halfWayValue));
-
+                else
+                {
+                    ((TextView)getActivity().findViewById(R.id.HalfWayValue)).setText("");
+                    mProgressUpdate.ClearHalfWay();
+                }
             }
         });
 

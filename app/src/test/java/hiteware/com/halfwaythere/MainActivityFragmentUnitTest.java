@@ -20,9 +20,11 @@ import java.util.List;
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 /**
@@ -157,11 +159,70 @@ public class MainActivityFragmentUnitTest {
 
         assertThat(testReceiver.getActualHalfWay(), equalTo(-1));
     }
-    // no setting of text when Invalid.
+    @Test
+    public void whenHalfWayButtonIsClickedAndIsInvalidBecauseHalfWayIsGreaterThenTextIsEmptyForHalfWay()
+    {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
 
-//    {
-//
-//    }
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 15000);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        CreatedActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
+
+        CreatedActivity.findViewById(R.id.HalfWayToggle).performClick();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        TextView halfWayValue = (TextView) CreatedActivity.findViewById(R.id.HalfWayValue);
+
+        assertThat(halfWayValue.getText().toString(), equalTo(""));
+    }
+
+    @Test
+    public void whenHalfWayButtonIsClickedAndIsValidThenItIsClickedWithInvalidThenTextIsEmptyForHalfWay()
+    {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 10000);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        CreatedActivity.findViewById(R.id.HalfWayToggle).performClick();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 15000);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        CreatedActivity.findViewById(R.id.HalfWayToggle).performClick();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        TextView halfWayValue = (TextView) CreatedActivity.findViewById(R.id.HalfWayValue);
+
+        assertThat(halfWayValue.getText().toString(), equalTo(""));
+    }
+
+    @Test
+    public void whenHalfWayButtonIsClickedAndProgressSaysIsValidThenItIsClickedWithProgressSayingInvalidThenProgressUpdateIsCleared()
+    {
+        ((TestInjectableApplication) RuntimeEnvironment.application).setMock();
+        ProgressUpdateInterface progressUpdate = ((TestInjectableApplication) RuntimeEnvironment.application).testModule.provideProgressUpdate();
+
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+
+        when(progressUpdate.SetHalfWay(anyInt())).thenReturn(true);
+
+        View halfWayButton = CreatedActivity.findViewById(R.id.HalfWayToggle);
+        halfWayButton.performClick();
+
+        when(progressUpdate.SetHalfWay(anyInt())).thenReturn(false);
+
+        halfWayButton.performClick();
+
+        verify(progressUpdate).ClearHalfWay();
+    }
 //
 //    @Test //TODO: whenServiceBroadcastsAClearThenTextIsClearedAndProgressUpdateIsCleared
 //    public void whenServiceBroadcastsAClearThenTextIsClearedAndProgressUpdateIsCleared()
