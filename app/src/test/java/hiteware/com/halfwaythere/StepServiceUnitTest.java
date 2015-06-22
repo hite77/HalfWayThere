@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Vibrator;
 import android.widget.TextView;
 
 import org.junit.Before;
@@ -20,6 +21,7 @@ import org.robolectric.shadows.ShadowLooper;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -210,4 +212,51 @@ public class StepServiceUnitTest {
 
         assertThat(testReceiver.getActualSteps(), equalTo(-1));
     }
+
+    //TODO: can set half way steps -- once steps are past half way then vibrate happens
+    @Test
+    public void GivenHalfWayHasBeenSetWhenStepsPassHalfWayThenPhoneVibrates()
+    {
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 12);
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        float value = SensorValue.CalculateForceToApplyOnEachAxisToGiveGValue((float) 2.01);
+        float peak[] = {value, value, value};
+        float lowValue[] = {0, 0, 0};
+
+        Vibrator vibrator = application.testModule.provideVibrator();
+
+        verify(vibrator, times(0)).vibrate(anyInt());
+
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(peak));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+
+        verify(vibrator, times(0)).vibrate(anyInt());
+
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(peak));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+
+        verify(vibrator).vibrate(2000);
+    }
+
+    //TODO: once vibrate for half way then should not vibrate on next step...
+    //TODO: on start emit a broadcast of the half way if half way is set....
+//    @Test
+//    public void GivenHalfWayIsSetWhenStepServiceIsRestartedThenHalfWayIsRebroadcast()
+//    {
+//        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+//
+//        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+//        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
+//
+//
+//    }
+
+    //TODO: goal changed, steps set, clear half way signal to fragment for it to clear the half way
+    //TODO: once half way is cleared, if it is restarted, then broadcast does not happen.
+
+    //TODO: steps happen, need to notify on goal achieved.
 }

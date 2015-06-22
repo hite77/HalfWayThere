@@ -2,6 +2,7 @@ package hiteware.com.halfwaythere;
 
 import android.content.Context;
 import android.hardware.SensorManager;
+import android.os.Vibrator;
 
 import javax.inject.Singleton;
 
@@ -29,5 +30,9 @@ class ProductionModule {
 
     @Provides @Singleton ProgressUpdateInterface provideProgressUpdate() {
         return new ProgressUpdate();
+    }
+
+    @Provides @Singleton Vibrator provideVibrator() {
+        return (Vibrator) Activity.getSystemService(Context.VIBRATOR_SERVICE);
     }
 }

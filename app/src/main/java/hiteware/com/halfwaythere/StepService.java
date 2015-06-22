@@ -11,6 +11,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
+import android.os.Vibrator;
 
 import javax.inject.Inject;
 
@@ -32,10 +33,15 @@ public class StepService extends Service implements SensorEventListener
     public static final String HALF_WAY_VALUE = "halfWayValue";
     private int currentSteps = 0;
     private int goal = 0;
+    private int halfWay;
+
     private MyBroadCastReceiver receiver;
 
     @Inject
     SensorManager sensorManager;
+
+    @Inject
+    Vibrator vibrator;
 
     private final SoftwareStepCounterInterface softwareStepCounter = new SoftwareStepCounter();
 
@@ -54,6 +60,8 @@ public class StepService extends Service implements SensorEventListener
         registerReceiver(receiver, new IntentFilter(ACTION_REQUEST_STEPS));
         registerReceiver(receiver, new IntentFilter(ACTION_GOAL_SET));
         registerReceiver(receiver, new IntentFilter(ACTION_GOAL_REQUEST));
+        registerReceiver(receiver, new IntentFilter(ACTION_HALF_WAY_SET));
+
         SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
 
         currentSteps = prefs.getInt("currentSteps", 0);
@@ -105,6 +113,10 @@ public class StepService extends Service implements SensorEventListener
                 SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
                 prefs.edit().putInt("goal", goal).apply();
             }
+            else if (intent.getAction().equals(ACTION_HALF_WAY_SET))
+            {
+                halfWay = intent.getIntExtra(HALF_WAY_VALUE, -1);
+            }
         }
     }
 
@@ -116,6 +128,9 @@ public class StepService extends Service implements SensorEventListener
             SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
             prefs.edit().putInt("currentSteps", currentSteps).apply();
             BroadcastHelper.sendBroadcast(this, ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
+            if (currentSteps > halfWay) {
+                vibrator.vibrate(2000);
+            }
         }
     }
 

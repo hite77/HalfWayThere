@@ -257,6 +257,9 @@ public class MainActivityFragmentUnitTest {
         assertThat(halfWayValue.getText().toString(), equalTo(""));
     }
 
+    //TODO: Set Halfway signal from StepService will set text start up text
+    //TODO: Set Halfway signal from StepService will set progress indicator start up progress indicator
+
     @Test
     public void whenActivityIsPausedItUnregistersReceiver() {
         ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();

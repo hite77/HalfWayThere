@@ -169,7 +169,7 @@ public class SoftwareStepCounterUnitTest {
     }
 
     @Test
-    public void WhenThePeakIsMoreThanTwoGForceThenNoStepsGenerated()
+    public void WhenThePeakIsMoreThanTwoGForceThenStepsGenerated()
     {
         float gForce = (float) 2.01;
         float componentValue = SensorValue.CalculateForceToApplyOnEachAxisToGiveGValue(gForce);
