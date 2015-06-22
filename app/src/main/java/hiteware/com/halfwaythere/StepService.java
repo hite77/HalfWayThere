@@ -34,6 +34,7 @@ public class StepService extends Service implements SensorEventListener
     private int currentSteps = 0;
     private int goal = 0;
     private int halfWay;
+    private boolean oneShotHalfWay = false;
 
     private MyBroadCastReceiver receiver;
 
@@ -116,6 +117,7 @@ public class StepService extends Service implements SensorEventListener
             else if (intent.getAction().equals(ACTION_HALF_WAY_SET))
             {
                 halfWay = intent.getIntExtra(HALF_WAY_VALUE, -1);
+                oneShotHalfWay = true;
             }
         }
     }
@@ -128,8 +130,9 @@ public class StepService extends Service implements SensorEventListener
             SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
             prefs.edit().putInt("currentSteps", currentSteps).apply();
             BroadcastHelper.sendBroadcast(this, ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
-            if (currentSteps > halfWay) {
+            if (oneShotHalfWay && (currentSteps > halfWay)) {
                 vibrator.vibrate(2000);
+                oneShotHalfWay = false;
             }
         }
     }

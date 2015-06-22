@@ -242,6 +242,32 @@ public class StepServiceUnitTest {
         verify(vibrator).vibrate(2000);
     }
 
+    @Test
+    public void GivenHalfWayHasBeenSetWhenStepsPassHalfWayThenPhoneVibratesOnceAndNotForEveryStep() {
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        float value = SensorValue.CalculateForceToApplyOnEachAxisToGiveGValue((float) 2.01);
+        float peak[] = {value, value, value};
+        float lowValue[] = {0, 0, 0};
+
+        Vibrator vibrator = application.testModule.provideVibrator();
+
+        verify(vibrator, times(0)).vibrate(anyInt());
+
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(peak));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+
+        verify(vibrator).vibrate(2000);
+
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(peak));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+
+        verify(vibrator, times(1)).vibrate(anyInt());
+    }
     //TODO: once vibrate for half way then should not vibrate on next step...
     //TODO: on start emit a broadcast of the half way if half way is set....
 //    @Test
