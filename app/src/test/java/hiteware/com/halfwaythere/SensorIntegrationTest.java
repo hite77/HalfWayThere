@@ -115,7 +115,7 @@ public class SensorIntegrationTest
     }
 
     @Test
-    public void GivenSetStepsIsCalledAndStepEvdntOccursAndServiceIsReconstructedThenCountShouldBeTwoMoreThanTheSetValue()
+    public void GivenSetStepsIsCalledAndStepEventOccursAndServiceIsReconstructedThenCountShouldBeTwoMoreThanTheSetValue()
     {
         int setStepsValue = 13;
 

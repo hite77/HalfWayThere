@@ -237,6 +237,25 @@ public class MainActivityFragmentUnitTest {
         verify(progressUpdate).ClearHalfWay();
     }
 
+    @Test
+    public void whenServiceBroadcastsAClearThenTextIsCleared()
+    {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 10000);
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        CreatedActivity.findViewById(R.id.HalfWayToggle).performClick();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_CLEAR_HALF_WAY);
+
+        TextView halfWayValue = (TextView) CreatedActivity.findViewById(R.id.HalfWayValue);
+
+        assertThat(halfWayValue.getText().toString(), equalTo(""));
+    }
 
     @Test
     public void whenActivityIsPausedItUnregistersReceiver() {

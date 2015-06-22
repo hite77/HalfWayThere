@@ -109,6 +109,7 @@ public class MainActivityFragment extends Fragment{
             }
             else if(intent.getAction().equals(StepService.ACTION_CLEAR_HALF_WAY)) {
                 mProgressUpdate.ClearHalfWay();
+                ((TextView) getActivity().findViewById(R.id.HalfWayValue)).setText("");
             }
         }
     }
