@@ -223,12 +223,20 @@ public class MainActivityFragmentUnitTest {
 
         verify(progressUpdate).ClearHalfWay();
     }
-//
-//    @Test //TODO: whenServiceBroadcastsAClearThenTextIsClearedAndProgressUpdateIsCleared
-//    public void whenServiceBroadcastsAClearThenTextIsClearedAndProgressUpdateIsCleared()
-//    {
-//
-//    }
+
+    @Test
+    public void whenServiceBroadcastsAClearThenTextIsClearedAndProgressUpdateIsCleared()
+    {
+        ((TestInjectableApplication) RuntimeEnvironment.application).setMock();
+        ProgressUpdateInterface progressUpdate = ((TestInjectableApplication) RuntimeEnvironment.application).testModule.provideProgressUpdate();
+
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_CLEAR_HALF_WAY);
+
+        verify(progressUpdate).ClearHalfWay();
+    }
+
 
     @Test
     public void whenActivityIsPausedItUnregistersReceiver() {

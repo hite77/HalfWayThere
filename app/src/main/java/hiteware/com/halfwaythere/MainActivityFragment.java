@@ -33,6 +33,7 @@ public class MainActivityFragment extends Fragment{
         IntentFilter filter = new IntentFilter();
         filter.addAction(StepService.ACTION_STEPS_OCCURRED);
         filter.addAction(StepService.ACTION_GOAL_CHANGED);
+        filter.addAction(StepService.ACTION_CLEAR_HALF_WAY);
 
         ((InjectableApplication)getActivity().getApplication()).inject(this);
 
@@ -105,6 +106,9 @@ public class MainActivityFragment extends Fragment{
             else if(intent.getAction().equals(StepService.ACTION_GOAL_CHANGED)) {
                 goal = intent.getIntExtra(StepService.GOAL_SET, 0);
                 updateStatus();
+            }
+            else if(intent.getAction().equals(StepService.ACTION_CLEAR_HALF_WAY)) {
+                mProgressUpdate.ClearHalfWay();
             }
         }
     }
