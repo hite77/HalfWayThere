@@ -295,17 +295,24 @@ public class StepServiceUnitTest {
         assertThat(shadowNotification.getContentTitle().toString(), equalTo("HalfWayThere"));
     }
 
-        //TODO: on start emit a broadcast of the half way if half way is set....
-//    @Test
-//    public void GivenHalfWayIsSetWhenStepServiceIsRestartedThenHalfWayIsRebroadcast()
-//    {
-//        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
-//
-//        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
-//        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
-//
-//
-//    }
+    @Test
+    public void GivenHalfWayIsSetWhenStepServiceIsRestartedThenHalfWayIsRebroadcast()
+    {
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
+
+        mStepService.onDestroy();
+        mStepService = null;
+        mStepService = new StepService();
+        mStepService.onStartCommand(new Intent(),0,0);
+
+        assertThat(testReceiver.getActualHalfWay(), equalTo(15));
+    }
 
     //TODO: goal changed, steps set, clear half way signal to fragment for it to clear the half way
     //TODO: once half way is cleared, if it is restarted, then broadcast does not happen.

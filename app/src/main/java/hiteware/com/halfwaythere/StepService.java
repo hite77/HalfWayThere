@@ -92,6 +92,9 @@ public class StepService extends Service implements SensorEventListener
         goal = prefs.getInt("goal", 0);
         BroadcastHelper.sendBroadcast(this, ACTION_GOAL_CHANGED, GOAL_SET, goal);
 
+        halfWay = prefs.getInt("halfWay", -1);
+        BroadcastHelper.sendBroadcast(this, ACTION_HALF_WAY_SET, HALF_WAY_VALUE, halfWay);
+
         return START_STICKY;
     }
 
@@ -137,6 +140,8 @@ public class StepService extends Service implements SensorEventListener
             else if (intent.getAction().equals(ACTION_HALF_WAY_SET))
             {
                 halfWay = intent.getIntExtra(HALF_WAY_VALUE, -1);
+                SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+                prefs.edit().putInt("halfWay", halfWay).apply();
                 oneShotHalfWay = true;
             }
         }
