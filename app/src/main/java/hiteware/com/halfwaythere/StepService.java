@@ -1,5 +1,7 @@
 package hiteware.com.halfwaythere;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +14,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.support.v4.app.NotificationCompat;
 
 import javax.inject.Inject;
 
@@ -45,6 +48,23 @@ public class StepService extends Service implements SensorEventListener
     Vibrator vibrator;
 
     private final SoftwareStepCounterInterface softwareStepCounter = new SoftwareStepCounter();
+
+    public void NotifyOnPhoneAndWearable()
+    {
+        int notificationId = 001;
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000, 1000})
+                        .setContentTitle("HalfWayThere")
+                        .setContentText("You Are halfWayThere")
+                        .setDefaults(Notification.DEFAULT_ALL);
+
+        NotificationManager notificationManager = (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(notificationId, notificationBuilder.build());
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -132,6 +152,7 @@ public class StepService extends Service implements SensorEventListener
             BroadcastHelper.sendBroadcast(this, ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
             if (oneShotHalfWay && (currentSteps > halfWay)) {
                 vibrator.vibrate(2000);
+                NotifyOnPhoneAndWearable();
                 oneShotHalfWay = false;
             }
         }

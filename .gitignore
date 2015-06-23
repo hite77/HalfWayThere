@@ -14,4 +14,4 @@ gradlew
 test_servers
 screenshot_*.png
 compare_*.png
-
+*.apk

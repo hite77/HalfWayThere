@@ -1,6 +1,9 @@
 package hiteware.com.halfwaythere;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
@@ -17,7 +20,10 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowNotification;
+import org.robolectric.shadows.ShadowNotificationManager;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
@@ -27,6 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 /**
  * Created on 5/14/15.
@@ -38,13 +45,24 @@ public class StepServiceUnitTest {
     private SensorManager sensorManager;
     private StepService mStepService;
 
+    float value = SensorValue.CalculateForceToApplyOnEachAxisToGiveGValue((float) 2.01);
+    float peak[] = {value, value, value};
+    float lowValue[] = {0, 0, 0};
+
+    public void generateStep() {
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(peak));
+        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+    }
+
     @Before
     public void setUp() {
+//        mStepService = new StepService();
         application = (TestInjectableApplication) RuntimeEnvironment.application;
+
         application.setMock();
         sensorManager = application.testModule.provideSensorManager();
-        mStepService = new StepService();
-        mStepService.onStartCommand(new Intent(), 0, 0);
+        mStepService = Robolectric.buildService(StepService.class).create().startCommand(0,0).get();
     }
 
     @Test
@@ -213,7 +231,6 @@ public class StepServiceUnitTest {
         assertThat(testReceiver.getActualSteps(), equalTo(-1));
     }
 
-    //TODO: can set half way steps -- once steps are past half way then vibrate happens
     @Test
     public void GivenHalfWayHasBeenSetWhenStepsPassHalfWayThenPhoneVibrates()
     {
@@ -221,55 +238,64 @@ public class StepServiceUnitTest {
         BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        float value = SensorValue.CalculateForceToApplyOnEachAxisToGiveGValue((float) 2.01);
-        float peak[] = {value, value, value};
-        float lowValue[] = {0, 0, 0};
-
         Vibrator vibrator = application.testModule.provideVibrator();
 
         verify(vibrator, times(0)).vibrate(anyInt());
 
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(peak));
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+        generateStep();
 
         verify(vibrator, times(0)).vibrate(anyInt());
 
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(peak));
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+        generateStep();
 
         verify(vibrator).vibrate(2000);
     }
 
     @Test
     public void GivenHalfWayHasBeenSetWhenStepsPassHalfWayThenPhoneVibratesOnceAndNotForEveryStep() {
+//        Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
         BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
         BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        float value = SensorValue.CalculateForceToApplyOnEachAxisToGiveGValue((float) 2.01);
-        float peak[] = {value, value, value};
-        float lowValue[] = {0, 0, 0};
 
         Vibrator vibrator = application.testModule.provideVibrator();
 
         verify(vibrator, times(0)).vibrate(anyInt());
 
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(peak));
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+        generateStep();
 
         verify(vibrator).vibrate(2000);
 
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(peak));
-        mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
+        generateStep();
 
         verify(vibrator, times(1)).vibrate(anyInt());
     }
-    //TODO: once vibrate for half way then should not vibrate on next step...
-    //TODO: on start emit a broadcast of the half way if half way is set....
+
+    @Test
+    public void GivenHalfWayHasBeenSetWhenStepsPassHalfWayThenNotificationHappens() {
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        generateStep();
+
+        NotificationManager notificationManager = (NotificationManager) application.getSystemService(Context.NOTIFICATION_SERVICE);
+        ShadowNotificationManager shadowNotificationManager = shadowOf(notificationManager);
+        assertThat(shadowNotificationManager.getAllNotifications().size(), equalTo(1));
+
+        Notification notification = shadowNotificationManager.getNotification(001);
+        assertNotNull(notification);
+        assertThat(notification.vibrate, equalTo(new long[]{1000, 1000, 1000, 1000, 1000, 1000}));
+        assertThat(notification.defaults, equalTo(Notification.DEFAULT_ALL));
+
+        ShadowNotification shadowNotification = shadowOf(notification);
+        assertNotNull(shadowNotification);
+        assertThat(shadowNotification.getContentText().toString(), equalTo("You Are halfWayThere"));
+        assertThat(shadowNotification.getContentTitle().toString(), equalTo("HalfWayThere"));
+    }
+
+        //TODO: on start emit a broadcast of the half way if half way is set....
 //    @Test
 //    public void GivenHalfWayIsSetWhenStepServiceIsRestartedThenHalfWayIsRebroadcast()
 //    {
