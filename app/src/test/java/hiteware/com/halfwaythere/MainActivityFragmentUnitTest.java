@@ -257,8 +257,32 @@ public class MainActivityFragmentUnitTest {
         assertThat(halfWayValue.getText().toString(), equalTo(""));
     }
 
-    //TODO: Set Halfway signal from StepService will set text start up text
-    //TODO: Set Halfway signal from StepService will set progress indicator start up progress indicator
+    @Test
+    public void WhenServiceSendsHalfwaySignalThenTextForHalfWayIsDisplayed()
+    {
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 45);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        TextView halfWayValue = (TextView) CreatedActivity.findViewById(R.id.HalfWayValue);
+
+        assertThat(halfWayValue.getText().toString(), equalTo("45"));
+    }
+
+    @Test
+    public void WhenServiceSendsHalfwaySignalThenProgressIndicatorIsSet()
+    {
+        ((TestInjectableApplication) RuntimeEnvironment.application).setMock();
+        ProgressUpdateInterface progressUpdate = ((TestInjectableApplication) RuntimeEnvironment.application).testModule.provideProgressUpdate();
+
+        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 100);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(progressUpdate).SetHalfWay(100);
+    }
 
     @Test
     public void whenActivityIsPausedItUnregistersReceiver() {

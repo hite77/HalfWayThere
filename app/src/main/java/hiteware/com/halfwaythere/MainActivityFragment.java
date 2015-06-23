@@ -34,6 +34,7 @@ public class MainActivityFragment extends Fragment{
         filter.addAction(StepService.ACTION_STEPS_OCCURRED);
         filter.addAction(StepService.ACTION_GOAL_CHANGED);
         filter.addAction(StepService.ACTION_CLEAR_HALF_WAY);
+        filter.addAction(StepService.ACTION_HALF_WAY_SET);
 
         ((InjectableApplication)getActivity().getApplication()).inject(this);
 
@@ -110,6 +111,11 @@ public class MainActivityFragment extends Fragment{
             else if(intent.getAction().equals(StepService.ACTION_CLEAR_HALF_WAY)) {
                 mProgressUpdate.ClearHalfWay();
                 ((TextView) getActivity().findViewById(R.id.HalfWayValue)).setText("");
+            }
+            else if(intent.getAction().equals(StepService.ACTION_HALF_WAY_SET)) {
+                int halfWayValue = intent.getIntExtra(StepService.HALF_WAY_VALUE, -1);
+                ((TextView) getActivity().findViewById(R.id.HalfWayValue)).setText(Integer.toString(halfWayValue));
+                mProgressUpdate.SetHalfWay(halfWayValue);
             }
         }
     }
