@@ -14,6 +14,7 @@ public class StepServiceUnitTestReceiver extends BroadcastReceiver {
     private int actualSteps = -1;
     private int actualGoal = -1;
     private int actualHalfWay = -1;
+    private boolean clearHalfWay = false;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -31,11 +32,14 @@ public class StepServiceUnitTestReceiver extends BroadcastReceiver {
         {
             actualHalfWay = shadowIntent.getIntExtra(StepService.HALF_WAY_VALUE, 0);
         }
+        if (shadowIntent.getAction().equals(StepService.ACTION_CLEAR_HALF_WAY))
+        {
+            clearHalfWay = true;
+        }
     }
 
-    public int getActualSteps() {
-        return actualSteps;
-    }
+    public int getActualSteps() { return actualSteps; }
     public int getActualGoal() { return actualGoal; }
     public int getActualHalfWay() { return actualHalfWay; }
+    public boolean getClearedHalfWay() {return clearHalfWay; }
 }

@@ -309,13 +309,124 @@ public class StepServiceUnitTest {
         mStepService.onDestroy();
         mStepService = null;
         mStepService = new StepService();
-        mStepService.onStartCommand(new Intent(),0,0);
+        mStepService.onStartCommand(new Intent(), 0, 0);
 
         assertThat(testReceiver.getActualHalfWay(), equalTo(15));
     }
 
-    //TODO: goal changed, steps set, clear half way signal to fragment for it to clear the half way
-    //TODO: once half way is cleared, if it is restarted, then broadcast does not happen.
+    @Test
+    public void GivenHalfWayIsSetWhenGoalsAreChangedThenHalfWayClearedIsBroadcast()
+    {
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
 
-    //TODO: steps happen, need to notify on goal achieved.
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_CLEAR_HALF_WAY));
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_GOAL_SET, StepService.GOAL_SET, 10000);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertThat(testReceiver.getClearedHalfWay(), equalTo(true));
+    }
+
+    @Test
+    public void GivenHalfWayIsSetWhenStepsAreChangedThenHalfWayClearedIsBroadcast()
+    {
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_CLEAR_HALF_WAY));
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertThat(testReceiver.getClearedHalfWay(), equalTo(true));
+    }
+
+    @Test
+    public void GivenHalfWayIsClearedBySettingGoalWhenServiceIsRestartedThenHalfWaySetIsNotBroadcast()
+    {
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_GOAL_SET, StepService.GOAL_SET, 10000);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
+
+        mStepService.onDestroy();
+        mStepService = null;
+        mStepService = new StepService();
+        mStepService.onStartCommand(new Intent(), 0, 0);
+
+        assertThat(testReceiver.getActualHalfWay(), equalTo(-1));
+    }
+
+    @Test
+    public void GivenHalfWayIsClearedBySettingStepsWhenServiceIsRestartedThenHalfWaySetIsNotBroadcast()
+    {
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
+
+        mStepService.onDestroy();
+        mStepService = null;
+        mStepService = new StepService();
+        mStepService.onStartCommand(new Intent(), 0, 0);
+
+        assertThat(testReceiver.getActualHalfWay(), equalTo(-1));
+    }
+
+    @Test
+    public void GivenStepsAreCloseToHalfWayWhenHalfWayIsClearedByStepsBeingSetAndStepOccursThenNotificationIsNotSent()
+    {
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        generateStep();
+
+        NotificationManager notificationManager = (NotificationManager) application.getSystemService(Context.NOTIFICATION_SERVICE);
+        ShadowNotificationManager shadowNotificationManager = shadowOf(notificationManager);
+        assertThat(shadowNotificationManager.getAllNotifications().size(), equalTo(0));
+    }
+
+    @Test
+    public void GivenStepsAreCloseToHalfWayWhenHalfWayIsClearedByGoalSetAndStepOccursThenNotificationIsNotSent()
+    {
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_GOAL_SET, StepService.GOAL_SET, 20);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        generateStep();
+
+        NotificationManager notificationManager = (NotificationManager) application.getSystemService(Context.NOTIFICATION_SERVICE);
+        ShadowNotificationManager shadowNotificationManager = shadowOf(notificationManager);
+        assertThat(shadowNotificationManager.getAllNotifications().size(), equalTo(0));
+    }
 }

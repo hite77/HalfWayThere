@@ -93,8 +93,9 @@ public class StepService extends Service implements SensorEventListener
         BroadcastHelper.sendBroadcast(this, ACTION_GOAL_CHANGED, GOAL_SET, goal);
 
         halfWay = prefs.getInt("halfWay", -1);
-        BroadcastHelper.sendBroadcast(this, ACTION_HALF_WAY_SET, HALF_WAY_VALUE, halfWay);
-
+        if (halfWay != -1) {
+            BroadcastHelper.sendBroadcast(this, ACTION_HALF_WAY_SET, HALF_WAY_VALUE, halfWay);
+        }
         return START_STICKY;
     }
 
@@ -123,19 +124,24 @@ public class StepService extends Service implements SensorEventListener
             }
             else if (intent.getAction().equals(ACTION_SET_STEPS))
             {
-                currentSteps = intent.getIntExtra(
-                        STEPS_OCCURRED, -1);
+                currentSteps = intent.getIntExtra(STEPS_OCCURRED, -1);
                 BroadcastHelper.sendBroadcast(getApplication(), ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
+                BroadcastHelper.sendBroadcast(getApplication(), ACTION_CLEAR_HALF_WAY);
                 softwareStepCounter.SetSteps(currentSteps);
                 SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
                 prefs.edit().putInt("currentSteps", currentSteps).apply();
+                prefs.edit().putInt("halfWay", -1).apply();
+                oneShotHalfWay = false;
             }
             else if (intent.getAction().equals(ACTION_GOAL_SET))
             {
                 goal = intent.getIntExtra(GOAL_SET, -1);
                 BroadcastHelper.sendBroadcast(getApplication(),ACTION_GOAL_CHANGED,GOAL_SET,goal);
+                BroadcastHelper.sendBroadcast(getApplication(), ACTION_CLEAR_HALF_WAY);
                 SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
                 prefs.edit().putInt("goal", goal).apply();
+                prefs.edit().putInt("halfWay", -1).apply();
+                oneShotHalfWay = false;
             }
             else if (intent.getAction().equals(ACTION_HALF_WAY_SET))
             {
