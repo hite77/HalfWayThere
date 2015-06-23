@@ -45,7 +45,7 @@ public class SensorIntegrationTest
         stepService.onStartCommand(new Intent(), 0, 0);
     }
 
-    public void SetCurrentSteps(int steps)
+    private void SetCurrentSteps(int steps)
     {
         MenuItem item = new RoboMenuItem(R.id.action_set_current_steps);
         CreatedActivity.onOptionsItemSelected(item);

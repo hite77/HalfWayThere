@@ -49,9 +49,9 @@ public class StepService extends Service implements SensorEventListener
 
     private final SoftwareStepCounterInterface softwareStepCounter = new SoftwareStepCounter();
 
-    public void NotifyOnPhoneAndWearable()
+    private void NotifyOnPhoneAndWearable()
     {
-        int notificationId = 001;
+        int notificationId = 1;
 
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
@@ -136,7 +136,7 @@ public class StepService extends Service implements SensorEventListener
             else if (intent.getAction().equals(ACTION_GOAL_SET))
             {
                 goal = intent.getIntExtra(GOAL_SET, -1);
-                BroadcastHelper.sendBroadcast(getApplication(),ACTION_GOAL_CHANGED,GOAL_SET,goal);
+                BroadcastHelper.sendBroadcast(getApplication(), ACTION_GOAL_CHANGED, GOAL_SET, goal);
                 BroadcastHelper.sendBroadcast(getApplication(), ACTION_CLEAR_HALF_WAY);
                 SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
                 prefs.edit().putInt("goal", goal).apply();

@@ -6,7 +6,7 @@ import android.content.Intent;
 /**
  * Created on 6/19/15.
  */
-public class BroadcastHelper {
+class BroadcastHelper {
     public static void sendBroadcast(Context context, String action, String extra, int value) {
         Intent broadcast = new Intent();
         broadcast.setAction(action);

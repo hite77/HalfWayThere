@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
-    final DialogUtility util = new DialogUtility();
+    private final DialogUtility util = new DialogUtility();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -45,11 +45,11 @@ public class StepServiceUnitTest {
     private SensorManager sensorManager;
     private StepService mStepService;
 
-    float value = SensorValue.CalculateForceToApplyOnEachAxisToGiveGValue((float) 2.01);
-    float peak[] = {value, value, value};
-    float lowValue[] = {0, 0, 0};
+    private final float value = SensorValue.CalculateForceToApplyOnEachAxisToGiveGValue((float) 2.01);
+    private final float[] peak = {value, value, value};
+    private final float[] lowValue = {0, 0, 0};
 
-    public void generateStep() {
+    private void generateStep() {
         mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
         mStepService.onSensorChanged(SensorValue.CreateSensorEvent(peak));
         mStepService.onSensorChanged(SensorValue.CreateSensorEvent(lowValue));
@@ -57,7 +57,6 @@ public class StepServiceUnitTest {
 
     @Before
     public void setUp() {
-//        mStepService = new StepService();
         application = (TestInjectableApplication) RuntimeEnvironment.application;
 
         application.setMock();
@@ -253,8 +252,6 @@ public class StepServiceUnitTest {
 
     @Test
     public void GivenHalfWayHasBeenSetWhenStepsPassHalfWayThenPhoneVibratesOnceAndNotForEveryStep() {
-//        Robolectric.buildActivity(MainActivity.class).create().postResume().get();
-
         BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
         BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -284,7 +281,7 @@ public class StepServiceUnitTest {
         ShadowNotificationManager shadowNotificationManager = shadowOf(notificationManager);
         assertThat(shadowNotificationManager.getAllNotifications().size(), equalTo(1));
 
-        Notification notification = shadowNotificationManager.getNotification(001);
+        Notification notification = shadowNotificationManager.getNotification(1);
         assertNotNull(notification);
         assertThat(notification.vibrate, equalTo(new long[]{1000, 1000, 1000, 1000, 1000, 1000}));
         assertThat(notification.defaults, equalTo(Notification.DEFAULT_ALL));

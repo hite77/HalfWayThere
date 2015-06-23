@@ -28,8 +28,8 @@ import static org.mockito.Mockito.verify;
 @RunWith(CustomRobolectricRunner.class)
 @Config(constants = BuildConfig.class)
 public class CircularProgressWithHalfWayUnitTest {
-    CircularProgressWithHalfWay progress;
-    Canvas mockCanvas;
+    private CircularProgressWithHalfWay progress;
+    private Canvas mockCanvas;
 
     class LineEndpoints {
         public final float centerX;

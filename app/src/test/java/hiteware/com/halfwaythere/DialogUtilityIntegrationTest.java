@@ -39,7 +39,7 @@ public class DialogUtilityIntegrationTest {
         controller.resume();
     }
 
-    public void SetCurrentSteps(int steps)
+    private void SetCurrentSteps(int steps)
     {
         MenuItem item = new RoboMenuItem(R.id.action_set_current_steps);
         CreatedActivity.onOptionsItemSelected(item);
@@ -52,7 +52,7 @@ public class DialogUtilityIntegrationTest {
         okButton.performClick();
     }
 
-    public void SetGoalSteps(int goal)
+    private void SetGoalSteps(int goal)
     {
         MenuItem item = new RoboMenuItem(R.id.action_set_goal_steps);
         CreatedActivity.onOptionsItemSelected(item);
