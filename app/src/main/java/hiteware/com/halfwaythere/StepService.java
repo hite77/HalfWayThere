@@ -69,34 +69,46 @@ public class StepService extends Service implements SensorEventListener
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
+
         ((InjectableApplication)getApplication()).inject(this);
+
+        RegisterForAccelerometerSensor();
+        SetupReceiverForActions();
+        PullInPersistedValues();
+
+        BroadcastHelper.sendBroadcast(this, ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
+        BroadcastHelper.sendBroadcast(this, ACTION_GOAL_CHANGED, GOAL_SET, goal);
+
+        softwareStepCounter.SetSteps(currentSteps);
+
+        if (halfWay != -1) {
+            BroadcastHelper.sendBroadcast(this, ACTION_HALF_WAY_SET, HALF_WAY_VALUE, halfWay);
+        }
+        return START_STICKY;
+    }
+
+    private void RegisterForAccelerometerSensor() {
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (null != sensor)
         {
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
+    }
 
+    private void PullInPersistedValues() {
+        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+        currentSteps = prefs.getInt("currentSteps", 0);
+        goal = prefs.getInt("goal", 0);
+        halfWay = prefs.getInt("halfWay", -1);
+    }
+
+    private void SetupReceiverForActions() {
         receiver = new MyBroadCastReceiver();
         registerReceiver(receiver, new IntentFilter(ACTION_SET_STEPS));
         registerReceiver(receiver, new IntentFilter(ACTION_REQUEST_STEPS));
         registerReceiver(receiver, new IntentFilter(ACTION_GOAL_SET));
         registerReceiver(receiver, new IntentFilter(ACTION_GOAL_REQUEST));
         registerReceiver(receiver, new IntentFilter(ACTION_HALF_WAY_SET));
-
-        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-
-        currentSteps = prefs.getInt("currentSteps", 0);
-        BroadcastHelper.sendBroadcast(this, ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
-        softwareStepCounter.SetSteps(currentSteps);
-
-        goal = prefs.getInt("goal", 0);
-        BroadcastHelper.sendBroadcast(this, ACTION_GOAL_CHANGED, GOAL_SET, goal);
-
-        halfWay = prefs.getInt("halfWay", -1);
-        if (halfWay != -1) {
-            BroadcastHelper.sendBroadcast(this, ACTION_HALF_WAY_SET, HALF_WAY_VALUE, halfWay);
-        }
-        return START_STICKY;
     }
 
     @Override
@@ -114,41 +126,38 @@ public class StepService extends Service implements SensorEventListener
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(ACTION_REQUEST_STEPS))
+            SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+
+            switch(intent.getAction())
             {
-                BroadcastHelper.sendBroadcast(getApplication(), ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
-            }
-            else if (intent.getAction().equals(ACTION_GOAL_REQUEST))
-            {
-                BroadcastHelper.sendBroadcast(getApplication(), ACTION_GOAL_CHANGED, GOAL_SET, goal);
-            }
-            else if (intent.getAction().equals(ACTION_SET_STEPS))
-            {
-                currentSteps = intent.getIntExtra(STEPS_OCCURRED, -1);
-                BroadcastHelper.sendBroadcast(getApplication(), ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
-                BroadcastHelper.sendBroadcast(getApplication(), ACTION_CLEAR_HALF_WAY);
-                softwareStepCounter.SetSteps(currentSteps);
-                SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-                prefs.edit().putInt("currentSteps", currentSteps).apply();
-                prefs.edit().putInt("halfWay", -1).apply();
-                oneShotHalfWay = false;
-            }
-            else if (intent.getAction().equals(ACTION_GOAL_SET))
-            {
-                goal = intent.getIntExtra(GOAL_SET, -1);
-                BroadcastHelper.sendBroadcast(getApplication(), ACTION_GOAL_CHANGED, GOAL_SET, goal);
-                BroadcastHelper.sendBroadcast(getApplication(), ACTION_CLEAR_HALF_WAY);
-                SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-                prefs.edit().putInt("goal", goal).apply();
-                prefs.edit().putInt("halfWay", -1).apply();
-                oneShotHalfWay = false;
-            }
-            else if (intent.getAction().equals(ACTION_HALF_WAY_SET))
-            {
-                halfWay = intent.getIntExtra(HALF_WAY_VALUE, -1);
-                SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-                prefs.edit().putInt("halfWay", halfWay).apply();
-                oneShotHalfWay = true;
+                case (ACTION_REQUEST_STEPS):
+                    BroadcastHelper.sendBroadcast(getApplication(), ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
+                    break;
+                case (ACTION_GOAL_REQUEST):
+                    BroadcastHelper.sendBroadcast(getApplication(), ACTION_GOAL_CHANGED, GOAL_SET, goal);
+                    break;
+                case (ACTION_SET_STEPS):
+                    currentSteps = intent.getIntExtra(STEPS_OCCURRED, -1);
+                    BroadcastHelper.sendBroadcast(getApplication(), ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
+                    BroadcastHelper.sendBroadcast(getApplication(), ACTION_CLEAR_HALF_WAY);
+                    softwareStepCounter.SetSteps(currentSteps);
+                    prefs.edit().putInt("currentSteps", currentSteps).apply();
+                    prefs.edit().putInt("halfWay", -1).apply();
+                    oneShotHalfWay = false;
+                    break;
+                case (ACTION_GOAL_SET):
+                    goal = intent.getIntExtra(GOAL_SET, -1);
+                    BroadcastHelper.sendBroadcast(getApplication(), ACTION_GOAL_CHANGED, GOAL_SET, goal);
+                    BroadcastHelper.sendBroadcast(getApplication(), ACTION_CLEAR_HALF_WAY);
+                    prefs.edit().putInt("goal", goal).apply();
+                    prefs.edit().putInt("halfWay", -1).apply();
+                    oneShotHalfWay = false;
+                    break;
+                case (ACTION_HALF_WAY_SET):
+                    halfWay = intent.getIntExtra(HALF_WAY_VALUE, -1);
+                    prefs.edit().putInt("halfWay", halfWay).apply();
+                    oneShotHalfWay = true;
+                    break;
             }
         }
     }

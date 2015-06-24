@@ -33,13 +33,13 @@ import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(CustomRobolectricRunner.class)
 @Config(constants = BuildConfig.class)
-public class MainActivityFragmentUnitTest {
-    private MainActivity CreatedActivity;
+public class HalfWayThereFragmentUILogicUnitTest {
+    private HalfWayThereActivity CreatedActivity;
 
     @Test
     public void whenTheAppIsRunningTheServiceWillBeStarted() {
-        ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();
-        MainActivity createdActivity = (MainActivity) controller.get();
+        ActivityController controller = Robolectric.buildActivity(HalfWayThereActivity.class).create().start();
+        HalfWayThereActivity createdActivity = (HalfWayThereActivity) controller.get();
         controller.start();
         ShadowActivity shadowActivity = shadowOf(createdActivity);
         Intent startedIntent = shadowActivity.getNextStartedService();
@@ -48,7 +48,7 @@ public class MainActivityFragmentUnitTest {
 
     @Test
     public void whenBroadcastOfStepsIsReceivedThenStepsAreDisplayed() {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
 
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 45);
 
@@ -59,7 +59,7 @@ public class MainActivityFragmentUnitTest {
     public void whenBroadcastOfStepsAndGoalAreReceivedThenProgressIsUpdated() {
         ((TestInjectableApplication) RuntimeEnvironment.application).setMock();
 
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
 
         int expected = 45;
         int expectedGoal = 14000;
@@ -78,7 +78,7 @@ public class MainActivityFragmentUnitTest {
 
     @Test
     public void whenBroadcastOfGoalIsReceivedThenGoalIsDisplayed() {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
 
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
 
@@ -88,7 +88,7 @@ public class MainActivityFragmentUnitTest {
     @Test
     public void whenHalfWayButtonIsClickedThenBroadcastIsSentToService()
     {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
 
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 1000);
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
@@ -110,7 +110,7 @@ public class MainActivityFragmentUnitTest {
         ((TestInjectableApplication) RuntimeEnvironment.application).setMock();
         ProgressUpdateInterface progressUpdate = ((TestInjectableApplication) RuntimeEnvironment.application).testModule.provideProgressUpdate();
 
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
 
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 4653);
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 5778);
@@ -126,7 +126,7 @@ public class MainActivityFragmentUnitTest {
     @Test
     public void whenHalfWayButtonIsClickedThenCountIsUpdatedForHalfWay()
     {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
 
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 1333);
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 2000);
@@ -145,7 +145,7 @@ public class MainActivityFragmentUnitTest {
     @Test
     public void whenHalfWayButtonIsClickedAndIsInvalidBecauseGoalIsZeroThenNoBroadcast()
     {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
 
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 0);
 
@@ -162,7 +162,7 @@ public class MainActivityFragmentUnitTest {
     @Test
     public void whenHalfWayButtonIsClickedAndIsInvalidBecauseHalfWayIsGreaterThenTextIsEmptyForHalfWay()
     {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
 
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 15000);
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
@@ -183,7 +183,7 @@ public class MainActivityFragmentUnitTest {
     @Test
     public void whenHalfWayButtonIsClickedAndIsValidThenItIsClickedWithInvalidThenTextIsEmptyForHalfWay()
     {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
 
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 10000);
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
@@ -210,7 +210,7 @@ public class MainActivityFragmentUnitTest {
         ((TestInjectableApplication) RuntimeEnvironment.application).setMock();
         ProgressUpdateInterface progressUpdate = ((TestInjectableApplication) RuntimeEnvironment.application).testModule.provideProgressUpdate();
 
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
 
         when(progressUpdate.SetHalfWay(anyInt())).thenReturn(true);
 
@@ -230,7 +230,7 @@ public class MainActivityFragmentUnitTest {
         ((TestInjectableApplication) RuntimeEnvironment.application).setMock();
         ProgressUpdateInterface progressUpdate = ((TestInjectableApplication) RuntimeEnvironment.application).testModule.provideProgressUpdate();
 
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
 
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_CLEAR_HALF_WAY);
 
@@ -240,7 +240,7 @@ public class MainActivityFragmentUnitTest {
     @Test
     public void whenServiceBroadcastsAClearThenTextIsCleared()
     {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
 
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_STEPS_OCCURRED, StepService.STEPS_OCCURRED, 10000);
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_GOAL_CHANGED, StepService.GOAL_SET, 14000);
@@ -260,7 +260,7 @@ public class MainActivityFragmentUnitTest {
     @Test
     public void WhenServiceSendsHalfwaySignalThenTextForHalfWayIsDisplayed()
     {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 45);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -276,7 +276,7 @@ public class MainActivityFragmentUnitTest {
         ((TestInjectableApplication) RuntimeEnvironment.application).setMock();
         ProgressUpdateInterface progressUpdate = ((TestInjectableApplication) RuntimeEnvironment.application).testModule.provideProgressUpdate();
 
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().start().resume().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().start().resume().postResume().get();
         BroadcastHelper.sendBroadcast(CreatedActivity, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 100);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -286,8 +286,8 @@ public class MainActivityFragmentUnitTest {
 
     @Test
     public void whenActivityIsPausedItUnregistersReceiver() {
-        ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();
-        CreatedActivity = (MainActivity) controller.get();
+        ActivityController controller = Robolectric.buildActivity(HalfWayThereActivity.class).create().start();
+        CreatedActivity = (HalfWayThereActivity) controller.get();
 
         controller.resume();
 

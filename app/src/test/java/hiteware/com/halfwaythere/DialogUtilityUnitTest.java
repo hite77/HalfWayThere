@@ -27,12 +27,12 @@ import static org.robolectric.Shadows.shadowOf;
 @Config(constants = BuildConfig.class)
 public class DialogUtilityUnitTest {
 
-    private MainActivity CreatedActivity;
+    private HalfWayThereActivity CreatedActivity;
 
     @Before
     public void Setup()
     {
-        CreatedActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        CreatedActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
     }
 
     private void StartSetCurrentSteps()

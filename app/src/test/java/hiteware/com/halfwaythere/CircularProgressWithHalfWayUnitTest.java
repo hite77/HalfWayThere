@@ -53,7 +53,7 @@ public class CircularProgressWithHalfWayUnitTest {
     @Before
     public void Setup()
     {
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
         AttributeSet attributes = Mockito.mock(AttributeSet.class);
 
         progress = new CircularProgressWithHalfWay(createdActivity, attributes);

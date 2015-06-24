@@ -30,15 +30,15 @@ import static org.robolectric.Shadows.shadowOf;
 @Config(constants = BuildConfig.class)
 public class SensorIntegrationTest
 {
-    private MainActivity CreatedActivity;
+    private HalfWayThereActivity CreatedActivity;
     private ActivityController controller;
     private StepService stepService;
 
     @Before
     public void setUp()
     {
-        controller = Robolectric.buildActivity(MainActivity.class).create().start();
-        CreatedActivity = (MainActivity) controller.get();
+        controller = Robolectric.buildActivity(HalfWayThereActivity.class).create().start();
+        CreatedActivity = (HalfWayThereActivity) controller.get();
         controller.postResume();
 
         stepService = new StepService();
@@ -107,7 +107,7 @@ public class SensorIntegrationTest
         stepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{value, value, value}));
         stepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{0, 0, 0}));
 
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
@@ -137,7 +137,7 @@ public class SensorIntegrationTest
         stepService = new StepService();
         stepService.onStartCommand(new Intent(), 0, 0);
 
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
@@ -176,7 +176,7 @@ public class SensorIntegrationTest
         stepService.onStartCommand(new Intent(), 0, 0);
         stepService.onSensorChanged(SensorValue.CreateSensorEvent(new float[]{0, 0, 0}));
 
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);

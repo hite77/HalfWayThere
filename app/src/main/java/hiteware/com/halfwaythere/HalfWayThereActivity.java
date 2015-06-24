@@ -7,7 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends AppCompatActivity {
+public class HalfWayThereActivity extends AppCompatActivity {
 
     private final DialogUtility util = new DialogUtility();
 

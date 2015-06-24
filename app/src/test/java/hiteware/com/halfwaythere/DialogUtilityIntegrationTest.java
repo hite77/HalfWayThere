@@ -29,13 +29,13 @@ import static org.robolectric.Shadows.shadowOf;
 @Config(constants = BuildConfig.class)
 public class DialogUtilityIntegrationTest {
 
-    private MainActivity CreatedActivity;
+    private HalfWayThereActivity CreatedActivity;
 
     @Before
     public void Setup()
     {
-        ActivityController controller = Robolectric.buildActivity(MainActivity.class).create().start();
-        CreatedActivity = (MainActivity) controller.get();
+        ActivityController controller = Robolectric.buildActivity(HalfWayThereActivity.class).create().start();
+        CreatedActivity = (HalfWayThereActivity) controller.get();
         controller.resume();
     }
 

@@ -93,7 +93,7 @@ public class StepServiceUnitTest {
     @Test
     public void GivenSetStepsIsCalledWhenStepServiceIsRestartedThenStepsComeBackUp()
     {
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
@@ -115,7 +115,7 @@ public class StepServiceUnitTest {
 
         BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, setStepsValue);
 
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
@@ -133,7 +133,7 @@ public class StepServiceUnitTest {
         mStepService.onDestroy();
         mStepService.onStartCommand(new Intent(), 0, 0);
 
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         TextView stepValue = (TextView) createdActivity.findViewById(R.id.step_value);
@@ -148,7 +148,7 @@ public class StepServiceUnitTest {
 
     @Test
     public void WhenGoalsAreSetTheGoalIsOutput() {
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_GOAL_CHANGED));
@@ -164,7 +164,7 @@ public class StepServiceUnitTest {
     @Test
     public void GivenSetGoalIsCalledWhenStepServiceIsRestartedThenGoalComesBackUp()
     {
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_GOAL_CHANGED));
@@ -186,7 +186,7 @@ public class StepServiceUnitTest {
 
         BroadcastHelper.sendBroadcast(application, StepService.ACTION_GOAL_SET, StepService.GOAL_SET, setGoalValue);
 
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         TextView goalValue = (TextView) createdActivity.findViewById(R.id.goal_value);
@@ -208,7 +208,7 @@ public class StepServiceUnitTest {
         mStepService = new StepService();
         mStepService.onStartCommand(new Intent(), 0, 0);
 
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         TextView goalValue = (TextView) createdActivity.findViewById(R.id.goal_value);
@@ -218,7 +218,7 @@ public class StepServiceUnitTest {
     @Test
     public void GivenOnSensorEventOccursWhenThisDoesNotChangeTheStepCountThenBroadcastDoesNotOccur()
     {
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
@@ -298,7 +298,7 @@ public class StepServiceUnitTest {
         BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
@@ -314,7 +314,7 @@ public class StepServiceUnitTest {
     @Test
     public void GivenHalfWayIsSetWhenGoalsAreChangedThenHalfWayClearedIsBroadcast()
     {
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_CLEAR_HALF_WAY));
@@ -331,7 +331,7 @@ public class StepServiceUnitTest {
     @Test
     public void GivenHalfWayIsSetWhenStepsAreChangedThenHalfWayClearedIsBroadcast()
     {
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_CLEAR_HALF_WAY));
@@ -354,7 +354,7 @@ public class StepServiceUnitTest {
         BroadcastHelper.sendBroadcast(application, StepService.ACTION_GOAL_SET, StepService.GOAL_SET, 10000);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
@@ -376,7 +376,7 @@ public class StepServiceUnitTest {
         BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        MainActivity createdActivity = Robolectric.buildActivity(MainActivity.class).create().postResume().get();
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
 
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
