@@ -156,7 +156,9 @@ public class StepService extends Service implements SensorEventListener
                 case (ACTION_HALF_WAY_SET):
                     halfWay = intent.getIntExtra(HALF_WAY_VALUE, -1);
                     prefs.edit().putInt("halfWay", halfWay).apply();
-                    oneShotHalfWay = true;
+                    if (currentSteps < halfWay) {
+                        oneShotHalfWay = true;
+                    }
                     break;
             }
         }

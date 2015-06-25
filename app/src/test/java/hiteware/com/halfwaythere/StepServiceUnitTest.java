@@ -426,4 +426,32 @@ public class StepServiceUnitTest {
         ShadowNotificationManager shadowNotificationManager = shadowOf(notificationManager);
         assertThat(shadowNotificationManager.getAllNotifications().size(), equalTo(0));
     }
+
+    @Test
+    public void GivenStepsAreOverHalfWayWhenStepServiceIsRestartedAndStepHappensThenVibrateDoesNotHappenAgain()
+    {
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_HALF_WAY_SET, StepService.HALF_WAY_VALUE, 15);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        generateStep();
+
+        Vibrator vibrator = application.testModule.provideVibrator();
+
+        verify(vibrator, times(1)).vibrate(anyInt());
+
+        mStepService.onDestroy();
+        mStepService = null;
+
+        mStepService = new StepService();
+        mStepService.onStartCommand(new Intent(), 0, 0);
+
+        generateStep();
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(vibrator, times(1)).vibrate(anyInt());
+    }
 }
