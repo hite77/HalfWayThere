@@ -2,20 +2,33 @@ package hiteware.com.halfwaythere;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
+import static junit.framework.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
  * Created on 6/10/15.
  */
+@RunWith(CustomRobolectricRunner.class)
+@Config(constants = BuildConfig.class)
 public class SoftwareStepCounterUnitTest {
     private SoftwareStepCounter softwareStepCounter;
+    private TestInjectableApplication application;
 
     @Before
     public void Setup()
     {
-        softwareStepCounter = new SoftwareStepCounter();
+        application = (TestInjectableApplication) RuntimeEnvironment.application;
+        softwareStepCounter = new SoftwareStepCounter(application);
     }
 
     @Test
@@ -194,5 +207,23 @@ public class SoftwareStepCounterUnitTest {
         softwareStepCounter.SensorUpdate(low);
 
         assertThat(softwareStepCounter.GetSteps(), equalTo(0));
+    }
+
+    @Test
+    public void WhenSensorUpdateHappensThenFileGetsSavedToAndReplacedToKeepServiceBusyAndAwake()
+    {
+        float value[] = {0};
+        softwareStepCounter.SensorUpdate(value);
+        softwareStepCounter.SensorUpdate(value);
+
+        File file = new File(application.getFilesDir(), "busy.file");
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            assertThat(bufferedReader.readLine().toString(), equalTo("anyText"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("IOException for file not being constructed, or empty.");
+        }
     }
 }

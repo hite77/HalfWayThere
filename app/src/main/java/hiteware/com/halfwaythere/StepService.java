@@ -47,7 +47,7 @@ public class StepService extends Service implements SensorEventListener
     @Inject
     Vibrator vibrator;
 
-    private final SoftwareStepCounterInterface softwareStepCounter = new SoftwareStepCounter();
+    private SoftwareStepCounterInterface softwareStepCounter = null;
 
     private void NotifyOnPhoneAndWearable()
     {
@@ -71,7 +71,7 @@ public class StepService extends Service implements SensorEventListener
         super.onStartCommand(intent, flags, startId);
 
         ((InjectableApplication)getApplication()).inject(this);
-
+        softwareStepCounter = new SoftwareStepCounter((InjectableApplication) getApplication());
         RegisterForAccelerometerSensor();
         SetupReceiverForActions();
         PullInPersistedValues();
