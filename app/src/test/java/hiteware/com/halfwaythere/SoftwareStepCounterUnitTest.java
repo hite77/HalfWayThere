@@ -220,7 +220,7 @@ public class SoftwareStepCounterUnitTest {
 
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            assertThat(bufferedReader.readLine().toString(), equalTo("anyText"));
+            assertThat(bufferedReader.readLine(), equalTo("anyText"));
         } catch (IOException e) {
             e.printStackTrace();
             fail("IOException for file not being constructed, or empty.");
