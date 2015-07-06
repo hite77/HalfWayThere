@@ -16,6 +16,8 @@ import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 
+import java.util.Calendar;
+
 import javax.inject.Inject;
 
 /**
@@ -47,7 +49,11 @@ public class StepService extends Service implements SensorEventListener
     @Inject
     Vibrator vibrator;
 
+    @Inject
+    Calendar calendar;
+
     private SoftwareStepCounterInterface softwareStepCounter = null;
+    private int dayOfMonth = -1;
 
     private void NotifyOnPhoneAndWearable()
     {
@@ -166,6 +172,16 @@ public class StepService extends Service implements SensorEventListener
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        if (dayOfMonth == -1)
+        {
+            dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        }
+        if (calendar.get(Calendar.DAY_OF_MONTH) != dayOfMonth)
+        {
+            dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+            softwareStepCounter.SetSteps(0);
+        }
+
         softwareStepCounter.SensorUpdate(event.values);
         if (softwareStepCounter.GetSteps() != currentSteps) {
             currentSteps = softwareStepCounter.GetSteps();

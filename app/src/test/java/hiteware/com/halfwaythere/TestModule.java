@@ -5,6 +5,8 @@ import android.os.Vibrator;
 
 import org.mockito.Mockito;
 
+import java.util.Calendar;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -22,6 +24,7 @@ class TestModule{
     private final SensorManager sensorManager = Mockito.mock(SensorManager.class);
     private final ProgressUpdateInterface progressUpdateMock = Mockito.mock(ProgressUpdateInterface.class);
     private final Vibrator vibratorMock = Mockito.mock(Vibrator.class);
+    private final Calendar calendarMock = Mockito.mock(Calendar.class);
 
     @Provides
     public SensorManager provideSensorManager() { return sensorManager; }
@@ -31,4 +34,7 @@ class TestModule{
 
     @Provides
     public Vibrator provideVibrator() { return vibratorMock;}
+
+    @Provides
+    public Calendar provideCalendar() { return calendarMock;}
 }

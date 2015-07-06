@@ -23,6 +23,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowNotification;
 import org.robolectric.shadows.ShadowNotificationManager;
 
+import java.util.Calendar;
+
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -299,7 +301,6 @@ public class StepServiceUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
-
         StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
         createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_HALF_WAY_SET));
 
@@ -454,4 +455,35 @@ public class StepServiceUnitTest {
 
         verify(vibrator, times(1)).vibrate(anyInt());
     }
+
+    // todo: test for setting the date each time the sensor is updated.
+    // Date now = new Date();
+    // calendar.setTime(now);
+
+    // todo: each time the date is set, it is a different date that is set.
+
+    @Test
+    public void GivenStepsAreSetToNonZeroWhenDayIsDifferentBetweenSensorEventsThenStepsAreResetAndAStepHappeningWillOutputTwo()
+    {
+        Calendar date = application.testModule.provideCalendar();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        when(date.get(Calendar.DAY_OF_MONTH)).thenReturn(1);
+        generateStep();
+
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
+
+        when(date.get(Calendar.DAY_OF_MONTH)).thenReturn(2);
+        generateStep();
+
+        assertThat(testReceiver.getActualSteps(), equalTo(2));
+    }
+
+    // todo: test for setting the day of the month, and shutting down, and make sure it still wipes to zero for the day of the month.
+    // should set the initial day to what was stored, or -1.
 }

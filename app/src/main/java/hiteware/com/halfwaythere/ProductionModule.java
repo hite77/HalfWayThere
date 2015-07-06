@@ -4,6 +4,9 @@ import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Vibrator;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -34,5 +37,9 @@ class ProductionModule {
 
     @Provides @Singleton Vibrator provideVibrator() {
         return (Vibrator) Activity.getSystemService(Context.VIBRATOR_SERVICE);
+    }
+
+    @Provides @Singleton Calendar provideCalendar() {
+        return new GregorianCalendar();
     }
 }
