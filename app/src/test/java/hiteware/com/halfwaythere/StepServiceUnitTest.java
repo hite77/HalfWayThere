@@ -15,6 +15,7 @@ import android.widget.TextView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -24,12 +25,15 @@ import org.robolectric.shadows.ShadowNotification;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import java.util.Calendar;
+import java.util.List;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -456,11 +460,33 @@ public class StepServiceUnitTest {
         verify(vibrator, times(1)).vibrate(anyInt());
     }
 
-    // todo: test for setting the date each time the sensor is updated.
-    // Date now = new Date();
-    // calendar.setTime(now);
+    @Test
+    public void WhenSensorEventHappensSetTimeInMillisIsCalled()
+    {
+        Calendar date = application.testModule.provideCalendar();
+        generateStep();
 
-    // todo: each time the date is set, it is a different date that is set.
+        verify(date, times(3)).setTimeInMillis(anyLong());
+    }
+
+    @Test
+    public void WhenSensorEventHappensTheValuesForTimeAreGreaterThanCurrentSystemTimeAndEachOther()
+    {
+        Calendar date = application.testModule.provideCalendar();
+        long currentTime = System.currentTimeMillis();
+
+        generateStep();
+
+        ArgumentCaptor<Long> argumentCaptor = ArgumentCaptor.forClass(long.class);
+
+        verify(date, times(3)).setTimeInMillis(argumentCaptor.capture());
+
+        List<Long> values = argumentCaptor.getAllValues();
+        assertThat(values.size(), equalTo(3));
+        assertThat(values.get(0), greaterThanOrEqualTo(currentTime));
+        assertThat(values.get(1), greaterThanOrEqualTo(values.get(0)));
+        assertThat(values.get(2), greaterThanOrEqualTo(values.get(1)));
+    }
 
     @Test
     public void GivenStepsAreSetToNonZeroWhenDayIsDifferentBetweenSensorEventsThenStepsAreResetAndAStepHappeningWillOutputTwo()
@@ -484,6 +510,57 @@ public class StepServiceUnitTest {
         assertThat(testReceiver.getActualSteps(), equalTo(2));
     }
 
-    // todo: test for setting the day of the month, and shutting down, and make sure it still wipes to zero for the day of the month.
-    // should set the initial day to what was stored, or -1.
+    @Test
+    public void GivenTodayIsFirstDayOfMonthAndStepsHaveHappenedWhenServiceIsShutDownAndStepOccursThenStepsAreStillWipedToZero() {
+        Calendar date = application.testModule.provideCalendar();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        when(date.get(Calendar.DAY_OF_MONTH)).thenReturn(1);
+        generateStep();
+
+        mStepService.onDestroy();
+        mStepService = null;
+        mStepService = new StepService();
+        mStepService.onStartCommand(new Intent(), 0, 0);
+
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
+
+        when(date.get(Calendar.DAY_OF_MONTH)).thenReturn(2);
+        generateStep();
+
+        assertThat(testReceiver.getActualSteps(), equalTo(2));
+    }
+
+    @Test
+    public void GivenADayHasPassedAndStepsHaveHappenedWhenServiceIsShutDownAndStepOccursThenStepsAreOnlyWipedOnce() {
+        Calendar date = application.testModule.provideCalendar();
+
+        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        when(date.get(Calendar.DAY_OF_MONTH)).thenReturn(1);
+        generateStep();
+
+        when(date.get(Calendar.DAY_OF_MONTH)).thenReturn(2);
+        generateStep();
+
+        mStepService.onDestroy();
+        mStepService = null;
+        mStepService = new StepService();
+        mStepService.onStartCommand(new Intent(), 0, 0);
+
+        HalfWayThereActivity createdActivity = Robolectric.buildActivity(HalfWayThereActivity.class).create().postResume().get();
+
+        StepServiceUnitTestReceiver testReceiver = new StepServiceUnitTestReceiver();
+        createdActivity.registerReceiver(testReceiver, new IntentFilter(StepService.ACTION_STEPS_OCCURRED));
+
+        generateStep();
+
+        assertThat(testReceiver.getActualSteps(), equalTo(4));
+    }
 }

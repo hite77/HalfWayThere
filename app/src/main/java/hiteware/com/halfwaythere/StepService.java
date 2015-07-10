@@ -53,24 +53,7 @@ public class StepService extends Service implements SensorEventListener
     Calendar calendar;
 
     private SoftwareStepCounterInterface softwareStepCounter = null;
-    private int dayOfMonth = -1;
-
-    private void NotifyOnPhoneAndWearable()
-    {
-        int notificationId = 1;
-
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000, 1000})
-                        .setContentTitle("HalfWayThere")
-                        .setContentText("You Are halfWayThere")
-                        .setDefaults(Notification.DEFAULT_ALL);
-
-        NotificationManager notificationManager = (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.notify(notificationId, notificationBuilder.build());
-    }
+    private int dayOfMonth;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -93,6 +76,34 @@ public class StepService extends Service implements SensorEventListener
         return START_STICKY;
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        ClearStepsEachDayOnce();
+
+        softwareStepCounter.SensorUpdate(event.values);
+
+        if (softwareStepCounter.GetSteps() != currentSteps) {
+            UpdateStepsAndNotifyOnHalfWay();
+        }
+    }
+
+    private void UpdateStepsAndNotifyOnHalfWay() {
+        currentSteps = softwareStepCounter.GetSteps();
+
+        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+        prefs.edit().putInt("currentSteps", currentSteps).apply();
+
+        BroadcastHelper.sendBroadcast(this, ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
+
+        if (oneShotHalfWay && (currentSteps > halfWay)) {
+            vibrator.vibrate(2000);
+            NotifyOnPhoneAndWearable();
+            oneShotHalfWay = false;
+        }
+    }
+
     private void RegisterForAccelerometerSensor() {
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (null != sensor)
@@ -106,6 +117,7 @@ public class StepService extends Service implements SensorEventListener
         currentSteps = prefs.getInt("currentSteps", 0);
         goal = prefs.getInt("goal", 0);
         halfWay = prefs.getInt("halfWay", -1);
+        dayOfMonth = prefs.getInt("dayOfMonth", -1);
     }
 
     private void SetupReceiverForActions() {
@@ -170,30 +182,41 @@ public class StepService extends Service implements SensorEventListener
         }
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
+    private void ClearStepsEachDayOnce() {
         if (dayOfMonth == -1)
         {
             dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+            StoreDayOfMonth();
         }
         if (calendar.get(Calendar.DAY_OF_MONTH) != dayOfMonth)
         {
             dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+            StoreDayOfMonth();
+
             softwareStepCounter.SetSteps(0);
         }
+    }
 
-        softwareStepCounter.SensorUpdate(event.values);
-        if (softwareStepCounter.GetSteps() != currentSteps) {
-            currentSteps = softwareStepCounter.GetSteps();
-            SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
-            prefs.edit().putInt("currentSteps", currentSteps).apply();
-            BroadcastHelper.sendBroadcast(this, ACTION_STEPS_OCCURRED, STEPS_OCCURRED, currentSteps);
-            if (oneShotHalfWay && (currentSteps > halfWay)) {
-                vibrator.vibrate(2000);
-                NotifyOnPhoneAndWearable();
-                oneShotHalfWay = false;
-            }
-        }
+    private void StoreDayOfMonth() {
+        SharedPreferences prefs = getSharedPreferences("hiteware.com.halfwaythere", MODE_PRIVATE);
+        prefs.edit().putInt("dayOfMonth", dayOfMonth).apply();
+    }
+
+    private void NotifyOnPhoneAndWearable()
+    {
+        int notificationId = 1;
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000, 1000})
+                        .setContentTitle("HalfWayThere")
+                        .setContentText("You Are halfWayThere")
+                        .setDefaults(Notification.DEFAULT_ALL);
+
+        NotificationManager notificationManager = (NotificationManager) getApplication().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(notificationId, notificationBuilder.build());
     }
 
     @Override
