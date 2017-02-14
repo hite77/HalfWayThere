@@ -493,9 +493,6 @@ public class StepServiceUnitTest {
     {
         Calendar date = application.testModule.provideCalendar();
 
-        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
         when(date.get(Calendar.DAY_OF_MONTH)).thenReturn(1);
         generateStep();
 
@@ -513,9 +510,6 @@ public class StepServiceUnitTest {
     @Test
     public void GivenTodayIsFirstDayOfMonthAndStepsHaveHappenedWhenServiceIsShutDownAndStepOccursThenStepsAreStillWipedToZero() {
         Calendar date = application.testModule.provideCalendar();
-
-        BroadcastHelper.sendBroadcast(application, StepService.ACTION_SET_STEPS, StepService.STEPS_OCCURRED, 14);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         when(date.get(Calendar.DAY_OF_MONTH)).thenReturn(1);
         generateStep();
