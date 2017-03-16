@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "22.0.1"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "hiteware.com.halfwaythere"
@@ -39,7 +39,5 @@ dependencies {
     compile 'com.squareup.dagger:dagger-compiler:1.2.2'
 
     testCompile 'org.apache.maven:maven-ant-tasks:2.1.3'
-    testCompile ('org.robolectric:robolectric:3.0-rc2') {
-        exclude group: 'commons-logging', module: 'commons-logging'
-    }
+    testCompile ('org.robolectric:robolectric:3.0')
 }
