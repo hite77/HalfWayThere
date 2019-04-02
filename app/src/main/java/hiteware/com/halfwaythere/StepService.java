@@ -59,7 +59,7 @@ public class StepService extends Service implements SensorEventListener
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        ((InjectableApplication)getApplication()).inject(this);
+        ((InjectableApplication)getApplication()).begin(this);
         softwareStepCounter = new SoftwareStepCounter((InjectableApplication) getApplication());
         RegisterForAccelerometerSensor();
         SetupReceiverForActions();

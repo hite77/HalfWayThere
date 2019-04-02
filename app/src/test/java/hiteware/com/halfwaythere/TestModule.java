@@ -13,10 +13,7 @@ import dagger.Provides;
 /**
  * Created on 4/25/15.
  */
-@Module(
-        injects = {UILogic.class, StepService.class},
-        overrides = true
-)
+@Module
 class TestModule{
     public TestModule() {
     }

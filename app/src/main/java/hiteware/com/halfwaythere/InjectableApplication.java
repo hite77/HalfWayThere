@@ -2,37 +2,31 @@ package hiteware.com.halfwaythere;
 
 import android.app.Application;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.inject.Singleton;
 
-import dagger.ObjectGraph;
+import dagger.Component;
 
 /**
  * Created on 4/23/15.
  */
+
+
 public class InjectableApplication extends Application {
-
-    private final ProductionModule productionModule =new ProductionModule(this);
-
-    final List<Object> objectsToCreate = new ArrayList<>();
-
-    private ObjectGraph graph = null;
+    @Singleton
+    @Component(modules = { ProductionModule.class })
+    public interface ApplicationComponent {
+        void inject(Object object);
+    }
     boolean useMock = false;
 
-    private void buildGraph()
-    {
-        if (graph == null)
-        {
+    private ApplicationComponent component;
+    private ProductionModule module = new ProductionModule(this);
+
+    public void begin(Object object) {
             if (!useMock) {
-                objectsToCreate.add(productionModule);
+                component = DaggerInjectableApplication_ApplicationComponent.builder().productionModule(module).build();
+                component.inject(this);
             }
-                graph = ObjectGraph.create(objectsToCreate.toArray());
-        }
     }
 
-    public void inject(Object object)
-    {
-        buildGraph();
-        graph.inject(object);
-    }
 }

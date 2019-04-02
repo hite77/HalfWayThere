@@ -15,10 +15,7 @@ import dagger.Provides;
 /**
  * Created on 4/25/15.
  */
-@Module(
-        injects = {StepService.class, UILogic.class},
-        overrides = false
-)
+@Module
 class ProductionModule {
 
     private final Context Activity;

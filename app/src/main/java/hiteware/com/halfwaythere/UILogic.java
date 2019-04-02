@@ -9,19 +9,30 @@ import android.view.View;
 import android.widget.TextView;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.Component;
 
 /**
  * Created on 6/24/15.
  */
 class UILogic {
+    @Singleton
+    @Component(modules = { ProductionModule.class })
+    public interface ApplicationComponent {
+        void inject(UILogic uiLogic);
+    }
+
     private final statusReceiver mStatusReceiver = new statusReceiver();
     private int currentSteps;
     private int goal;
     private final FragmentActivity Activity;
     private final View MyView;
+    private ApplicationComponent component;
+    private ProductionModule module;
 
-    @Inject
-    ProgressUpdateInterface mProgressUpdate;
+
+    @Inject ProgressUpdateInterface mProgressUpdate;
 
     public UILogic(FragmentActivity activity, View view)
     {
@@ -31,7 +42,11 @@ class UILogic {
 
     public void Setup()
     {
-        ((InjectableApplication)Activity.getApplication()).inject(this);
+        module = new ProductionModule(Activity);
+        component = DaggerUILogic_ApplicationComponent.builder().productionModule(module).build();
+        component.inject(this);
+//        ((InjectableApplication) Activity.getApplication()).begin(this);
+//        ((InjectableApplication)Activity.getApplication()).inject(Activity);
 
         if (null != MyView && null != MyView.findViewById(R.id.circularProgressWithHalfWay)) {
             mProgressUpdate.SetCircularProgress((CircularProgressWithHalfWay) MyView.findViewById(R.id.circularProgressWithHalfWay));

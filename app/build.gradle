@@ -35,8 +35,15 @@ dependencies {
     testCompile "org.mockito:mockito-core:1.9.5"
     testCompile 'org.hamcrest:hamcrest-all:1.3'
 
-    compile 'com.squareup.dagger:dagger:1.2.2'
-    compile 'com.squareup.dagger:dagger-compiler:1.2.2'
+//    compile 'com.squareup.dagger:dagger:1.2.2'
+//    compile 'com.squareup.dagger:dagger-compiler:1.2.2'
+
+//    compile 'com.google.dagger:dagger:2.9'
+//    compile 'com.google.dagger:dagger-compiler:2.9'
+
+    compile 'com.google.dagger:dagger:2.0.1'
+    compile 'com.google.dagger:dagger-compiler:2.0.1'
+    compile 'javax.annotation:javax.annotation-api:1.2'
 
     testCompile 'org.apache.maven:maven-ant-tasks:2.1.3'
     testCompile ('org.robolectric:robolectric:3.0')
